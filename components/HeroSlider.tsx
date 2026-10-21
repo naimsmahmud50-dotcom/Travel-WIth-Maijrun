@@ -10,7 +10,7 @@ interface HeroSliderProps {
 const HERO_SLIDES = [
   {
     id: 'makkah',
-    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=85&w=2000&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=75&w=1280&auto=format&fit=crop',
     tag: 'Royal Spiritual Expeditions',
     icon: Sparkles,
     titleMain: 'Makkah & Madinah',
@@ -20,7 +20,7 @@ const HERO_SLIDES = [
   },
   {
     id: 'andalusia',
-    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=85&w=2000&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=75&w=1280&auto=format&fit=crop',
     tag: 'Islamic Heritage Discovery',
     icon: Crown,
     titleMain: 'Moorish Andalusia',
@@ -30,7 +30,7 @@ const HERO_SLIDES = [
   },
   {
     id: 'maldives',
-    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=85&w=2000&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=75&w=1280&auto=format&fit=crop',
     tag: '100% Private Secluded Haven',
     icon: Shield,
     titleMain: 'The Maldives Pavilions',
@@ -40,7 +40,7 @@ const HERO_SLIDES = [
   },
   {
     id: 'turkey',
-    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=85&w=2000&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=75&w=1280&auto=format&fit=crop',
     tag: 'Ottoman Grandeur & Coastal Luxury',
     icon: Compass,
     titleMain: 'Bosphorus Royalty',
@@ -52,12 +52,22 @@ const HERO_SLIDES = [
 
 export default function HeroSlider({ onOpenInquiry }: HeroSliderProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [loadedSecondary, setLoadedSecondary] = useState(false);
 
   useEffect(() => {
+    // Defer loading slides 1, 2, 3 until after primary hydration
+    const idleTimer = setTimeout(() => {
+      setLoadedSecondary(true);
+    }, 1500);
+
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
     }, 6000);
-    return () => clearInterval(timer);
+
+    return () => {
+      clearTimeout(idleTimer);
+      clearInterval(timer);
+    };
   }, []);
 
   const slide = HERO_SLIDES[currentSlide];
@@ -68,6 +78,7 @@ export default function HeroSlider({ onOpenInquiry }: HeroSliderProps) {
       {/* Slides Background Container */}
       {HERO_SLIDES.map((item, idx) => {
         const isActive = idx === currentSlide;
+        const shouldLoadBg = idx === 0 || loadedSecondary || isActive;
         return (
           <div
             key={item.id}
@@ -79,7 +90,7 @@ export default function HeroSlider({ onOpenInquiry }: HeroSliderProps) {
               className={`absolute inset-0 bg-cover bg-center transition-transform duration-[6000ms] ease-out ${
                 isActive ? 'scale-105' : 'scale-100'
               }`}
-              style={{ backgroundImage: `url(${item.image})` }}
+              style={{ backgroundImage: shouldLoadBg ? `url(${item.image})` : 'none' }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-brand-emeraldDeep via-brand-emeraldDeep/50 to-brand-emeraldDeep/20" />
             <div className="absolute inset-0 bg-gradient-to-r from-brand-emeraldDeep/80 via-transparent to-brand-emeraldDeep/40" />

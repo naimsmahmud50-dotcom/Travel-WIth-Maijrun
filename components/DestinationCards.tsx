@@ -17,7 +17,7 @@ const DESTINATIONS = [
     title: 'The Sacred Sanctuaries: Makkah & Madinah',
     desc: 'Direct Kaaba-view suites at Raffles or Dar Al Tawhid, Haram VIP access assistance, private luxury bullet train transfers, and scholars on retinue.',
     priceBdt: '৳695,000',
-    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'spain',
@@ -29,7 +29,7 @@ const DESTINATIONS = [
     title: 'Echoes of Al-Andalus: Moorish Splendors',
     desc: 'Private after-hours entry into the Alhambra and Great Mosque of Cordoba. Halal Andalusian culinary tastings and luxury historical estates.',
     priceBdt: '৳768,000',
-    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'maldives',
@@ -41,7 +41,7 @@ const DESTINATIONS = [
     title: 'The Pearl Pavilions: Private Overwater Sanctuary',
     desc: 'Enclosed lagoon infinity pool, halal private destination dining under the stars, zero public visibility, and dedicated private seaplane transfers.',
     priceBdt: '৳864,000',
-    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'switzerland',
@@ -53,7 +53,7 @@ const DESTINATIONS = [
     title: 'Matterhorn Majesty: Swiss Alpine Chalets',
     desc: 'Private luxury chalet with halal private chef, panoramic glacier express first-class carriage, helicopter scenic flights, and secluded wellness spas.',
     priceBdt: '৳1,020,000',
-    image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'turkey',
@@ -65,7 +65,7 @@ const DESTINATIONS = [
     title: 'Sultans of the Bosphorus: Palaces & Yachts',
     desc: 'Ciragan Palace Kempinski waterfront suites, chartered mega-yacht sunset cruise, Hagia Sophia after-hours tour, and secluded Bodrum coastal villa.',
     priceBdt: '৳624,000',
-    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'safari',
@@ -77,7 +77,7 @@ const DESTINATIONS = [
     title: 'The Great Migration: Luxury Tented Haven',
     desc: 'Singita luxury tented camp with certified halal gourmet catering, hot-air balloon dawn flight over the plains, and private open-roof 4x4 land cruisers.',
     priceBdt: '৳1,176,000',
-    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=75&w=640&auto=format&fit=crop',
   },
 ];
 
@@ -130,6 +130,8 @@ export default function DestinationCards({ onOpenInquiry }: DestinationCardsProp
                 <img
                   src={item.image}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-4 left-4 bg-brand-emerald/90 backdrop-blur-md text-brand-gold text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-brand-gold/30">

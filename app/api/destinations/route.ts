@@ -14,7 +14,7 @@ const DESTINATIONS_DB = [
     priceUsd: 5800,
     halalFeatures: ['Kaaba-view private suites', 'Haram VIP escort', 'Dedicated Islamic scholar', 'Private Haram transfers'],
     availableSlots: 4,
-    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'spain',
@@ -29,7 +29,7 @@ const DESTINATIONS_DB = [
     priceUsd: 6400,
     halalFeatures: ['Private Michelin-star halal chef', 'After-hours Alhambra access', 'Historical prayer spaces reserved'],
     availableSlots: 6,
-    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'maldives',
@@ -44,7 +44,7 @@ const DESTINATIONS_DB = [
     priceUsd: 7200,
     halalFeatures: ['Zero-sightline enclosed pool', 'Alcohol-free villa', 'Private beach dining'],
     availableSlots: 3,
-    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'switzerland',
@@ -59,7 +59,7 @@ const DESTINATIONS_DB = [
     priceUsd: 8500,
     halalFeatures: ['Exclusive chalet buyout', 'Halal certified gourmet catering', 'Private wellness spa'],
     availableSlots: 2,
-    image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'turkey',
@@ -74,7 +74,7 @@ const DESTINATIONS_DB = [
     priceUsd: 5200,
     halalFeatures: ['Ciragan Palace private suite', 'Private yacht charter', 'Historic mosques VIP tour'],
     availableSlots: 5,
-    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=75&w=640&auto=format&fit=crop',
   },
   {
     id: 'safari',
@@ -89,7 +89,7 @@ const DESTINATIONS_DB = [
     priceUsd: 9800,
     halalFeatures: ['Certified halal wilderness catering', 'Private 4x4 land cruiser', 'Dedicated family camp'],
     availableSlots: 4,
-    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=85&w=900&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=75&w=640&auto=format&fit=crop',
   },
 ];
 
