@@ -26,7 +26,7 @@ const PILLARS = [
 
 export default function HalalPillars() {
   return (
-    <section id="halal-philosophy" class="py-24 max-w-7xl mx-auto px-4 sm:px-8">
+    <section id="halal-philosophy" className="py-24 max-w-7xl mx-auto px-4 sm:px-8">
       <div className="text-center max-w-3xl mx-auto space-y-4 mb-16">
         <span className="text-xs uppercase tracking-[0.25em] font-bold text-brand-goldDark">The Maijrun Standard of Excellence</span>
         <h2 className="font-serif text-3xl sm:text-5xl text-brand-emerald tracking-tight">

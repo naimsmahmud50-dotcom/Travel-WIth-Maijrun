@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { Sparkles, Crown, Shield, Compass, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 
 interface HeroSliderProps {
