@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin CRM Portal | Travel With Maijrun VIP Leads</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              gold: '#D4AF37',
+              goldLight: '#F3E5AB',
+              goldDark: '#AA820A',
+              emerald: '#0B2019',
+              emeraldDeep: '#061410',
+              sand: '#F7F4EE',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-brand-gold selection:text-brand-emeraldDeep">
+
+  <!-- Top Admin Bar -->
+  <header class="border-b border-neutral-800 bg-neutral-900/90 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="flex items-center gap-2 text-brand-gold hover:text-white transition-colors">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span class="text-xs uppercase tracking-wider font-semibold">Back to Live Website</span>
+        </a>
+        <span class="text-neutral-700">|</span>
+        <div class="flex items-center gap-2">
+          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span class="text-xs uppercase tracking-widest font-bold text-neutral-300">Travel With Maijrun CRM</span>
+          <span class="bg-brand-gold/15 text-brand-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">Executive Portal</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <button onclick="exportCSV()" class="bg-brand-gold hover:bg-white text-brand-emeraldDeep text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Export Leads (CSV)</span>
+        </button>
+        <button onclick="openNewLeadModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Add VIP Lead</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto p-6 sm:p-8 space-y-8">
+    
+    <!-- Title & Welcome -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-neutral-800 gap-4">
+      <div>
+        <h1 class="text-3xl font-serif font-bold text-white tracking-tight">VIP Inquiries & Travel Consultations</h1>
+        <p class="text-neutral-400 text-xs mt-1">Manage private client proposals, WhatsApp conversations, and booking statuses.</p>
+      </div>
+      <button onclick="loadInquiries()" class="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2 border border-neutral-700 transition-colors">
+        <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="refreshIcon"></i>
+        <span>Refresh Data</span>
+      </button>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
+        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Total Inquiries</span>
+        <div id="statTotal" class="text-3xl font-serif font-bold text-white">0</div>
+        <span class="text-[11px] text-emerald-400 flex items-center gap-1">
+          <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +100% Client Interest
+        </span>
+      </div>
+
+      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
+        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Pending Callbacks</span>
+        <div id="statPending" class="text-3xl font-serif font-bold text-brand-gold">0</div>
+        <span class="text-[11px] text-neutral-500">Requires 4-hour response</span>
+      </div>
+
+      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
+        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Confirmed Bookings</span>
+        <div id="statConfirmed" class="text-3xl font-serif font-bold text-emerald-400">0</div>
+        <span class="text-[11px] text-neutral-500">Invoiced & Scheduled</span>
+      </div>
+
+      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
+        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Estimated Pipeline Value</span>
+        <div class="text-3xl font-serif font-bold text-emerald-400">৳৪,২০০,০০০+</div>
+        <span class="text-[11px] text-neutral-500">Avg. ৳700,000 / Booking</span>
+      </div>
+    </div>
+
+    <!-- Inquiries Table Card -->
+    <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden shadow-2xl">
+      <div class="p-6 border-b border-neutral-800 flex items-center justify-between">
+        <h3 class="font-serif text-xl font-bold text-white">Incoming Client Records</h3>
+        <span id="recordCount" class="text-xs text-neutral-400 font-mono">0 Record(s)</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-neutral-950 text-neutral-400 uppercase tracking-wider font-semibold border-b border-neutral-800">
+            <tr>
+              <th class="py-4 px-6">Client Name & ID</th>
+              <th class="py-4 px-6">Quick Contact</th>
+              <th class="py-4 px-6">Destination & Guests</th>
+              <th class="py-4 px-6">Halal & Dietary Preferences</th>
+              <th class="py-4 px-6">Status</th>
+              <th class="py-4 px-6 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="inquiriesTableBody" class="divide-y divide-neutral-800/80">
+            <!-- Dynamically populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: Add New Lead Manually -->
+  <div id="newLeadModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-neutral-900 rounded-2xl max-w-lg w-full p-6 sm:p-8 border border-neutral-700 shadow-2xl relative">
+      <button onclick="closeNewLeadModal()" class="absolute top-5 right-5 text-neutral-400 hover:text-white">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+
+      <h3 class="text-xl font-serif font-bold text-white mb-4">Add VIP Client Lead Manually</h3>
+
+      <form onsubmit="handleManualLead(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Client Full Name *</label>
+          <input type="text" id="mName" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Email *</label>
+            <input type="email" id="mEmail" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">WhatsApp / Phone *</label>
+            <input type="tel" id="mPhone" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Destination</label>
+          <input type="text" id="mDest" placeholder="e.g. Royal Makkah & Madinah" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
+        </div>
+        <div>
+          <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Special Preferences</label>
+          <textarea id="mPref" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-brand-gold hover:bg-white text-brand-emeraldDeep font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-all">
+          Save Client Record
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Demo Leads
+    const DEMO_LEADS = [
+      {
+        id: "INQ-2026-001",
+        name: "Sheikh Tariq Al-Mansoor",
+        email: "tariq.mansoor@dubai-holdings.ae",
+        phone: "+971501234567",
+        destination: "Makkah & Madinah (Royal Presidential)",
+        guests: "Family (6 Guests)",
+        preferences: "Direct Kaaba-view suites, private Haram scholar on retinue, private bullet train VIP carriage.",
+        status: "NEW",
+        createdAt: "2026-10-21T18:30:00Z"
+      },
+      {
+        id: "INQ-2026-002",
+        name: "Dr. Farhan & Shagufta Qureshi",
+        email: "farhan.qureshi@harleystreet.co.uk",
+        phone: "+447911123456",
+        destination: "Moorish Andalusia (Granada & Cordoba)",
+        guests: "Couples / 2 Guests",
+        preferences: "100% Halal Michelin gourmet private chef, private after-hours Alhambra pass.",
+        status: "CONTACTED",
+        createdAt: "2026-10-21T15:10:00Z"
+      },
+      {
+        id: "INQ-2026-003",
+        name: "Eng. Tariqul Islam Chowdhury",
+        email: "tariqul.chowdhury@concord-group.com",
+        phone: "+8801711000000",
+        destination: "Maldives (The Pearl Pavilions)",
+        guests: "Family (4 Guests)",
+        preferences: "Complete villa pool privacy (zero sightline), alcohol-free villa, private seaplane.",
+        status: "CONFIRMED",
+        createdAt: "2026-10-20T11:45:00Z"
+      }
+    ];
+
+    function getStoredInquiries() {
+      const stored = localStorage.getItem('maijrun_inquiries');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {}
+      }
+      localStorage.setItem('maijrun_inquiries', JSON.stringify(DEMO_LEADS));
+      return DEMO_LEADS;
+    }
+
+    async function loadInquiries() {
+      let list = getStoredInquiries();
+      
+      // Try to fetch from backend API if running
+      try {
+        const res = await fetch('/api/inquiries');
+        const json = await res.json();
+        if (json.success && json.data.length > 0) {
+          list = json.data;
+        }
+      } catch (err) {}
+
+      renderTable(list);
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById('inquiriesTableBody');
+      const countEl = document.getElementById('recordCount');
+      const statTotal = document.getElementById('statTotal');
+      const statPending = document.getElementById('statPending');
+      const statConfirmed = document.getElementById('statConfirmed');
+
+      countEl.innerText = `${list.length} Record(s)`;
+      statTotal.innerText = list.length;
+      statPending.innerText = list.filter(i => i.status === 'NEW').length;
+      statConfirmed.innerText = list.filter(i => i.status === 'CONFIRMED').length;
+
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-neutral-500">No leads recorded yet.</td></tr>`;
+        return;
+      }
+
+      list.forEach((item, index) => {
+        const statusColors = {
+          'NEW': 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
+          'CONTACTED': 'bg-blue-500/10 text-blue-400 border border-blue-500/30',
+          'CONFIRMED': 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30',
+        };
+
+        const cleanPhone = item.phone.replace(/[^0-9]/g, '');
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-neutral-800/40 transition-colors';
+        tr.innerHTML = `
+          <td class="py-4 px-6 font-semibold text-white">
+            ${item.name}
+            <span class="block text-[10px] text-brand-gold font-mono font-normal mt-0.5">${item.id}</span>
+          </td>
+          <td class="py-4 px-6 space-y-1">
+            <a href="https://wa.me/${cleanPhone}" target="_blank" class="inline-flex items-center gap-1.5 text-emerald-400 hover:underline">
+              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+              <span>${item.phone}</span>
+            </a>
+            <div class="flex items-center gap-1.5 text-neutral-400">
+              <i data-lucide="mail" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span>${item.email}</span>
+            </div>
+          </td>
+          <td class="py-4 px-6 space-y-1">
+            <div class="flex items-center gap-1.5 text-white font-medium">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-gold"></i>
+              <span>${item.destination}</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-neutral-400 text-[11px]">
+              <i data-lucide="users" class="w-3.5 h-3.5"></i>
+              <span>${item.guests || 'Family'}</span>
+            </div>
+          </td>
+          <td class="py-4 px-6 text-neutral-300 max-w-xs font-light leading-relaxed">
+            ${item.preferences || 'Standard Halal Protocol'}
+          </td>
+          <td class="py-4 px-6">
+            <select onchange="updateStatus(${index}, this.value)" class="bg-neutral-800 text-xs px-2.5 py-1 rounded-lg border border-neutral-700 text-neutral-200 cursor-pointer focus:outline-none">
+              <option value="NEW" ${item.status === 'NEW' ? 'selected' : ''}>NEW</option>
+              <option value="CONTACTED" ${item.status === 'CONTACTED' ? 'selected' : ''}>CONTACTED</option>
+              <option value="CONFIRMED" ${item.status === 'CONFIRMED' ? 'selected' : ''}>CONFIRMED</option>
+            </select>
+          </td>
+          <td class="py-4 px-6 text-right">
+            <a href="https://wa.me/${cleanPhone}?text=Salam%20${encodeURIComponent(item.name)},%20this%20is%20VIP%20Concierge%20from%20Travel%20With%20Maijrun%20regarding%20your%20inquiry%20for%20${encodeURIComponent(item.destination)}" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/40 text-[11px] font-semibold transition-all inline-flex items-center gap-1">
+              <i data-lucide="send" class="w-3 h-3"></i>
+              <span>WhatsApp</span>
+            </a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      lucide.createIcons();
+    }
+
+    function updateStatus(index, newStatus) {
+      const list = getStoredInquiries();
+      if (list[index]) {
+        list[index].status = newStatus;
+        localStorage.setItem('maijrun_inquiries', JSON.stringify(list));
+        loadInquiries();
+      }
+    }
+
+    function exportCSV() {
+      const list = getStoredInquiries();
+      if (list.length === 0) return;
+      const headers = ['ID', 'Name', 'Email', 'Phone', 'Destination', 'Guests', 'Preferences', 'Status', 'Date'];
+      const rows = list.map(i => [
+        i.id,
+        `"${i.name}"`,
+        `"${i.email}"`,
+        `"${i.phone}"`,
+        `"${i.destination}"`,
+        `"${i.guests}"`,
+        `"${(i.preferences || '').replace(/"/g, '""')}"`,
+        i.status,
+        i.createdAt
+      ]);
+
+      const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `maijrun-vip-leads-${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function openNewLeadModal() {
+      document.getElementById('newLeadModal').classList.remove('hidden');
+      document.getElementById('newLeadModal').classList.add('flex');
+    }
+
+    function closeNewLeadModal() {
+      document.getElementById('newLeadModal').classList.add('hidden');
+      document.getElementById('newLeadModal').classList.remove('flex');
+    }
+
+    function handleManualLead(e) {
+      e.preventDefault();
+      const list = getStoredInquiries();
+      const newLead = {
+        id: `INQ-${Date.now()}`,
+        name: document.getElementById('mName').value,
+        email: document.getElementById('mEmail').value,
+        phone: document.getElementById('mPhone').value,
+        destination: document.getElementById('mDest').value,
+        guests: "2 Guests",
+        preferences: document.getElementById('mPref').value,
+        status: "NEW",
+        createdAt: new Date().toISOString()
+      };
+      list.unshift(newLead);
+      localStorage.setItem('maijrun_inquiries', JSON.stringify(list));
+      closeNewLeadModal();
+      loadInquiries();
+      alert('New VIP lead saved successfully!');
+    }
+
+    // Initialize
+    loadInquiries();
+    lucide.createIcons();
+  </script>
+</body>
+</html>
