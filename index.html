@@ -1572,83 +1572,151 @@
   </section>
 
   <!-- ================= LUXURY FOOTER ================= -->
-  <footer class="bg-brand-emeraldDeep text-white border-t border-brand-gold/20 pt-20 pb-12">
-    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+  <!-- ================= LUXURY FOOTER ================= -->
+  <footer class="bg-[#061410] text-white border-t border-brand-gold/20 pt-20 pb-12 relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8 relative z-10">
       
-      <div class="glass-dark rounded-2xl p-8 sm:p-12 border border-brand-gold/30 mb-16 flex flex-col lg:flex-row items-center justify-between gap-8">
-        <div class="space-y-2 max-w-xl text-center lg:text-left">
-          <span class="text-xs uppercase tracking-[0.25em] font-bold text-brand-gold">Private Society Newsletter</span>
-          <h3 class="font-serif text-2xl sm:text-3xl text-white">Receive Our Curated 2026 Black Book of Journeys</h3>
-          <p class="text-neutral-400 text-xs sm:text-sm font-light">Unpublished private villas, upcoming royal pilgrimages, and bespoke invitations sent monthly.</p>
+      <!-- Newsletter Section -->
+      <div class="bg-[#0B2019]/90 backdrop-blur-xl rounded-2xl p-8 sm:p-12 border border-brand-gold/30 mb-16 shadow-2xl">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div class="space-y-2 max-w-xl text-center lg:text-left">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-gold/15 border border-brand-gold/30 text-brand-gold text-[10px] tracking-[0.25em] uppercase font-bold">
+              <i data-lucide="sparkles" class="w-3 h-3 text-brand-gold"></i>
+              <span>Private Society Newsletter</span>
+            </div>
+            <h3 class="font-serif text-2xl sm:text-3xl text-white tracking-wide">Receive Our Curated 2026 Black Book of Journeys</h3>
+            <p class="text-neutral-300 text-xs sm:text-sm font-light leading-relaxed">Unpublished private villas, upcoming royal pilgrimages, and bespoke invitations sent monthly.</p>
+          </div>
+          <form onsubmit="handleSubscribe(event)" class="w-full lg:w-auto flex flex-col sm:flex-row items-center gap-3">
+            <input type="email" id="newsletterEmailInput" required placeholder="Enter your private email" class="w-full sm:w-80 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-neutral-400 text-sm focus:outline-none focus:border-brand-gold transition-colors">
+            <button type="submit" id="newsletterSubmitBtn" class="w-full sm:w-auto bg-brand-gold hover:bg-brand-goldLight text-brand-emeraldDeep font-semibold text-xs tracking-widest uppercase px-8 py-3.5 rounded-full transition-all duration-300 shadow-lg cursor-pointer">
+              Subscribe
+            </button>
+          </form>
         </div>
-        <form onsubmit="handleSubscribe(event)" class="w-full lg:w-auto flex flex-col sm:flex-row items-center gap-3">
-          <input type="email" required placeholder="Enter your email address" class="w-full sm:w-80 px-5 py-3.5 rounded-full bg-white/10 border border-white/20 text-white placeholder-neutral-400 text-sm focus:outline-none focus:border-brand-gold transition-colors">
-          <button type="submit" class="w-full sm:w-auto bg-brand-gold hover:bg-white text-brand-emeraldDeep font-semibold text-xs tracking-widest uppercase px-8 py-3.5 rounded-full transition-all">
-            Subscribe
-          </button>
-        </form>
+        <div id="newsletterFeedback" class="hidden mt-4 p-3.5 rounded-xl text-xs flex items-center gap-2"></div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 pb-16 border-b border-white/10">
+        <!-- Col 1 & 2: Brand & Founder Narrative -->
         <div class="lg:col-span-2 space-y-4">
           <h4 class="font-serif text-2xl font-bold tracking-tight text-white uppercase">Travel With Maijrun</h4>
-          <p class="text-neutral-400 text-xs font-light leading-relaxed max-w-sm">
+          <p class="text-neutral-300 text-xs font-light leading-relaxed max-w-sm">
             Curating world-class bespoke luxury journeys, royal pilgrimages, and sacred historical expeditions under strict 100% Halal hospitality standards.
           </p>
+          <div class="text-xs text-neutral-400 font-light pt-1">
+            <span class="text-brand-gold font-medium">Founder &amp; Executive Director:</span>
+            <span class="text-white font-medium">Sheikh Mahmud Hasan</span>
+          </div>
           <div class="flex items-center gap-4 pt-2">
             <span class="text-xs text-brand-gold font-medium">Certified Partner:</span>
             <span class="text-xs bg-white/5 border border-white/10 px-2.5 py-1 rounded text-neutral-300">IATA Accredited</span>
             <span class="text-xs bg-white/5 border border-white/10 px-2.5 py-1 rounded text-neutral-300">Halal Tourism Alliance</span>
           </div>
+
+          <!-- Social Channels -->
+          <div class="pt-3 flex items-center gap-3">
+            <a href="https://github.com/naimsmahmud50-dotcom" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/5 border border-white/15 hover:border-brand-gold hover:bg-brand-gold hover:text-brand-emeraldDeep text-neutral-300 flex items-center justify-center transition-all" aria-label="GitHub">
+              <i data-lucide="github" class="w-4 h-4"></i>
+            </a>
+            <a href="https://www.linkedin.com/in/mahmud-hasan-687908269/" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/5 border border-white/15 hover:border-brand-gold hover:bg-brand-gold hover:text-brand-emeraldDeep text-neutral-300 flex items-center justify-center transition-all" aria-label="LinkedIn">
+              <i data-lucide="linkedin" class="w-4 h-4"></i>
+            </a>
+            <a href="https://www.facebook.com/profile.php?id=61594545143334" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-white/5 border border-white/15 hover:border-brand-gold hover:bg-brand-gold hover:text-brand-emeraldDeep text-neutral-300 flex items-center justify-center transition-all" aria-label="Facebook">
+              <i data-lucide="facebook" class="w-4 h-4"></i>
+            </a>
+            <a href="https://wa.me/8801767850859?text=Salam,%20I%20would%20like%20to%20inquire%20about%20a%20luxury%20halal%20journey%20with%20Travel%20With%20Maijrun" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-emerald-950/60 border border-emerald-500/40 hover:bg-emerald-600 hover:text-white text-emerald-400 flex items-center justify-center transition-all" aria-label="WhatsApp">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+            </a>
+          </div>
         </div>
 
+        <!-- Col 3: Destinations -->
         <div class="space-y-3">
           <h5 class="text-xs tracking-[0.2em] uppercase font-bold text-brand-gold">Destinations</h5>
-          <ul class="space-y-2 text-xs text-neutral-400 font-light">
-            <li><a href="#destinations" class="hover:text-white transition-colors">Makkah & Madinah Royal</a></li>
-            <li><a href="#destinations" class="hover:text-white transition-colors">Andalusia & Granada</a></li>
-            <li><a href="#destinations" class="hover:text-white transition-colors">Maldives Private Atolls</a></li>
-            <li><a href="#destinations" class="hover:text-white transition-colors">Bosphorus & Bodrum</a></li>
-            <li><a href="#destinations" class="hover:text-white transition-colors">Swiss Alpine Chalets</a></li>
-            <li><a href="#destinations" class="hover:text-white transition-colors">Serengeti Safari Tents</a></li>
+          <ul class="space-y-2 text-xs text-neutral-300 font-light">
+            <li><a href="#destinations" class="hover:text-brand-gold transition-colors">Makkah &amp; Madinah Royal</a></li>
+            <li><a href="#destinations" class="hover:text-brand-gold transition-colors">Andalusia &amp; Granada</a></li>
+            <li><a href="#destinations" class="hover:text-brand-gold transition-colors">Maldives Private Atolls</a></li>
+            <li><a href="#destinations" class="hover:text-brand-gold transition-colors">Bosphorus &amp; Bodrum</a></li>
+            <li><a href="#destinations" class="hover:text-brand-gold transition-colors">Swiss Alpine Chalets</a></li>
+            <li><a href="#destinations" class="hover:text-brand-gold transition-colors">Serengeti Safari Tents</a></li>
           </ul>
         </div>
 
+        <!-- Col 4: Expedition Styles -->
         <div class="space-y-3">
           <h5 class="text-xs tracking-[0.2em] uppercase font-bold text-brand-gold">Expedition Styles</h5>
-          <ul class="space-y-2 text-xs text-neutral-400 font-light">
-            <li><a href="#bespoke-tailored" class="hover:text-white transition-colors">Private Aviation & Jets</a></li>
-            <li><a href="#bespoke-tailored" class="hover:text-white transition-colors">Sacred Royal Umrah</a></li>
-            <li><a href="#bespoke-tailored" class="hover:text-white transition-colors">Secluded Honeymoons</a></li>
-            <li><a href="#bespoke-tailored" class="hover:text-white transition-colors">Multi-Gen Family Havens</a></li>
-            <li><a href="#bespoke-tailored" class="hover:text-white transition-colors">Yacht & Coastal Charters</a></li>
+          <ul class="space-y-2 text-xs text-neutral-300 font-light">
+            <li><a href="#bespoke-tailored" class="hover:text-brand-gold transition-colors">Private Aviation &amp; Jets</a></li>
+            <li><a href="#signature-journeys" class="hover:text-brand-gold transition-colors">Sacred Royal Umrah</a></li>
+            <li><a href="#bespoke-tailored" class="hover:text-brand-gold transition-colors">Secluded Honeymoons</a></li>
+            <li><a href="#bespoke-tailored" class="hover:text-brand-gold transition-colors">Multi-Gen Family Havens</a></li>
+            <li><a href="#bespoke-tailored" class="hover:text-brand-gold transition-colors">Yacht &amp; Coastal Charters</a></li>
           </ul>
         </div>
 
+        <!-- Col 5: VIP Concierge (Mahmud Hasan's Authentic Information) -->
         <div class="space-y-3">
           <h5 class="text-xs tracking-[0.2em] uppercase font-bold text-brand-gold">VIP Concierge</h5>
-          <div class="space-y-2 text-xs text-neutral-400 font-light">
-            <p><strong>Hotline:</strong> +880 9612-888-999</p>
-            <p><strong>WhatsApp:</strong> +880 9612-888-999</p>
-            <p><strong>Private Email:</strong> vip@travelwithmaijrun.com</p>
-            <p><strong>Global Office:</strong> Gulshan Avenue, Dhaka & Mayfair, London</p>
+          <div class="space-y-2.5 text-xs text-neutral-300 font-light">
+            <div class="flex items-start gap-2">
+              <i data-lucide="phone" class="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0"></i>
+              <div>
+                <span class="text-neutral-400 block text-[11px]">Direct Hotline:</span>
+                <a href="tel:+8801767850859" class="text-white hover:text-brand-gold font-medium transition-colors">
+                  +880 1767-850859
+                </a>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-2">
+              <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0"></i>
+              <div>
+                <span class="text-neutral-400 block text-[11px]">WhatsApp Concierge:</span>
+                <a href="https://wa.me/8801767850859?text=Salam,%20I%20would%20like%20to%20inquire%20about%20a%20luxury%20halal%20journey%20with%20Travel%20With%20Maijrun" target="_blank" rel="noopener noreferrer" class="text-white hover:text-emerald-300 font-medium transition-colors inline-flex items-center gap-1">
+                  <span>+880 1767-850859</span>
+                  <i data-lucide="arrow-up-right" class="w-3 h-3 text-emerald-400"></i>
+                </a>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-2">
+              <i data-lucide="mail" class="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0"></i>
+              <div>
+                <span class="text-neutral-400 block text-[11px]">Private Desk:</span>
+                <a href="mailto:naimsmahmud50@gmail.com" class="text-white hover:text-brand-gold font-medium transition-colors break-all">
+                  naimsmahmud50@gmail.com
+                </a>
+              </div>
+            </div>
+
+            <div class="flex items-start gap-2">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-gold mt-0.5 shrink-0"></i>
+              <div>
+                <span class="text-neutral-400 block text-[11px]">Global Headquarters:</span>
+                <span class="text-neutral-300">Gulshan Avenue, Dhaka, Bangladesh</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
-        <p>© 2026 Travel With Maijrun Ltd. All Rights Reserved. Luxury Reimagined with Purpose.</p>
-        <div class="flex items-center gap-6">
-          <a href="#" class="hover:text-neutral-300 transition-colors">Privacy Policy</a>
-          <a href="#" class="hover:text-neutral-300 transition-colors">Halal Certification Guarantee</a>
-          <a href="#" class="hover:text-neutral-300 transition-colors">Terms of Luxury Service</a>
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-400 gap-4">
+        <p class="text-center sm:text-left">
+          &copy; 2026 Travel With Maijrun Ltd. Founded by Sheikh Mahmud Hasan. All Rights Reserved.
+        </p>
+        <div class="flex flex-wrap items-center justify-center gap-6">
+          <button type="button" onclick="openPolicyModal('privacy')" class="hover:text-brand-gold transition-colors cursor-pointer">Privacy Policy</button>
+          <button type="button" onclick="openPolicyModal('halal')" class="hover:text-brand-gold transition-colors cursor-pointer">Halal Certification Guarantee</button>
+          <button type="button" onclick="openPolicyModal('terms')" class="hover:text-brand-gold transition-colors cursor-pointer">Terms of Luxury Service</button>
         </div>
       </div>
     </div>
   </footer>
 
   <!-- ================= FLOATING WHATSAPP VIP CONCIERGE BUTTON ================= -->
-  <a href="https://wa.me/8801700000000?text=Salam,%20I%20would%20like%20to%20inquire%20about%20a%20luxury%20halal%20journey%20with%20Travel%20With%20Maijrun" 
+  <a href="https://wa.me/8801767850859?text=Salam,%20I%20would%20like%20to%20inquire%20about%20a%20luxury%20halal%20journey%20with%20Travel%20With%20Maijrun" 
      target="_blank" rel="noopener noreferrer" 
      class="fixed bottom-6 left-6 z-40 bg-emerald-700 hover:bg-emerald-600 text-white rounded-full p-4 shadow-2xl flex items-center gap-2 group transition-all duration-300 hover:scale-105 border border-emerald-500/40">
     <i data-lucide="message-circle" class="w-6 h-6"></i>
@@ -1721,6 +1789,25 @@
           Request Confidential Proposal
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= INTERACTIVE POLICY DIALOG MODAL ================= -->
+  <div id="policyModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="bg-[#0B2019] border border-brand-gold/40 rounded-2xl max-w-lg w-full p-6 sm:p-8 text-white relative shadow-2xl animate-fade-in max-h-[92vh] overflow-y-auto">
+      <button onclick="closePolicyModal()" class="absolute top-4 right-4 text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <div id="policyModalContent" class="space-y-4">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-white/10 flex justify-end">
+        <button type="button" onclick="closePolicyModal()" class="px-5 py-2 rounded-full bg-brand-gold text-brand-emeraldDeep text-xs font-semibold uppercase tracking-wider hover:bg-brand-goldLight transition-all cursor-pointer">
+          Understood
+        </button>
+      </div>
     </div>
   </div>
 
@@ -1971,7 +2058,22 @@
 
     async function handleSubscribe(e) {
       e.preventDefault();
-      const email = e.target.querySelector('input[type="email"]').value;
+      const input = document.getElementById('newsletterEmailInput');
+      const submitBtn = document.getElementById('newsletterSubmitBtn');
+      const feedback = document.getElementById('newsletterFeedback');
+      const email = input.value;
+
+      if (!email || !email.includes('@')) {
+        feedback.className = 'mt-4 p-3.5 rounded-xl text-xs flex items-center gap-2 bg-rose-950/80 border border-rose-500/40 text-rose-200';
+        feedback.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4 text-rose-400 shrink-0"></i><span>Please provide a valid private email address.</span>';
+        feedback.classList.remove('hidden');
+        if (window.lucide) window.lucide.createIcons();
+        return;
+      }
+
+      submitBtn.textContent = 'Reserving...';
+      submitBtn.disabled = true;
+
       try {
         await fetch('/api/newsletter', {
           method: 'POST',
@@ -1979,8 +2081,81 @@
           body: JSON.stringify({ email }),
         });
       } catch (err) {}
-      alert('Thank you for subscribing to the Travel With Maijrun Private Society.');
-      e.target.reset();
+
+      submitBtn.textContent = 'Subscribe';
+      submitBtn.disabled = false;
+      input.value = '';
+
+      feedback.className = 'mt-4 p-3.5 rounded-xl text-xs flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-200';
+      feedback.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i><span>Marhaban! Your invitation to our 2026 Black Book of Private Journeys has been dispatched.</span>';
+      feedback.classList.remove('hidden');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function openPolicyModal(type) {
+      const modal = document.getElementById('policyModal');
+      const content = document.getElementById('policyModalContent');
+      if (!modal || !content) return;
+
+      if (type === 'privacy') {
+        content.innerHTML = `
+          <div class="flex items-center gap-2 text-brand-gold">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+            <h3 class="font-serif text-xl font-bold">Privacy Policy &amp; Non-Disclosure</h3>
+          </div>
+          <p class="text-xs text-neutral-300 leading-relaxed">
+            Travel With Maijrun operates under absolute client confidentiality. We maintain strict zero-disclosure protocols for high-profile travelers, royal families, and dignitaries.
+          </p>
+          <ul class="text-xs text-neutral-400 space-y-1.5 list-disc pl-4">
+            <li>Personal details and itineraries are never shared with unauthorized third parties.</li>
+            <li>Direct encrypted communication channels via private concierge desk.</li>
+            <li>Inquiries can be conducted under confidential Non-Disclosure Agreements (NDAs).</li>
+          </ul>
+        `;
+      } else if (type === 'halal') {
+        content.innerHTML = `
+          <div class="flex items-center gap-2 text-brand-gold">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+            <h3 class="font-serif text-xl font-bold">Halal Certification Guarantee</h3>
+          </div>
+          <p class="text-xs text-neutral-300 leading-relaxed">
+            Every villa, private retreat, resort, and gastronomic arrangement in our portfolio is rigorously audited and certified under Islamic hospitality guidelines.
+          </p>
+          <ul class="text-xs text-neutral-400 space-y-1.5 list-disc pl-4">
+            <li>100% Zabihah Halal hand-slaughtered meat options curated by Michelin-trained chefs.</li>
+            <li>Strictly alcohol-free villas and private dining environments upon request.</li>
+            <li>Guaranteed zero-sightline privacy in private swimming pools and family suites.</li>
+            <li>Salah-synchronized itineraries with exact Qibla orientation and prayer accommodations.</li>
+          </ul>
+        `;
+      } else if (type === 'terms') {
+        content.innerHTML = `
+          <div class="flex items-center gap-2 text-brand-gold">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+            <h3 class="font-serif text-xl font-bold">Terms of Luxury Service</h3>
+          </div>
+          <p class="text-xs text-neutral-300 leading-relaxed">
+            Bespoke reservations are crafted exclusively through one-on-one consultation with our dedicated travel artisans led by Sheikh Mahmud Hasan.
+          </p>
+          <ul class="text-xs text-neutral-400 space-y-1.5 list-disc pl-4">
+            <li>Complimentary itinerary revisions during the initial bespoke design phase.</li>
+            <li>Dedicated 24/7 Butler &amp; VIP Concierge retinue assigned throughout your expedition.</li>
+            <li>VIP tarmac limousine transfers and discreet private aviation coordination.</li>
+          </ul>
+        `;
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      if (window.lucide) window.lucide.createIcons();
+    }
+
+    function closePolicyModal() {
+      const modal = document.getElementById('policyModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
     }
 
     function handleJourneySearch(e) {
