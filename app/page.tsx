@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import HeroSlider from '@/components/HeroSlider';
 import JourneyFinder from '@/components/JourneyFinder';
 import HalalPillars from '@/components/HalalPillars';
+import SignatureJourneys from '@/components/SignatureJourneys';
 import DestinationCards from '@/components/DestinationCards';
 import BespokeSection from '@/components/BespokeSection';
 import Testimonials from '@/components/Testimonials';
@@ -30,6 +31,7 @@ export default function HomePage() {
       <Navbar onOpenInquiry={handleOpenInquiry} />
       <HeroSlider onOpenInquiry={handleOpenInquiry} />
       <JourneyFinder />
+      <SignatureJourneys onOpenInquiry={handleOpenInquiry} />
       <HalalPillars />
       <DestinationCards onOpenInquiry={handleOpenInquiry} />
       <BespokeSection onOpenInquiry={handleOpenInquiry} />

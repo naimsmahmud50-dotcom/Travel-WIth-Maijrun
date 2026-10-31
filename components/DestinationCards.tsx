@@ -87,7 +87,7 @@ export default function DestinationCards({ onOpenInquiry }: DestinationCardsProp
   const filtered = DESTINATIONS.filter((d) => activeCategory === 'all' || d.category === activeCategory);
 
   return (
-    <section id="destinations" className="py-20 bg-white border-y border-brand-sandDark/70">
+    <section id="destinations" className="py-20 bg-white border-y border-brand-sandDark/70 scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>

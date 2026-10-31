@@ -3,7 +3,7 @@ import { Star } from 'lucide-react';
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="py-24 bg-brand-sand">
+    <section id="testimonials" className="py-24 bg-brand-sand scroll-mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-3">
           <span className="text-xs uppercase tracking-[0.25em] font-bold text-brand-goldDark">Voices of Distinction</span>

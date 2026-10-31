@@ -7,7 +7,7 @@ interface BespokeSectionProps {
 
 export default function BespokeSection({ onOpenInquiry }: BespokeSectionProps) {
   return (
-    <section id="bespoke-tailored" className="py-24 bg-brand-emerald text-white relative overflow-hidden">
+    <section id="bespoke-tailored" className="py-24 bg-brand-emerald text-white relative overflow-hidden scroll-mt-20">
       <div className="absolute -right-20 -bottom-20 w-96 h-96 rounded-full bg-brand-gold/10 filter blur-3xl pointer-events-none" />
       <div className="absolute -left-20 -top-20 w-96 h-96 rounded-full bg-brand-gold/10 filter blur-3xl pointer-events-none" />
 

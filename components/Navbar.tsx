@@ -58,6 +58,17 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
     }
   };
 
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const target = document.getElementById(targetId);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+    if (mobileOpen) {
+      setMobileOpen(false);
+    }
+  };
+
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
@@ -123,7 +134,8 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
             <div className="hidden min-[1200px]:flex items-center gap-6 xl:gap-8 shrink-0">
               <a
                 href="#destinations"
-                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline"
+                onClick={(e) => handleNavClick(e, 'destinations')}
+                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline cursor-pointer"
               >
                 <span>Destinations</span>
                 <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#D4AF37] group-hover:w-full transition-all duration-300 ease-out" />
@@ -131,7 +143,8 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
               <a
                 href="#signature-journeys"
-                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline"
+                onClick={(e) => handleNavClick(e, 'signature-journeys')}
+                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline cursor-pointer"
               >
                 <span>Signature Journeys</span>
                 <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#D4AF37] group-hover:w-full transition-all duration-300 ease-out" />
@@ -139,7 +152,8 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
               <a
                 href="#halal-philosophy"
-                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 flex items-center gap-1.5 no-underline"
+                onClick={(e) => handleNavClick(e, 'halal-philosophy')}
+                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 flex items-center gap-1.5 no-underline cursor-pointer"
               >
                 <span>Halal Sanctuary</span>
                 <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold tracking-wider uppercase rounded bg-[#D4AF37]/15 text-[#8C6B14] border border-[#D4AF37]/35 shadow-xs">
@@ -150,7 +164,8 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
               <a
                 href="#bespoke-tailored"
-                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline"
+                onClick={(e) => handleNavClick(e, 'bespoke-tailored')}
+                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline cursor-pointer"
               >
                 <span>Tailor-Made</span>
                 <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#D4AF37] group-hover:w-full transition-all duration-300 ease-out" />
@@ -271,7 +286,13 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
             <a
               key={item.label}
               href={item.href}
-              onClick={() => setMobileOpen(false)}
+              onClick={(e) => {
+                if (item.href.startsWith('#')) {
+                  handleNavClick(e, item.href.slice(1));
+                } else {
+                  setMobileOpen(false);
+                }
+              }}
               className="font-serif text-xl font-medium text-[#ECEAE3] hover:text-[#D4AF37] py-2.5 px-3 rounded-lg hover:bg-white/5 transition-all flex items-center justify-between group no-underline"
             >
               <div className="flex items-center gap-2">
