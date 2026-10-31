@@ -68,8 +68,8 @@ export default function Footer() {
           <div className="space-y-3">
             <h5 className="text-xs tracking-[0.2em] uppercase font-bold text-brand-gold">VIP Concierge</h5>
             <div className="space-y-2 text-xs text-neutral-400 font-light">
-              <p><strong>Hotline:</strong> +880 1800-MAIJRUN</p>
-              <p><strong>WhatsApp:</strong> +880 1700-000000</p>
+              <p><strong>Hotline:</strong> +880 9612-888-999</p>
+              <p><strong>WhatsApp:</strong> +880 9612-888-999</p>
               <p><strong>Private Email:</strong> vip@travelwithmaijrun.com</p>
               <p><strong>Global Office:</strong> Gulshan Avenue, Dhaka & Mayfair, London</p>
             </div>

@@ -77,7 +77,7 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
                   <input
                     type="tel"
                     required
-                    placeholder="+880 1800-000000"
+                    placeholder="+880 1XXXXXXXXX"
                     className="w-full px-4 py-3 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:border-brand-gold transition-colors"
                   />
                 </div>

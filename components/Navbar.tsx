@@ -356,7 +356,7 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
             { label: 'Halal Sanctuary Ethos', href: '#halal-philosophy', badge: '100% Halal' },
             { label: 'Tailor-Made Atelier', href: '#bespoke-tailored' },
             { label: 'VIP Society Reviews', href: '#testimonials' },
-            { label: 'Sign In / VIP Atelier', href: '/admin' },
+            { label: 'Client Portal', href: '/admin' },
           ].map((item) => (
             <a
               key={item.label}
@@ -400,10 +400,10 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
           <div className="pt-2 text-center text-xs text-neutral-400 space-y-1">
             <p className="tracking-wide">24/7 VIP Concierge & WhatsApp</p>
             <a
-              href="tel:+8801800000000"
+              href="tel:+8809612888999"
               className="text-[#D4AF37] font-semibold hover:underline block"
             >
-              +880 1800-MAIJRUN
+              +880 9612-888-999
             </a>
           </div>
         </div>
