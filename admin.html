@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin CRM Portal | Travel With Maijrun VIP Leads</title>
+  <title>Travel Atelier & VIP Operations Portal | Travel With Maijrun</title>
   
-  <!-- Fonts -->
+  <!-- Preconnects & Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400;1,600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -32,319 +32,745 @@
               emerald: '#0B2019',
               emeraldDeep: '#061410',
               sand: '#F7F4EE',
+              sandLight: '#FAF8F5',
             }
           }
         }
       }
     }
   </script>
-</head>
-<body class="bg-neutral-950 font-sans text-neutral-100 antialiased selection:bg-brand-gold selection:text-brand-emeraldDeep">
 
-  <!-- Top Admin Bar -->
-  <header class="border-b border-neutral-800 bg-neutral-900/90 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
+  <style>
+    :root {
+      --brand-green: #0B2019;
+      --brand-green-deep: #061410;
+      --brand-gold: #D4AF37;
+      --brand-gold-light: #F3E5AB;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0B2019;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #D4AF37;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-[#061410] font-sans text-neutral-100 min-h-screen flex flex-col antialiased selection:bg-brand-gold selection:text-brand-emeraldDeep">
+
+  <!-- ================= TOP ATELIER NAVIGATION BAR ================= -->
+  <header class="border-b border-brand-gold/20 bg-[#0B2019]/95 backdrop-blur-md sticky top-0 z-50 px-4 sm:px-8 py-3.5 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+      
+      <!-- Brand & Title Lockup -->
       <div class="flex items-center gap-4">
-        <a href="index.html" class="flex items-center gap-2 text-brand-gold hover:text-white transition-colors">
-          <i data-lucide="arrow-left" class="w-4 h-4"></i>
-          <span class="text-xs uppercase tracking-wider font-semibold">Back to Live Website</span>
+        <a href="/" class="flex items-center gap-3 no-underline group">
+          <span class="w-9 h-9 rounded-full border border-brand-gold flex items-center justify-center text-brand-gold font-serif text-lg font-bold group-hover:rotate-6 transition-transform">
+            M
+          </span>
+          <div class="flex flex-col">
+            <span class="font-serif text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-brand-gold transition-colors">
+              Travel With Maijrun
+            </span>
+            <span class="text-[9px] uppercase tracking-[0.22em] text-brand-gold">
+              VIP Atelier & Operations Suite
+            </span>
+          </div>
         </a>
-        <span class="text-neutral-700">|</span>
-        <div class="flex items-center gap-2">
-          <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span class="text-xs uppercase tracking-widest font-bold text-neutral-300">Travel With Maijrun CRM</span>
-          <span class="bg-brand-gold/15 text-brand-gold text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider">Executive Portal</span>
+
+        <span class="hidden md:inline text-neutral-600">|</span>
+
+        <!-- Live Server Status Indicator -->
+        <div class="hidden md:flex items-center gap-2 bg-black/40 px-3 py-1 rounded-full border border-white/10 text-xs">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-neutral-300 font-medium tracking-wide">REST API Live (Port 5000)</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <button onclick="exportCSV()" class="bg-brand-gold hover:bg-white text-brand-emeraldDeep text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all">
-          <i data-lucide="download" class="w-4 h-4"></i>
-          <span>Export Leads (CSV)</span>
+      <!-- Action Controls -->
+      <div class="flex items-center gap-3">
+        <a href="/" class="hidden sm:inline-flex items-center gap-2 text-xs uppercase tracking-wider text-neutral-300 hover:text-brand-gold border border-white/15 hover:border-brand-gold/50 px-3.5 py-2 rounded-xl transition-all">
+          <i data-lucide="external-link" class="w-3.5 h-3.5 text-brand-gold"></i>
+          <span>View Public Site</span>
+        </a>
+
+        <button onclick="exportCSV()" class="inline-flex items-center gap-2 bg-[#D4AF37]/15 hover:bg-[#D4AF37] text-brand-gold hover:text-brand-emeraldDeep border border-brand-gold/40 text-xs uppercase font-bold tracking-wider px-3.5 py-2 rounded-xl transition-all shadow-sm">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span class="hidden sm:inline">Export Leads</span>
         </button>
-        <button onclick="openNewLeadModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg transition-all">
-          <i data-lucide="plus" class="w-4 h-4"></i>
-          <span>Add VIP Lead</span>
+
+        <button onclick="openNewLeadModal()" class="inline-flex items-center gap-2 bg-brand-gold text-brand-emeraldDeep hover:bg-brand-goldLight text-xs uppercase font-bold tracking-wider px-4 py-2 rounded-xl transition-all shadow-md">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <span>New Lead</span>
         </button>
       </div>
+
     </div>
   </header>
 
-  <!-- Main Content Area -->
-  <main class="max-w-7xl mx-auto p-6 sm:p-8 space-y-8">
-    
-    <!-- Title & Welcome -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-neutral-800 gap-4">
-      <div>
-        <h1 class="text-3xl font-serif font-bold text-white tracking-tight">VIP Inquiries & Travel Consultations</h1>
-        <p class="text-neutral-400 text-xs mt-1">Manage private client proposals, WhatsApp conversations, and booking statuses.</p>
-      </div>
-      <button onclick="loadInquiries()" class="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold uppercase tracking-wider text-neutral-300 flex items-center gap-2 border border-neutral-700 transition-colors">
-        <i data-lucide="refresh-cw" class="w-3.5 h-3.5" id="refreshIcon"></i>
-        <span>Refresh Data</span>
+  <!-- ================= SECONDARY SUITE TABS ================= -->
+  <nav class="bg-[#0B2019] border-b border-brand-gold/15 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto flex items-center gap-8 overflow-x-auto custom-scrollbar py-2 text-xs uppercase tracking-widest font-semibold">
+      <button onclick="switchTab('inquiriesTab')" id="tabBtn-inquiriesTab" class="tab-btn pb-2 border-b-2 border-brand-gold text-brand-gold flex items-center gap-2 whitespace-nowrap transition-colors">
+        <i data-lucide="clipboard-list" class="w-4 h-4"></i>
+        <span>VIP Client Inquiries</span>
+      </button>
+
+      <button onclick="switchTab('itineraryTab')" id="tabBtn-itineraryTab" class="tab-btn pb-2 border-b-2 border-transparent text-neutral-400 hover:text-white flex items-center gap-2 whitespace-nowrap transition-colors">
+        <i data-lucide="compass" class="w-4 h-4"></i>
+        <span>Bespoke Itinerary Studio</span>
+      </button>
+
+      <button onclick="switchTab('sanctuaryTab')" id="tabBtn-sanctuaryTab" class="tab-btn pb-2 border-b-2 border-transparent text-neutral-400 hover:text-white flex items-center gap-2 whitespace-nowrap transition-colors">
+        <i data-lucide="shield-check" class="w-4 h-4"></i>
+        <span>Sanctuary Lodges & Villas</span>
+      </button>
+
+      <button onclick="switchTab('analyticsTab')" id="tabBtn-analyticsTab" class="tab-btn pb-2 border-b-2 border-transparent text-neutral-400 hover:text-white flex items-center gap-2 whitespace-nowrap transition-colors">
+        <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+        <span>Financial & Pipeline Metrics</span>
       </button>
     </div>
+  </nav>
 
-    <!-- Stat Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
-        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Total Inquiries</span>
-        <div id="statTotal" class="text-3xl font-serif font-bold text-white">0</div>
-        <span class="text-[11px] text-emerald-400 flex items-center gap-1">
-          <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +100% Client Interest
-        </span>
+  <!-- ================= MAIN CONTENT CONTAINER ================= -->
+  <main class="max-w-7xl mx-auto w-full p-4 sm:p-8 space-y-8 flex-1">
+
+    <!-- ================= TAB 1: VIP CLIENT INQUIRIES (CRM) ================= -->
+    <section id="inquiriesTab" class="tab-panel space-y-8">
+      
+      <!-- Key Metric Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-[#0B2019] p-5 rounded-2xl border border-brand-gold/20 shadow-md space-y-2">
+          <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Total VIP Consultations</span>
+          <div id="statTotal" class="text-3xl font-serif font-bold text-white">0</div>
+          <p class="text-[11px] text-emerald-400 flex items-center gap-1">
+            <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Curated Expeditions
+          </p>
+        </div>
+
+        <div class="bg-[#0B2019] p-5 rounded-2xl border border-brand-gold/20 shadow-md space-y-2">
+          <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Pending Concierge Action</span>
+          <div id="statPending" class="text-3xl font-serif font-bold text-brand-gold">0</div>
+          <p class="text-[11px] text-brand-goldLight">Requires response within 4 hours</p>
+        </div>
+
+        <div class="bg-[#0B2019] p-5 rounded-2xl border border-brand-gold/20 shadow-md space-y-2">
+          <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Confirmed Expeditions</span>
+          <div id="statConfirmed" class="text-3xl font-serif font-bold text-emerald-400">0</div>
+          <p class="text-[11px] text-neutral-400">Deposits secured & suites allocated</p>
+        </div>
+
+        <div class="bg-[#0B2019] p-5 rounded-2xl border border-brand-gold/20 shadow-md space-y-2">
+          <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Halal Purity Compliance</span>
+          <div class="text-3xl font-serif font-bold text-white">100%</div>
+          <p class="text-[11px] text-emerald-400 flex items-center gap-1">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Strict Islamic Purity Audited
+          </p>
+        </div>
       </div>
 
-      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
-        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Pending Callbacks</span>
-        <div id="statPending" class="text-3xl font-serif font-bold text-brand-gold">0</div>
-        <span class="text-[11px] text-neutral-500">Requires 4-hour response</span>
+      <!-- Filters & Search Toolbar -->
+      <div class="bg-[#0B2019] p-4 sm:p-5 rounded-2xl border border-brand-gold/20 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-3 flex-1 max-w-md bg-black/40 px-3.5 py-2.5 rounded-xl border border-white/10">
+          <i data-lucide="search" class="w-4 h-4 text-brand-gold shrink-0"></i>
+          <input type="text" id="searchInput" oninput="filterInquiries()" placeholder="Search guest name, phone, or destination..." class="bg-transparent text-sm w-full focus:outline-none text-white placeholder-neutral-500">
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <select id="statusFilter" onchange="filterInquiries()" class="bg-black/50 text-neutral-200 border border-white/15 px-3 py-2 rounded-xl text-xs uppercase tracking-wider focus:outline-none focus:border-brand-gold">
+            <option value="ALL">All Statuses</option>
+            <option value="NEW">New Inquiries</option>
+            <option value="CONTACTED">Concierge Contacted</option>
+            <option value="PROPOSAL">Proposal Dispatched</option>
+            <option value="CONFIRMED">Confirmed Bookings</option>
+          </select>
+
+          <button onclick="loadInquiries()" class="p-2 bg-black/40 hover:bg-black/60 border border-white/15 rounded-xl text-neutral-300 hover:text-white transition-colors" title="Reload from API">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+          </button>
+        </div>
+
       </div>
 
-      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
-        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Confirmed Bookings</span>
-        <div id="statConfirmed" class="text-3xl font-serif font-bold text-emerald-400">0</div>
-        <span class="text-[11px] text-neutral-500">Invoiced & Scheduled</span>
+      <!-- CRM Table -->
+      <div class="bg-[#0B2019] rounded-2xl border border-brand-gold/20 overflow-hidden shadow-xl">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-brand-gold/20 bg-black/40 text-[11px] uppercase tracking-wider text-neutral-400 font-semibold">
+                <th class="py-4 px-6">Dossier ID</th>
+                <th class="py-4 px-6">Distinguished Guest</th>
+                <th class="py-4 px-6">Contact & WhatsApp</th>
+                <th class="py-4 px-6">Desired Expedition</th>
+                <th class="py-4 px-6">Halal Requirements</th>
+                <th class="py-4 px-6">Status Workflow</th>
+                <th class="py-4 px-6 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inquiriesTableBody" class="divide-y divide-white/5 text-neutral-200">
+              <!-- Dynamically populated via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+
+        <div id="emptyState" class="hidden p-12 text-center text-neutral-400">
+          <i data-lucide="inbox" class="w-10 h-10 mx-auto text-brand-gold/40 mb-3"></i>
+          <p class="font-serif text-lg text-white">No Consultations Found</p>
+          <p class="text-xs text-neutral-500 mt-1">Inquiries submitted via the public site or manually created will appear here.</p>
+        </div>
       </div>
 
-      <div class="bg-neutral-900 p-6 rounded-2xl border border-neutral-800 space-y-2">
-        <span class="text-xs text-neutral-400 uppercase tracking-widest font-semibold block">Estimated Pipeline Value</span>
-        <div class="text-3xl font-serif font-bold text-emerald-400">৳৪,২০০,০০০+</div>
-        <span class="text-[11px] text-neutral-500">Avg. ৳700,000 / Booking</span>
-      </div>
-    </div>
+    </section>
 
-    <!-- Inquiries Table Card -->
-    <div class="bg-neutral-900 rounded-2xl border border-neutral-800 overflow-hidden shadow-2xl">
-      <div class="p-6 border-b border-neutral-800 flex items-center justify-between">
-        <h3 class="font-serif text-xl font-bold text-white">Incoming Client Records</h3>
-        <span id="recordCount" class="text-xs text-neutral-400 font-mono">0 Record(s)</span>
+    <!-- ================= TAB 2: BESPOKE ITINERARY STUDIO ================= -->
+    <section id="itineraryTab" class="tab-panel hidden space-y-8">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-white/10 gap-4">
+        <div>
+          <h2 class="text-2xl font-serif font-bold text-white">Bespoke Itinerary Studio</h2>
+          <p class="text-neutral-400 text-xs mt-1">Choreograph custom multi-day journeys inspired by Abercrombie & Kent's master travel designers.</p>
+        </div>
+        <button onclick="previewSampleProposal()" class="bg-brand-gold text-brand-emeraldDeep text-xs uppercase font-bold tracking-wider px-4 py-2 rounded-xl transition-all shadow-md flex items-center gap-2">
+          <i data-lucide="file-text" class="w-4 h-4"></i>
+          <span>Sample Royal Proposal</span>
+        </button>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-neutral-950 text-neutral-400 uppercase tracking-wider font-semibold border-b border-neutral-800">
-            <tr>
-              <th class="py-4 px-6">Client Name & ID</th>
-              <th class="py-4 px-6">Quick Contact</th>
-              <th class="py-4 px-6">Destination & Guests</th>
-              <th class="py-4 px-6">Halal & Dietary Preferences</th>
-              <th class="py-4 px-6">Status</th>
-              <th class="py-4 px-6 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="inquiriesTableBody" class="divide-y divide-neutral-800/80">
-            <!-- Dynamically populated via JS -->
-          </tbody>
-        </table>
+      <!-- Itinerary Creator Form & Preview Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Controls Column -->
+        <div class="bg-[#0B2019] p-6 rounded-2xl border border-brand-gold/20 space-y-5">
+          <h3 class="font-serif text-lg font-bold text-brand-gold">Expedition Parameters</h3>
+          
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Guest / Family Head</label>
+            <input type="text" id="itnGuest" value="H.E. Ambassador Rahman" class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Sanctuary Destination</label>
+            <select id="itnDest" class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+              <option>Makkah & Madinah (Royal Presidential Umrah)</option>
+              <option>Moorish Andalusia (Granada & Cordoba Private Palaces)</option>
+              <option>Maldives (Private Atoll Water Pavilion)</option>
+              <option>Swiss Alpine Chalet (Zermatt & Lake Geneva)</option>
+              <option>Bosphorus Waterfront Yalı (Istanbul Grandeur)</option>
+              <option>Serengeti & Ngorongoro Private Halal Safari</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Duration</label>
+              <input type="text" id="itnDays" value="10 Days • 9 Nights" class="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+            </div>
+            <div>
+              <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Retinue Size</label>
+              <input type="text" id="itnGuests" value="4 Guests (Private Retinue)" class="w-full bg-black/40 border border-white/15 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-brand-gold">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-400 mb-1">Signature Amenities Included</label>
+            <div class="space-y-2 text-xs text-neutral-300">
+              <label class="flex items-center gap-2">
+                <input type="checkbox" checked class="accent-[#D4AF37]">
+                <span>Kaaba-facing Suite or Secluded Water Villa</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" checked class="accent-[#D4AF37]">
+                <span>Private Islamic Scholar & Heritage Historian</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" checked class="accent-[#D4AF37]">
+                <span>100% Halal Michelin-Trained Private Chef</span>
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" checked class="accent-[#D4AF37]">
+                <span>VIP Airport Tarmac Limousine Transfers</span>
+              </label>
+            </div>
+          </div>
+
+          <button onclick="updateItineraryPreview()" class="w-full bg-brand-gold hover:bg-brand-goldLight text-brand-emeraldDeep font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-all shadow-md">
+            Update Proposal Preview
+          </button>
+        </div>
+
+        <!-- Live Proposal Document Preview -->
+        <div class="lg:col-span-2 bg-[#FAF8F5] text-neutral-900 p-8 rounded-2xl border border-brand-gold shadow-2xl relative">
+          
+          <div class="border-b border-neutral-300 pb-6 flex items-start justify-between">
+            <div>
+              <span class="text-[10px] uppercase tracking-[0.25em] text-[#8C6B14] font-bold">Confidential Travel Dossier</span>
+              <h3 id="pvTitle" class="font-serif text-3xl font-bold text-[#0B2019] mt-1">The Sacred Sanctuaries: Makkah & Madinah</h3>
+              <p id="pvGuest" class="text-xs text-neutral-600 mt-1">Exclusively curated for: <strong>H.E. Ambassador Rahman</strong></p>
+            </div>
+            <div class="text-right">
+              <span class="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center font-serif font-bold text-xl ml-auto">M</span>
+              <span class="text-[10px] uppercase tracking-widest text-neutral-500 block mt-1">Abercrombie Quality Standard</span>
+            </div>
+          </div>
+
+          <div class="py-6 space-y-6">
+            <div class="grid grid-cols-3 gap-4 border-b border-neutral-200 pb-4 text-center">
+              <div>
+                <span class="text-[10px] uppercase text-neutral-500 font-bold block">Duration</span>
+                <span id="pvDays" class="text-sm font-semibold text-neutral-900">10 Days • 9 Nights</span>
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-neutral-500 font-bold block">Party Size</span>
+                <span id="pvParty" class="text-sm font-semibold text-neutral-900">4 Guests (Private Retinue)</span>
+              </div>
+              <div>
+                <span class="text-[10px] uppercase text-neutral-500 font-bold block">Estimated Investment</span>
+                <span class="text-sm font-semibold text-emerald-800">৳ 2,780,000 / $23,200</span>
+              </div>
+            </div>
+
+            <!-- Sample Day Progression -->
+            <div class="space-y-4">
+              <h4 class="font-serif text-xl font-bold text-[#0B2019]">Day-by-Day Curated Progression</h4>
+              
+              <div class="border-l-2 border-[#D4AF37] pl-4 space-y-1">
+                <span class="text-xs uppercase font-bold text-[#8C6B14]">Day 01 — Royal Arrival & Kaaba Elevation</span>
+                <p class="text-xs text-neutral-700">VIP Tarmac escort at King Abdulaziz Int'l Airport. Private Mercedes Maybach transfer to Kaaba-view Presidential Suite at Raffles Makkah Palace.</p>
+              </div>
+
+              <div class="border-l-2 border-[#D4AF37] pl-4 space-y-1">
+                <span class="text-xs uppercase font-bold text-[#8C6B14]">Day 02 to 05 — The Sacred Rites with Private Scholar</span>
+                <p class="text-xs text-neutral-700">Spiritual guidance for Umrah during quietest hours. Private access to Kiswa manufacturing museum and Mount Noor historical expedition.</p>
+              </div>
+
+              <div class="border-l-2 border-[#D4AF37] pl-4 space-y-1">
+                <span class="text-xs uppercase font-bold text-[#8C6B14]">Day 06 to 10 — Haramain High-Speed VIP Express to Madinah</span>
+                <p class="text-xs text-neutral-700">First-class private cabin transfer to Madinah. Residence at The Oberoi, private Rawdah visitation arrangements, and private historical Uhud tour.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="border-t border-neutral-300 pt-4 flex items-center justify-between text-xs text-neutral-500">
+            <span>Travel With Maijrun • 100% Certified Halal Luxury Hospitality</span>
+            <button onclick="window.print()" class="text-neutral-800 hover:text-black font-semibold flex items-center gap-1.5 underline">
+              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print Dossier
+            </button>
+          </div>
+
+        </div>
+
       </div>
-    </div>
+
+    </section>
+
+    <!-- ================= TAB 3: SANCTUARY LODGES & VILLAS ================= -->
+    <section id="sanctuaryTab" class="tab-panel hidden space-y-6">
+      
+      <div class="pb-4 border-b border-white/10">
+        <h2 class="text-2xl font-serif font-bold text-white">Sanctuary Lodges & Private Estates</h2>
+        <p class="text-neutral-400 text-xs mt-1">Our certified portfolio of zero-sightline private pool villas, Kaaba-facing suites, and secluded luxury estates.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Sanctuary 1 -->
+        <div class="bg-[#0B2019] rounded-2xl border border-brand-gold/20 overflow-hidden shadow-lg group">
+          <div class="h-48 overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=85&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Makkah Sanctuary">
+            <span class="absolute top-3 left-3 bg-brand-emeraldDeep/80 backdrop-blur-md text-brand-gold text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full border border-brand-gold/30">
+              Pilgrimage Sanctuary
+            </span>
+          </div>
+          <div class="p-5 space-y-3">
+            <h3 class="font-serif text-xl font-bold text-white">Raffles Royal Kaaba Suite</h3>
+            <p class="text-xs text-neutral-400">Direct unobstructed Kaaba views, 24/7 personal butler, private Haram audio broadcast, and in-suite Haramain dining.</p>
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+              <span class="text-brand-gold font-bold">From ৳ 695,000 / $5,800</span>
+              <span class="text-emerald-400">100% Certified</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sanctuary 2 -->
+        <div class="bg-[#0B2019] rounded-2xl border border-brand-gold/20 overflow-hidden shadow-lg group">
+          <div class="h-48 overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=85&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Maldives Sanctuary">
+            <span class="absolute top-3 left-3 bg-brand-emeraldDeep/80 backdrop-blur-md text-brand-gold text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full border border-brand-gold/30">
+              Island Sanctuary
+            </span>
+          </div>
+          <div class="p-5 space-y-3">
+            <h3 class="font-serif text-xl font-bold text-white">Noonu Lagoon Water Pavilion</h3>
+            <p class="text-xs text-neutral-400">Zero-sightline enclosed swimming pool, private seaplane dock, 100% alcohol-free curated wine cellar alternative, and female butler service.</p>
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+              <span class="text-brand-gold font-bold">From ৳ 864,000 / $7,200</span>
+              <span class="text-emerald-400">Zero-Sightline Privacy</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sanctuary 3 -->
+        <div class="bg-[#0B2019] rounded-2xl border border-brand-gold/20 overflow-hidden shadow-lg group">
+          <div class="h-48 overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1568084680786-a84f91d1153c?q=85&w=800&auto=format&fit=crop" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Andalusia Sanctuary">
+            <span class="absolute top-3 left-3 bg-brand-emeraldDeep/80 backdrop-blur-md text-brand-gold text-[10px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-full border border-brand-gold/30">
+              Heritage Sanctuary
+            </span>
+          </div>
+          <div class="p-5 space-y-3">
+            <h3 class="font-serif text-xl font-bold text-white">Palacio de Santa Inés (Albaicín)</h3>
+            <p class="text-xs text-neutral-400">Private Moorish courtyard estate overlooking the illuminated Alhambra, with private halal gastronomy prepared by master Andalusian chefs.</p>
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between text-xs">
+              <span class="text-brand-gold font-bold">From ৳ 768,000 / $6,400</span>
+              <span class="text-emerald-400">Historic Exclusive</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= TAB 4: FINANCIAL & PIPELINE METRICS ================= -->
+    <section id="analyticsTab" class="tab-panel hidden space-y-8">
+      
+      <div class="pb-4 border-b border-white/10">
+        <h2 class="text-2xl font-serif font-bold text-white">Financial & Pipeline Intelligence</h2>
+        <p class="text-neutral-400 text-xs mt-1">Track high-net-worth client interest, destination demand, and revenue pipelines.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <div class="bg-[#0B2019] p-6 rounded-2xl border border-brand-gold/20 space-y-4">
+          <h3 class="font-serif text-lg font-bold text-brand-gold">Expedition Pipeline by Region</h3>
+          <div class="space-y-3 text-xs">
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>Makkah & Madinah (Royal Umrah)</span>
+                <span class="text-brand-gold font-bold">42%</span>
+              </div>
+              <div class="w-full bg-black/50 h-2 rounded-full overflow-hidden">
+                <div class="bg-brand-gold h-full" style="width: 42%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>Moorish Andalusia & Spain</span>
+                <span class="text-brand-gold font-bold">24%</span>
+              </div>
+              <div class="w-full bg-black/50 h-2 rounded-full overflow-hidden">
+                <div class="bg-brand-gold h-full" style="width: 24%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>Maldives Private Atolls</span>
+                <span class="text-brand-gold font-bold">18%</span>
+              </div>
+              <div class="w-full bg-black/50 h-2 rounded-full overflow-hidden">
+                <div class="bg-brand-gold h-full" style="width: 18%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1">
+                <span>Swiss Alps & Bosphorus</span>
+                <span class="text-brand-gold font-bold">16%</span>
+              </div>
+              <div class="w-full bg-black/50 h-2 rounded-full overflow-hidden">
+                <div class="bg-brand-gold h-full" style="width: 16%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 bg-[#0B2019] p-6 rounded-2xl border border-brand-gold/20 space-y-4">
+          <h3 class="font-serif text-lg font-bold text-white">Global Concierge Response SLA</h3>
+          <p class="text-xs text-neutral-400">Target response time: <strong>under 4 hours</strong> for private jet inquiries and royal Umrah dossiers.</p>
+          
+          <div class="grid grid-cols-3 gap-4 pt-4 text-center border-t border-white/10">
+            <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+              <span class="text-[10px] uppercase text-neutral-400 font-bold block">Avg First Response</span>
+              <span class="text-xl font-serif font-bold text-emerald-400 mt-1 block">42 Mins</span>
+            </div>
+            <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+              <span class="text-[10px] uppercase text-neutral-400 font-bold block">VIP Conversion</span>
+              <span class="text-xl font-serif font-bold text-brand-gold mt-1 block">68.4%</span>
+            </div>
+            <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+              <span class="text-[10px] uppercase text-neutral-400 font-bold block">Client Retention</span>
+              <span class="text-xl font-serif font-bold text-white mt-1 block">94.8%</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
 
   </main>
 
-  <!-- Modal: Add New Lead Manually -->
+  <!-- ================= MANUAL LEAD REGISTRATION MODAL ================= -->
   <div id="newLeadModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4">
-    <div class="bg-neutral-900 rounded-2xl max-w-lg w-full p-6 sm:p-8 border border-neutral-700 shadow-2xl relative">
-      <button onclick="closeNewLeadModal()" class="absolute top-5 right-5 text-neutral-400 hover:text-white">
-        <i data-lucide="x" class="w-6 h-6"></i>
-      </button>
-
-      <h3 class="text-xl font-serif font-bold text-white mb-4">Add VIP Client Lead Manually</h3>
+    <div class="bg-[#0B2019] border border-brand-gold/40 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-brand-gold/20 pb-4">
+        <div>
+          <h3 class="font-serif text-2xl font-bold text-white">Register VIP Expedition Lead</h3>
+          <p class="text-neutral-400 text-xs mt-0.5">Direct entry into Maijrun Concierge CRM.</p>
+        </div>
+        <button onclick="closeNewLeadModal()" class="text-neutral-400 hover:text-white p-2">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
 
       <form onsubmit="handleManualLead(event)" class="space-y-4">
         <div>
-          <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Client Full Name *</label>
-          <input type="text" id="mName" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Email *</label>
-            <input type="email" id="mEmail" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
-          </div>
-          <div>
-            <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">WhatsApp / Phone *</label>
-            <input type="tel" id="mPhone" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
-          </div>
-        </div>
-        <div>
-          <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Destination</label>
-          <input type="text" id="mDest" placeholder="e.g. Royal Makkah & Madinah" required class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold">
-        </div>
-        <div>
-          <label class="block text-xs uppercase tracking-wider font-semibold text-neutral-400 mb-1">Special Preferences</label>
-          <textarea id="mPref" rows="2" class="w-full px-4 py-2.5 rounded-xl bg-neutral-800 border border-neutral-700 text-sm text-white focus:outline-none focus:border-brand-gold"></textarea>
+          <label class="block text-xs uppercase tracking-wider text-neutral-300 mb-1 font-semibold">Guest Full Name *</label>
+          <input type="text" id="mName" required placeholder="e.g. Sheikh Mahmud Hasan" class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
         </div>
 
-        <button type="submit" class="w-full bg-brand-gold hover:bg-white text-brand-emeraldDeep font-bold text-xs uppercase tracking-widest py-3 rounded-xl transition-all">
-          Save Client Record
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-300 mb-1 font-semibold">Email *</label>
+            <input type="email" id="mEmail" required placeholder="vip@domain.com" class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+          </div>
+          <div>
+            <label class="block text-xs uppercase tracking-wider text-neutral-300 mb-1 font-semibold">Phone / WhatsApp *</label>
+            <input type="tel" id="mPhone" required placeholder="+880 1800-MAIJRUN" class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-neutral-300 mb-1 font-semibold">Destination</label>
+          <select id="mDest" class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-brand-gold">
+            <option>Makkah & Madinah (Royal Umrah)</option>
+            <option>Moorish Andalusia (Spain)</option>
+            <option>Maldives (Private Water Pavilions)</option>
+            <option>Swiss Alpine Chalet (Zermatt)</option>
+            <option>Bosphorus & Turkish Riviera</option>
+            <option>Serengeti & Masai Mara Safari</option>
+            <option>Completely Custom Bespoke</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs uppercase tracking-wider text-neutral-300 mb-1 font-semibold">Halal Preferences / Notes</label>
+          <textarea id="mPref" rows="3" placeholder="Private chef, scholar accompaniment, female butler requests..." class="w-full bg-black/40 border border-white/15 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-brand-gold"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-brand-gold hover:bg-brand-goldLight text-brand-emeraldDeep font-bold text-xs uppercase tracking-widest py-3.5 rounded-xl transition-all shadow-md">
+          Save VIP Lead to Atelier
         </button>
       </form>
     </div>
   </div>
 
-  <!-- JavaScript -->
+  <!-- ================= SCRIPTS ================= -->
   <script>
-    // Demo Leads
-    const DEMO_LEADS = [
+    let inquiries = [];
+
+    // Tab Switcher
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-brand-gold', 'text-brand-gold');
+        btn.classList.add('border-transparent', 'text-neutral-400');
+      });
+
+      const activePanel = document.getElementById(tabId);
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      if (activePanel) activePanel.classList.remove('hidden');
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent', 'text-neutral-400');
+        activeBtn.classList.add('border-brand-gold', 'text-brand-gold');
+      }
+      lucide.createIcons();
+    }
+
+    // Default Seed Inquiries for Abercrombie Quality Demo
+    const SEED_INQUIRIES = [
       {
         id: "INQ-2026-001",
-        name: "Sheikh Tariq Al-Mansoor",
-        email: "tariq.mansoor@dubai-holdings.ae",
-        phone: "+971501234567",
-        destination: "Makkah & Madinah (Royal Presidential)",
-        guests: "Family (6 Guests)",
-        preferences: "Direct Kaaba-view suites, private Haram scholar on retinue, private bullet train VIP carriage.",
-        status: "NEW",
-        createdAt: "2026-10-21T18:30:00Z"
+        name: "H.E. Tariq Al-Mansoor",
+        email: "tariq.mansoor@royalestate.ae",
+        phone: "+971 50 123 4567",
+        destination: "Makkah & Madinah (Royal Umrah)",
+        guests: "6 Guests (Private Retinue)",
+        preferences: "Direct Kaaba-view suite on high floor, private Haram escort, private scholar on retinue.",
+        status: "CONFIRMED",
+        createdAt: new Date(Date.now() - 3600000 * 2).toISOString()
       },
       {
         id: "INQ-2026-002",
-        name: "Dr. Farhan & Shagufta Qureshi",
-        email: "farhan.qureshi@harleystreet.co.uk",
-        phone: "+447911123456",
-        destination: "Moorish Andalusia (Granada & Cordoba)",
-        guests: "Couples / 2 Guests",
-        preferences: "100% Halal Michelin gourmet private chef, private after-hours Alhambra pass.",
-        status: "CONTACTED",
-        createdAt: "2026-10-21T15:10:00Z"
+        name: "Dr. Farhana & Family",
+        email: "farhana.k@luxuryhealth.co.uk",
+        phone: "+44 7700 900123",
+        destination: "Moorish Andalusia (Spain)",
+        guests: "4 Guests",
+        preferences: "Private after-hours Alhambra access, 100% Halal gourmet dining, alcohol-free palace hotel.",
+        status: "PROPOSAL",
+        createdAt: new Date(Date.now() - 3600000 * 8).toISOString()
       },
       {
         id: "INQ-2026-003",
-        name: "Eng. Tariqul Islam Chowdhury",
-        email: "tariqul.chowdhury@concord-group.com",
-        phone: "+8801711000000",
-        destination: "Maldives (The Pearl Pavilions)",
-        guests: "Family (4 Guests)",
-        preferences: "Complete villa pool privacy (zero sightline), alcohol-free villa, private seaplane.",
-        status: "CONFIRMED",
-        createdAt: "2026-10-20T11:45:00Z"
+        name: "Barrister Mahmudul Karim",
+        email: "m.karim@chambers.com.bd",
+        phone: "+880 1711 000000",
+        destination: "Maldives (Private Water Pavilions)",
+        guests: "2 Guests (Honeymoon)",
+        preferences: "Zero-sightline private pool, secluded seaplane arrival, private halal floating breakfast.",
+        status: "NEW",
+        createdAt: new Date(Date.now() - 3600000 * 18).toISOString()
       }
     ];
 
-    function getStoredInquiries() {
-      const stored = localStorage.getItem('maijrun_inquiries');
-      if (stored) {
-        try {
-          return JSON.parse(stored);
-        } catch (e) {}
-      }
-      localStorage.setItem('maijrun_inquiries', JSON.stringify(DEMO_LEADS));
-      return DEMO_LEADS;
-    }
-
+    // Load Inquiries from Backend API or LocalStorage
     async function loadInquiries() {
-      let list = getStoredInquiries();
-      
-      // Try to fetch from backend API if running
       try {
         const res = await fetch('/api/inquiries');
         const json = await res.json();
-        if (json.success && json.data.length > 0) {
-          list = json.data;
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          inquiries = json.data;
+        } else {
+          loadFromLocalOrSeed();
         }
-      } catch (err) {}
-
-      renderTable(list);
+      } catch (e) {
+        loadFromLocalOrSeed();
+      }
+      renderInquiries(inquiries);
+      updateStats();
     }
 
-    function renderTable(list) {
+    function loadFromLocalOrSeed() {
+      const stored = localStorage.getItem('maijrun_inquiries');
+      if (stored) {
+        try {
+          inquiries = JSON.parse(stored);
+        } catch (e) {
+          inquiries = SEED_INQUIRIES;
+        }
+      } else {
+        inquiries = SEED_INQUIRIES;
+        localStorage.setItem('maijrun_inquiries', JSON.stringify(inquiries));
+      }
+    }
+
+    // Render Inquiries Table
+    function renderInquiries(list) {
       const tbody = document.getElementById('inquiriesTableBody');
-      const countEl = document.getElementById('recordCount');
-      const statTotal = document.getElementById('statTotal');
-      const statPending = document.getElementById('statPending');
-      const statConfirmed = document.getElementById('statConfirmed');
-
-      countEl.innerText = `${list.length} Record(s)`;
-      statTotal.innerText = list.length;
-      statPending.innerText = list.filter(i => i.status === 'NEW').length;
-      statConfirmed.innerText = list.filter(i => i.status === 'CONFIRMED').length;
-
+      const empty = document.getElementById('emptyState');
       tbody.innerHTML = '';
 
       if (list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-neutral-500">No leads recorded yet.</td></tr>`;
+        empty.classList.remove('hidden');
         return;
       }
+      empty.classList.add('hidden');
 
-      list.forEach((item, index) => {
-        const statusColors = {
-          'NEW': 'bg-amber-500/10 text-amber-400 border border-amber-500/30',
-          'CONTACTED': 'bg-blue-500/10 text-blue-400 border border-blue-500/30',
-          'CONFIRMED': 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30',
+      list.forEach((inq, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-white/5 transition-colors';
+
+        const statusBadges = {
+          'NEW': '<span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold">NEW INQUIRY</span>',
+          'CONTACTED': '<span class="bg-brand-gold/20 text-brand-gold border border-brand-gold/30 px-2 py-0.5 rounded-full text-[10px] font-bold">CONTACTED</span>',
+          'PROPOSAL': '<span class="bg-purple-500/20 text-purple-400 border border-purple-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold">PROPOSAL SENT</span>',
+          'CONFIRMED': '<span class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-bold">CONFIRMED</span>',
         };
 
-        const cleanPhone = item.phone.replace(/[^0-9]/g, '');
+        const badge = statusBadges[inq.status] || `<span class="bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded-full text-[10px]">${inq.status}</span>`;
+        const waClean = (inq.phone || '').replace(/[^0-9]/g, '');
 
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-neutral-800/40 transition-colors';
         tr.innerHTML = `
-          <td class="py-4 px-6 font-semibold text-white">
-            ${item.name}
-            <span class="block text-[10px] text-brand-gold font-mono font-normal mt-0.5">${item.id}</span>
-          </td>
-          <td class="py-4 px-6 space-y-1">
-            <a href="https://wa.me/${cleanPhone}" target="_blank" class="inline-flex items-center gap-1.5 text-emerald-400 hover:underline">
-              <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-              <span>${item.phone}</span>
-            </a>
-            <div class="flex items-center gap-1.5 text-neutral-400">
-              <i data-lucide="mail" class="w-3.5 h-3.5 text-blue-400"></i>
-              <span>${item.email}</span>
-            </div>
-          </td>
-          <td class="py-4 px-6 space-y-1">
-            <div class="flex items-center gap-1.5 text-white font-medium">
-              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-brand-gold"></i>
-              <span>${item.destination}</span>
-            </div>
-            <div class="flex items-center gap-1.5 text-neutral-400 text-[11px]">
-              <i data-lucide="users" class="w-3.5 h-3.5"></i>
-              <span>${item.guests || 'Family'}</span>
-            </div>
-          </td>
-          <td class="py-4 px-6 text-neutral-300 max-w-xs font-light leading-relaxed">
-            ${item.preferences || 'Standard Halal Protocol'}
+          <td class="py-4 px-6 font-mono text-[11px] text-brand-gold">${inq.id || `INQ-${idx+1}`}</td>
+          <td class="py-4 px-6">
+            <span class="font-bold text-white block text-sm">${inq.name}</span>
+            <span class="text-neutral-500 text-[11px]">${inq.guests || 'Bespoke Party'}</span>
           </td>
           <td class="py-4 px-6">
-            <select onchange="updateStatus(${index}, this.value)" class="bg-neutral-800 text-xs px-2.5 py-1 rounded-lg border border-neutral-700 text-neutral-200 cursor-pointer focus:outline-none">
-              <option value="NEW" ${item.status === 'NEW' ? 'selected' : ''}>NEW</option>
-              <option value="CONTACTED" ${item.status === 'CONTACTED' ? 'selected' : ''}>CONTACTED</option>
-              <option value="CONFIRMED" ${item.status === 'CONFIRMED' ? 'selected' : ''}>CONFIRMED</option>
+            <div class="space-y-0.5">
+              <span class="text-neutral-300 block">${inq.email}</span>
+              <a href="https://wa.me/${waClean}" target="_blank" class="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 text-[11px] font-medium">
+                <i data-lucide="message-circle" class="w-3 h-3"></i> ${inq.phone}
+              </a>
+            </div>
+          </td>
+          <td class="py-4 px-6">
+            <span class="font-medium text-white">${inq.destination}</span>
+          </td>
+          <td class="py-4 px-6 max-w-xs">
+            <p class="text-neutral-400 line-clamp-2 text-[11px] italic">${inq.preferences || 'Standard Halal Luxury Purity'}</p>
+          </td>
+          <td class="py-4 px-6">
+            <select onchange="updateInquiryStatus('${inq.id}', this.value)" class="bg-black/50 border border-white/10 text-neutral-200 text-[11px] rounded-lg px-2 py-1 focus:outline-none focus:border-brand-gold">
+              <option value="NEW" ${inq.status === 'NEW' ? 'selected' : ''}>NEW</option>
+              <option value="CONTACTED" ${inq.status === 'CONTACTED' ? 'selected' : ''}>CONTACTED</option>
+              <option value="PROPOSAL" ${inq.status === 'PROPOSAL' ? 'selected' : ''}>PROPOSAL</option>
+              <option value="CONFIRMED" ${inq.status === 'CONFIRMED' ? 'selected' : ''}>CONFIRMED</option>
             </select>
           </td>
           <td class="py-4 px-6 text-right">
-            <a href="https://wa.me/${cleanPhone}?text=Salam%20${encodeURIComponent(item.name)},%20this%20is%20VIP%20Concierge%20from%20Travel%20With%20Maijrun%20regarding%20your%20inquiry%20for%20${encodeURIComponent(item.destination)}" target="_blank" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-400 hover:text-white border border-emerald-500/40 text-[11px] font-semibold transition-all inline-flex items-center gap-1">
-              <i data-lucide="send" class="w-3 h-3"></i>
-              <span>WhatsApp</span>
+            <a href="https://wa.me/${waClean}?text=Salam%20${encodeURIComponent(inq.name)}%2C%20this%20is%20the%20Senior%20Concierge%20at%20Travel%20With%20Maijrun%20regarding%20your%20bespoke%20expedition." target="_blank" class="p-2 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-black rounded-lg transition-colors inline-block" title="Launch WhatsApp Concierge">
+              <i data-lucide="send" class="w-3.5 h-3.5"></i>
             </a>
           </td>
         `;
         tbody.appendChild(tr);
       });
-
       lucide.createIcons();
     }
 
-    function updateStatus(index, newStatus) {
-      const list = getStoredInquiries();
-      if (list[index]) {
-        list[index].status = newStatus;
-        localStorage.setItem('maijrun_inquiries', JSON.stringify(list));
-        loadInquiries();
+    // Filter by text and status
+    function filterInquiries() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+
+      const filtered = inquiries.filter(i => {
+        const matchesQuery = (i.name || '').toLowerCase().includes(q) ||
+                             (i.phone || '').toLowerCase().includes(q) ||
+                             (i.destination || '').toLowerCase().includes(q);
+        const matchesStatus = (status === 'ALL') || (i.status === status);
+        return matchesQuery && matchesStatus;
+      });
+
+      renderInquiries(filtered);
+    }
+
+    // Update Status
+    function updateInquiryStatus(id, newStatus) {
+      const item = inquiries.find(i => i.id === id);
+      if (item) {
+        item.status = newStatus;
+        localStorage.setItem('maijrun_inquiries', JSON.stringify(inquiries));
+        updateStats();
       }
     }
 
+    // Update Top Counters
+    function updateStats() {
+      document.getElementById('statTotal').innerText = inquiries.length;
+      document.getElementById('statPending').innerText = inquiries.filter(i => i.status === 'NEW' || i.status === 'CONTACTED').length;
+      document.getElementById('statConfirmed').innerText = inquiries.filter(i => i.status === 'CONFIRMED').length;
+    }
+
+    // Export CSV
     function exportCSV() {
-      const list = getStoredInquiries();
-      if (list.length === 0) return;
-      const headers = ['ID', 'Name', 'Email', 'Phone', 'Destination', 'Guests', 'Preferences', 'Status', 'Date'];
-      const rows = list.map(i => [
+      const headers = ['Dossier_ID', 'Name', 'Email', 'Phone', 'Destination', 'Party_Size', 'Preferences', 'Status', 'CreatedAt'];
+      const rows = inquiries.map(i => [
         i.id,
         `"${i.name}"`,
         `"${i.email}"`,
         `"${i.phone}"`,
         `"${i.destination}"`,
-        `"${i.guests}"`,
+        `"${i.guests || '2 Guests'}"`,
         `"${(i.preferences || '').replace(/"/g, '""')}"`,
         i.status,
         i.createdAt
@@ -354,45 +780,70 @@
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement('a');
       link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `maijrun-vip-leads-${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute('download', `maijrun-vip-dossiers-${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     }
 
+    // Modal Helpers
     function openNewLeadModal() {
       document.getElementById('newLeadModal').classList.remove('hidden');
       document.getElementById('newLeadModal').classList.add('flex');
     }
-
     function closeNewLeadModal() {
       document.getElementById('newLeadModal').classList.add('hidden');
       document.getElementById('newLeadModal').classList.remove('flex');
     }
 
-    function handleManualLead(e) {
+    async function handleManualLead(e) {
       e.preventDefault();
-      const list = getStoredInquiries();
       const newLead = {
-        id: `INQ-${Date.now()}`,
+        id: `INQ-${Date.now().toString().slice(-6)}`,
         name: document.getElementById('mName').value,
         email: document.getElementById('mEmail').value,
         phone: document.getElementById('mPhone').value,
         destination: document.getElementById('mDest').value,
-        guests: "2 Guests",
+        guests: 'Private Retinue',
         preferences: document.getElementById('mPref').value,
-        status: "NEW",
+        status: 'NEW',
         createdAt: new Date().toISOString()
       };
-      list.unshift(newLead);
-      localStorage.setItem('maijrun_inquiries', JSON.stringify(list));
+
+      try {
+        await fetch('/api/inquiries', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newLead)
+        });
+      } catch (err) {}
+
+      inquiries.unshift(newLead);
+      localStorage.setItem('maijrun_inquiries', JSON.stringify(inquiries));
       closeNewLeadModal();
-      loadInquiries();
-      alert('New VIP lead saved successfully!');
+      renderInquiries(inquiries);
+      updateStats();
+      alert('Alhamdulillah! New VIP Lead successfully registered into the Atelier.');
+    }
+
+    // Itinerary Studio Helpers
+    function updateItineraryPreview() {
+      document.getElementById('pvTitle').innerText = document.getElementById('itnDest').value;
+      document.getElementById('pvGuest').innerHTML = `Exclusively curated for: <strong>${document.getElementById('itnGuest').value}</strong>`;
+      document.getElementById('pvDays').innerText = document.getElementById('itnDays').value;
+      document.getElementById('pvParty').innerText = document.getElementById('itnGuests').value;
+      alert('Proposal updated successfully with custom luxury itinerary parameters!');
+    }
+
+    function previewSampleProposal() {
+      switchTab('itineraryTab');
     }
 
     // Initialize
     loadInquiries();
+    if (window.location.hash === '#itinerary') switchTab('itineraryTab');
+    if (window.location.hash === '#sanctuary') switchTab('sanctuaryTab');
+    if (window.location.hash === '#analytics') switchTab('analyticsTab');
     lucide.createIcons();
   </script>
 </body>

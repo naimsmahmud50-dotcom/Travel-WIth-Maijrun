@@ -64,6 +64,400 @@
   </script>
 
   <style>
+    /* Brand CSS Custom Properties */
+    :root {
+      --brand-green: #0B2019;
+      --brand-green-deep: #061410;
+      --brand-green-light: #15382D;
+      --brand-gold: #D4AF37;
+      --brand-gold-muted: #B89643;
+      --brand-gold-light: #F3E5AB;
+      --brand-gold-dark: #8C6B14;
+      --brand-gold-glow: rgba(212, 175, 55, 0.45);
+      --header-bg-scrolled: #FAF8F3;
+      --header-border-scrolled: rgba(212, 175, 55, 0.22);
+      --header-shadow-scrolled: 0 4px 20px -2px rgba(6, 20, 16, 0.08);
+    }
+
+    /* Luxury Header Behavioral Architecture */
+    .luxury-header-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      transition: transform 300ms ease;
+    }
+
+    /* 36px Top Utility Concierge Bar */
+    .luxury-utility-bar {
+      height: 36px;
+      background-color: var(--brand-green);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+      transition: max-height 300ms ease, opacity 300ms ease, padding 300ms ease;
+      overflow: hidden;
+    }
+
+    .luxury-header-wrapper.scrolled .luxury-utility-bar {
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+      pointer-events: none;
+    }
+
+    /* Main Navigation Bar (78px initial -> 68px scrolled) */
+    .luxury-nav-bar {
+      height: 78px;
+      transition: height 300ms ease, background-color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+      background: rgba(250, 248, 245, 0.96);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      box-shadow: 0 4px 25px -5px rgba(6, 20, 16, 0.06);
+    }
+
+    .luxury-header-wrapper.scrolled .luxury-nav-bar {
+      height: 68px;
+      background: var(--header-bg-scrolled);
+      border-bottom: 1px solid var(--header-border-scrolled);
+      box-shadow: var(--header-shadow-scrolled);
+    }
+
+    /* 3-Part Luxury Nav Container (1440px max, perfectly balanced) */
+    .luxury-nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 32px;
+      gap: 16px;
+    }
+
+    /* Left Nav Group (Single Line, Never Wraps) */
+    .luxury-left-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .luxury-nav-item {
+      position: relative;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      white-space: nowrap;
+      color: var(--brand-green);
+      text-decoration: none;
+      padding: 8px 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 250ms ease;
+    }
+
+    .luxury-nav-item:hover {
+      color: var(--brand-gold-dark);
+    }
+
+    .luxury-nav-item::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background-color: var(--brand-gold);
+      transition: width 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .luxury-nav-item:hover::after,
+    .luxury-nav-item.active::after {
+      width: 100%;
+    }
+
+    .luxury-halal-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 6px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-radius: 9999px;
+      background-color: rgba(212, 175, 55, 0.15);
+      color: var(--brand-gold-dark);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* Center Brand Identity (Strictly Single Line, Never Wraps) */
+    .luxury-center-brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      flex-shrink: 0;
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    .luxury-brand-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      white-space: nowrap;
+      color: var(--brand-green);
+      transition: color 250ms ease;
+    }
+
+    .luxury-center-brand:hover .luxury-brand-title {
+      color: var(--brand-gold-dark);
+    }
+
+    .luxury-brand-tagline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.32em;
+      color: var(--brand-gold-dark);
+      margin-top: 4px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    /* Right Actions */
+    .luxury-right-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 16px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .luxury-find-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      color: var(--brand-green);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      text-decoration: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 250ms ease;
+    }
+
+    .luxury-find-btn:hover {
+      color: var(--brand-gold-dark);
+      background-color: rgba(212, 175, 55, 0.1);
+    }
+
+    .luxury-cta-btn {
+      white-space: nowrap;
+      padding: 10px 22px;
+      border-radius: 9999px;
+      background-color: var(--brand-green);
+      border: 1px solid rgba(212, 175, 55, 0.6);
+      color: #FFFFFF;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(11, 32, 25, 0.15);
+      transition: transform 250ms ease, box-shadow 250ms ease, background-color 250ms ease, color 250ms ease, border-color 250ms ease;
+    }
+
+    .luxury-cta-btn:hover {
+      transform: translateY(-1.5px);
+      background-color: var(--brand-gold);
+      color: var(--brand-green-deep);
+      border-color: var(--brand-gold);
+      box-shadow: 0 4px 16px var(--brand-gold-glow);
+    }
+
+    /* Hamburger Trigger */
+    .luxury-hamburger-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: 1px solid rgba(11, 32, 25, 0.15);
+      color: var(--brand-green);
+      cursor: pointer;
+      transition: all 250ms ease;
+    }
+
+    .luxury-hamburger-btn:hover {
+      border-color: var(--brand-gold);
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--brand-gold-dark);
+    }
+
+    /* Accessibility Focus Rings */
+    .luxury-nav-item:focus-visible,
+    .luxury-find-btn:focus-visible,
+    .luxury-cta-btn:focus-visible,
+    .luxury-hamburger-btn:focus-visible,
+    .luxury-drawer-close:focus-visible,
+    .luxury-drawer-link:focus-visible {
+      outline: 2px solid var(--brand-gold);
+      outline-offset: 3px;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 1199px) {
+      .luxury-left-nav {
+        display: none !important;
+      }
+      .luxury-hamburger-btn {
+        display: inline-flex !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .luxury-nav-container {
+        padding: 0 16px;
+      }
+      .luxury-brand-title {
+        font-size: 20px;
+      }
+      .luxury-brand-tagline {
+        font-size: 8px;
+        letter-spacing: 0.22em;
+      }
+      .luxury-find-btn span {
+        display: none;
+      }
+      .luxury-cta-btn {
+        padding: 8px 16px;
+        font-size: 11px;
+      }
+    }
+
+    /* Full-Height Mobile Drawer */
+    .luxury-drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 20, 16, 0.72);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 300ms ease;
+    }
+
+    .luxury-drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .luxury-drawer-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(100vw, 380px);
+      height: 100vh;
+      background: linear-gradient(180deg, #0B2019 0%, #061410 100%);
+      border-left: 1px solid rgba(212, 175, 55, 0.25);
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+
+    .luxury-drawer-panel.active {
+      transform: translateX(0);
+    }
+
+    .luxury-drawer-header {
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .luxury-drawer-links {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+    }
+
+    .luxury-drawer-link {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: #ECEAE3;
+      text-decoration: none;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: color 200ms ease, padding-left 200ms ease;
+    }
+
+    .luxury-drawer-link:hover {
+      color: var(--brand-gold);
+      padding-left: 6px;
+    }
+
+    .luxury-drawer-footer {
+      padding: 24px;
+      border-top: 1px solid rgba(212, 175, 55, 0.15);
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
     /* Custom Luxury Styling */
     .glass-dark {
       background: rgba(11, 32, 25, 0.85);
@@ -132,26 +526,29 @@
 </head>
 <body class="bg-brand-sand font-sans text-neutral-800 antialiased selection:bg-brand-gold selection:text-brand-emerald selection:font-semibold">
 
-  <!-- ================= TOP UTILITY CONCIERGE BAR ================= -->
-  <header class="fixed top-0 left-0 right-0 z-50">
-    <div class="bg-brand-emerald text-xs text-neutral-300 border-b border-brand-gold/15 py-2 px-4 sm:px-8">
-      <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <div class="flex items-center gap-6">
-          <a href="tel:+8801800000000" class="flex items-center gap-2 hover:text-brand-goldLight transition-colors">
-            <i data-lucide="phone" class="w-3.5 h-3.5 text-brand-gold"></i>
-            <span class="tracking-wider">24/7 VIP CONCIERGE: <strong class="text-white font-medium">+880 1800-MAIJRUN</strong></span>
+  <!-- ================= LUXURY HEADER & NAVIGATION ================= -->
+  <header id="mainHeader" class="luxury-header-wrapper">
+    <!-- Top Utility Concierge Bar (36px, smoothly collapses on scroll) -->
+    <div id="topUtilityBar" class="luxury-utility-bar">
+      <div class="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between text-xs text-neutral-300">
+        <div class="flex items-center gap-4 lg:gap-6 min-w-0">
+          <a href="tel:+8801800000000" class="flex items-center gap-2 hover:text-brand-goldLight transition-colors whitespace-nowrap">
+            <i data-lucide="phone" class="w-3.5 h-3.5 text-brand-gold shrink-0"></i>
+            <span class="tracking-wider text-[11px] sm:text-xs">
+              <span class="hidden sm:inline">24/7 VIP CONCIERGE: </span><strong class="text-white font-medium">+880 1800-MAIJRUN</strong>
+            </span>
           </a>
-          <span class="hidden md:inline text-neutral-500">•</span>
-          <span class="hidden md:flex items-center gap-1.5 text-neutral-400">
+          <span class="hidden xl:inline text-neutral-500">•</span>
+          <span class="hidden xl:flex items-center gap-1.5 text-neutral-300 whitespace-nowrap text-[11px]">
             <i data-lucide="shield-check" class="w-3.5 h-3.5 text-brand-gold"></i>
             <span>100% Certified Halal Hospitality</span>
           </span>
         </div>
 
-        <div class="flex items-center gap-5">
+        <div class="flex items-center gap-3 sm:gap-4 whitespace-nowrap">
           <div class="flex items-center gap-1.5">
             <i data-lucide="globe" class="w-3.5 h-3.5 text-brand-gold"></i>
-            <select id="currencySelector" onchange="changeCurrency(this.value)" class="bg-transparent text-neutral-300 text-xs focus:outline-none cursor-pointer">
+            <select id="currencySelector" onchange="changeCurrency(this.value)" class="bg-transparent text-neutral-200 text-xs focus:outline-none cursor-pointer">
               <option value="BDT" class="bg-brand-emerald text-white" selected>BDT (৳)</option>
               <option value="USD" class="bg-brand-emerald text-white">USD ($)</option>
               <option value="AED" class="bg-brand-emerald text-white">AED (د.إ)</option>
@@ -159,66 +556,131 @@
               <option value="EUR" class="bg-brand-emerald text-white">EUR (€)</option>
             </select>
           </div>
-          <span class="text-neutral-600">|</span>
-          <button onclick="openInquiryModal('Private Brochure Request')" class="hover:text-brand-gold tracking-widest uppercase text-[11px] font-semibold transition-colors">
+          <span class="hidden md:inline text-neutral-600">|</span>
+          <button onclick="openInquiryModal('Private Brochure Request')" class="hidden md:inline hover:text-brand-gold tracking-widest uppercase text-[11px] font-semibold transition-colors whitespace-nowrap">
             Request Brochure
           </button>
-          <span class="text-neutral-600">|</span>
-          <a href="/admin" class="hidden sm:inline bg-brand-gold/20 hover:bg-brand-gold text-brand-gold hover:text-brand-emeraldDeep text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded transition-all">
-            Admin CRM
+          <span class="hidden sm:inline text-neutral-600">|</span>
+          <a href="/admin" class="hidden sm:inline-flex items-center gap-1.5 bg-brand-gold/20 hover:bg-brand-gold text-brand-gold hover:text-brand-emeraldDeep text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded transition-all whitespace-nowrap">
+            <i data-lucide="user" class="w-3 h-3"></i>
+            <span>Sign In / VIP Atelier</span>
           </a>
         </div>
       </div>
     </div>
 
-    <!-- MAIN LUXURY NAVIGATION -->
-    <nav class="bg-white/95 backdrop-blur-md border-b border-brand-sandDark/60 shadow-sm transition-all duration-300">
-      <div class="max-w-7xl mx-auto px-4 sm:px-8 h-20 flex items-center justify-between">
+    <!-- MAIN LUXURY NAVIGATION BAR (Abercrombie & Kent Inspired Clean Single-Line Header) -->
+    <nav class="luxury-nav-bar" aria-label="Primary">
+      <div class="luxury-nav-container">
         
-        <button onclick="toggleMobileMenu()" class="lg:hidden p-2 text-brand-emerald hover:text-brand-gold transition-colors" aria-label="Toggle Navigation">
-          <i data-lucide="menu" class="w-6 h-6"></i>
+        <!-- LEFT NAVIGATION LINKS (Desktop >= 1200px) -->
+        <div class="luxury-left-nav">
+          <a href="#destinations" class="luxury-nav-item active">
+            <span>Destinations</span>
+          </a>
+          <a href="#signature-journeys" class="luxury-nav-item">
+            <span>Signature Journeys</span>
+          </a>
+          <a href="#halal-philosophy" class="luxury-nav-item">
+            <span>Halal Sanctuary</span>
+            <span class="luxury-halal-badge">100% Halal</span>
+          </a>
+          <a href="#bespoke-tailored" class="luxury-nav-item">
+            <span>Tailor-Made</span>
+          </a>
+        </div>
+
+        <!-- HAMBURGER TRIGGER FOR SCREENS < 1200px -->
+        <button id="hamburgerBtn" onclick="openLuxuryMobileMenu()" class="luxury-hamburger-btn" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="luxuryMobileDrawer">
+          <i data-lucide="menu" class="w-5 h-5"></i>
         </button>
 
-        <div class="hidden lg:flex items-center gap-8 text-[13px] tracking-[0.16em] uppercase font-semibold text-neutral-700">
-          <a href="#destinations" class="hover:text-brand-gold transition-colors">Destinations</a>
-          <a href="#gallery" class="hover:text-brand-gold transition-colors">Halal Sanctuary</a>
-          <a href="#halal-philosophy" class="hover:text-brand-gold transition-colors flex items-center gap-1.5">
-            <span>The Maijrun Standard</span>
-            <span class="bg-brand-gold/15 text-brand-goldDark text-[10px] px-1.5 py-0.5 rounded font-bold tracking-normal">100% Halal</span>
-          </a>
-          <a href="#bespoke-tailored" class="hover:text-brand-gold transition-colors">Tailor-Made</a>
-        </div>
-
-        <a href="#" class="flex flex-col items-center group">
-          <span class="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-brand-emerald uppercase group-hover:text-brand-gold transition-colors">
-            Travel With Maijrun
-          </span>
-          <span class="text-[9px] tracking-[0.35em] uppercase text-neutral-400 font-medium -mt-1 group-hover:text-brand-goldDark transition-colors">
-            Bespoke Halal Expeditions
-          </span>
+        <!-- CENTER BRAND IDENTITY (Strictly Single-Line, Never Wraps) -->
+        <a href="#" class="luxury-center-brand" aria-label="Travel with Maijrun Home">
+          <span class="luxury-brand-title">Travel With Maijrun</span>
+          <span class="luxury-brand-tagline">Bespoke Halal Expeditions</span>
         </a>
 
-        <div class="flex items-center gap-4">
-          <a href="#journey-finder" class="hidden sm:flex items-center gap-2 text-xs tracking-widest font-semibold uppercase text-brand-emerald hover:text-brand-gold transition-colors">
-            <i data-lucide="search" class="w-4 h-4 text-brand-gold"></i>
+        <!-- RIGHT ACTIONS (Search & CTA Button, Strictly Single-Line) -->
+        <div class="luxury-right-actions">
+          <button onclick="handleJourneySearchClick(event)" class="luxury-find-btn" aria-label="Search journeys">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-brand-gold"></i>
             <span>Find Journey</span>
-          </a>
-          <button onclick="openInquiryModal('Plan A Journey')" class="bg-brand-emerald text-white hover:bg-brand-gold hover:text-brand-emeraldDeep text-xs tracking-widest uppercase font-semibold px-5 py-2.5 rounded-full shadow-md transition-all duration-300">
-            Plan A Journey
+          </button>
+
+          <button onclick="openInquiryModal('Plan A Journey')" class="luxury-cta-btn">
+            Plan a Journey
           </button>
         </div>
-      </div>
 
-      <!-- Mobile Dropdown Menu -->
-      <div id="mobileMenu" class="hidden lg:hidden bg-brand-emerald border-t border-brand-gold/20 px-6 py-6 text-white space-y-4">
-        <a href="#destinations" onclick="toggleMobileMenu()" class="block text-sm tracking-widest uppercase py-2 border-b border-white/10 hover:text-brand-gold">Destinations</a>
-        <a href="#gallery" onclick="toggleMobileMenu()" class="block text-sm tracking-widest uppercase py-2 border-b border-white/10 hover:text-brand-gold">Sanctuary Gallery</a>
-        <a href="#halal-philosophy" onclick="toggleMobileMenu()" class="block text-sm tracking-widest uppercase py-2 border-b border-white/10 hover:text-brand-gold">Halal Sanctuary Ethos</a>
-        <a href="#bespoke-tailored" onclick="toggleMobileMenu()" class="block text-sm tracking-widest uppercase py-2 border-b border-white/10 hover:text-brand-gold">Bespoke Tailoring</a>
-        <a href="#testimonials" onclick="toggleMobileMenu()" class="block text-sm tracking-widest uppercase py-2 hover:text-brand-gold">VIP Reviews</a>
       </div>
     </nav>
   </header>
+
+  <!-- Mobile Slide-In Drawer Backdrop Overlay -->
+  <div id="luxuryDrawerOverlay" class="luxury-drawer-overlay" onclick="closeLuxuryMobileMenu()" aria-hidden="true"></div>
+
+  <!-- Mobile Slide-In Drawer Panel -->
+  <aside id="luxuryMobileDrawer" class="luxury-drawer-panel" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+    <div class="luxury-drawer-header">
+      <div class="flex items-center gap-2.5">
+        <span class="luxury-logo-crest">M</span>
+        <div class="flex flex-col">
+          <span class="font-serif text-xl font-semibold text-white">Travel With Maijrun</span>
+          <span class="text-[9px] uppercase tracking-[0.2em] text-brand-gold">Bespoke Halal Expeditions</span>
+        </div>
+      </div>
+      <button onclick="closeLuxuryMobileMenu()" class="luxury-drawer-close p-2 text-neutral-400 hover:text-white transition-colors" aria-label="Close menu">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+
+    <nav class="luxury-drawer-links" aria-label="Mobile Primary">
+      <a href="#destinations" onclick="closeLuxuryMobileMenu()" class="luxury-drawer-link">
+        <span>Destinations</span>
+        <i data-lucide="chevron-right" class="w-5 h-5 opacity-40"></i>
+      </a>
+      <a href="#signature-journeys" onclick="closeLuxuryMobileMenu()" class="luxury-drawer-link">
+        <span>Signature Journeys</span>
+        <i data-lucide="chevron-right" class="w-5 h-5 opacity-40"></i>
+      </a>
+      <a href="#halal-philosophy" onclick="closeLuxuryMobileMenu()" class="luxury-drawer-link">
+        <span>Halal Sanctuary Ethos</span>
+        <i data-lucide="chevron-right" class="w-5 h-5 opacity-40"></i>
+      </a>
+      <a href="#bespoke-tailored" onclick="closeLuxuryMobileMenu()" class="luxury-drawer-link">
+        <span>Tailor-Made Atelier</span>
+        <i data-lucide="chevron-right" class="w-5 h-5 opacity-40"></i>
+      </a>
+      <a href="#testimonials" onclick="closeLuxuryMobileMenu()" class="luxury-drawer-link">
+        <span>VIP Society Reviews</span>
+        <i data-lucide="chevron-right" class="w-5 h-5 opacity-40"></i>
+      </a>
+      <a href="/admin" class="luxury-drawer-link !text-brand-gold pt-2 border-t border-white/10 flex items-center justify-between">
+        <span>Sign In / VIP Atelier</span>
+        <i data-lucide="external-link" class="w-4 h-4 opacity-70"></i>
+      </a>
+    </nav>
+
+    <div class="luxury-drawer-footer">
+      <button onclick="closeLuxuryMobileMenu(); openInquiryModal('Plan A Journey')" class="w-full py-3.5 rounded-full bg-brand-gold text-brand-emeraldDeep font-semibold text-xs uppercase tracking-widest hover:bg-brand-goldLight transition-all shadow-md">
+        Plan a Journey
+      </button>
+      <div class="space-y-2 text-xs text-neutral-300">
+        <a href="https://wa.me/8801800000000" class="flex items-center gap-2 hover:text-brand-gold transition-colors">
+          <i data-lucide="message-circle" class="w-4 h-4 text-brand-gold"></i>
+          <span>WhatsApp VIP Concierge</span>
+        </a>
+        <a href="tel:+8801800000000" class="flex items-center gap-2 hover:text-brand-gold transition-colors">
+          <i data-lucide="phone" class="w-4 h-4 text-brand-gold"></i>
+          <span>+880 1800-MAIJRUN (24/7)</span>
+        </a>
+      </div>
+      <p class="text-[10px] text-neutral-400 tracking-wider uppercase border-t border-white/10 pt-3">
+        100% Certified Halal Luxury Hospitality
+      </p>
+    </div>
+  </aside>
 
   <!-- ================= SWIPER 11 PARALLAX CINEMATIC HERO SLIDESHOW ================= -->
   <section class="relative w-full h-[95vh] min-h-[680px] max-h-[1050px] overflow-hidden bg-brand-emeraldDeep pt-28">
@@ -429,6 +891,104 @@
           </button>
         </div>
       </form>
+    </div>
+  </section>
+
+  <!-- ================= A&K SIGNATURE EDITORIAL: THE BUSINESS OF DREAMS ================= -->
+  <section id="business-of-dreams" class="py-24 bg-gradient-to-b from-[#FAF8F5] to-white border-b border-brand-sandDark/70 text-center relative overflow-hidden">
+    <div class="max-w-4xl mx-auto px-6 relative z-10">
+      <div class="inline-flex items-center gap-2 bg-brand-gold/15 text-brand-goldDark text-[11px] font-bold tracking-[0.25em] uppercase px-4 py-1.5 rounded-full mb-6">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-gold"></i>
+        <span>An Abercrombie Standard of Sacred Travel</span>
+      </div>
+
+      <blockquote class="font-serif text-3xl sm:text-5xl text-brand-emerald leading-tight font-medium italic">
+        “We are not in the travel business. We are in the business of dreams — choreographing sacred moments, timeless heritage, and uncompromising halal luxury for the world’s most discerning families.”
+      </blockquote>
+
+      <p class="text-neutral-600 font-light text-base max-w-2xl mx-auto mt-6 leading-relaxed">
+        For the modern conscious traveler, every journey should be extraordinary. We curate private jet retinue arrivals, Michelin-starred halal gastronomy, private scholar accompaniment, and complete zero-sightline privacy.
+      </p>
+
+      <div class="mt-8 flex items-center justify-center gap-4">
+        <div class="h-[1px] w-12 bg-brand-gold"></div>
+        <div class="text-center">
+          <span class="font-serif text-lg font-bold text-neutral-900 tracking-wide block">Sheikh Mahmud Hasan</span>
+          <span class="text-[10px] text-neutral-500 uppercase tracking-widest block font-semibold">Founder & Managing Director • Travel With Maijrun</span>
+        </div>
+        <div class="h-[1px] w-12 bg-brand-gold"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= A&K SIGNATURE: WHERE DO YOU WANT TO GO? ================= -->
+  <section id="destinations-we-love" class="py-20 bg-white border-b border-brand-sandDark/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div>
+          <span class="text-xs uppercase tracking-[0.25em] font-bold text-brand-goldDark">Destinations We Love</span>
+          <h2 class="font-serif text-3xl sm:text-5xl text-brand-emerald tracking-tight mt-2">
+            Where Do You Want To Go?
+          </h2>
+          <p class="text-neutral-500 text-sm font-light mt-1">Inspired by iconic global journeys, hand-crafted with 100% verified Halal luxury.</p>
+        </div>
+        <button onclick="openInquiryModal('Where Do You Want To Go Consultation')" class="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-semibold text-brand-emerald hover:text-brand-gold transition-colors">
+          <span>Request Custom Portfolio</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <!-- Card 1: Switzerland -->
+        <div class="group relative rounded-2xl overflow-hidden shadow-lg h-96 flex flex-col justify-end p-6 cursor-pointer" onclick="openInquiryModal('Switzerland Alpine Sanctuary')">
+          <img src="https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=85&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Switzerland">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"></div>
+          <div class="relative z-10 space-y-1">
+            <span class="text-[10px] uppercase tracking-widest text-brand-gold font-bold">Alpine Sanctuary</span>
+            <h3 class="font-serif text-2xl font-bold text-white group-hover:text-brand-goldLight transition-colors">Switzerland</h3>
+            <p class="text-xs text-neutral-300 font-light line-clamp-2">Storybook Alpine peaks of Zermatt & Lake Geneva with private halal chalet catering.</p>
+            <span class="text-[11px] text-brand-gold font-semibold pt-1 inline-block">10 Days • From ৳ 890,000 / $7,400</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Costa Rica -->
+        <div class="group relative rounded-2xl overflow-hidden shadow-lg h-96 flex flex-col justify-end p-6 cursor-pointer" onclick="openInquiryModal('Costa Rica Rainforest Sanctuary')">
+          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=85&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Costa Rica">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"></div>
+          <div class="relative z-10 space-y-1">
+            <span class="text-[10px] uppercase tracking-widest text-brand-gold font-bold">Pristine Eco-Sanctuary</span>
+            <h3 class="font-serif text-2xl font-bold text-white group-hover:text-brand-goldLight transition-colors">Costa Rica</h3>
+            <p class="text-xs text-neutral-300 font-light line-clamp-2">Lush cloud forests, private hot-spring villas, and custom halal eco-adventures.</p>
+            <span class="text-[11px] text-brand-gold font-semibold pt-1 inline-block">9 Days • From ৳ 720,000 / $6,000</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Japan -->
+        <div class="group relative rounded-2xl overflow-hidden shadow-lg h-96 flex flex-col justify-end p-6 cursor-pointer" onclick="openInquiryModal('Japan Heritage Ryokan')">
+          <img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=85&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Japan">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"></div>
+          <div class="relative z-10 space-y-1">
+            <span class="text-[10px] uppercase tracking-widest text-brand-gold font-bold">Imperial Heritage</span>
+            <h3 class="font-serif text-2xl font-bold text-white group-hover:text-brand-goldLight transition-colors">Japan</h3>
+            <p class="text-xs text-neutral-300 font-light line-clamp-2">Kyoto private ryokan buyouts, bullet train first class, and certified halal Wagyu Kaiseki.</p>
+            <span class="text-[11px] text-brand-gold font-semibold pt-1 inline-block">12 Days • From ৳ 940,000 / $7,800</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Moorish Andalusia -->
+        <div class="group relative rounded-2xl overflow-hidden shadow-lg h-96 flex flex-col justify-end p-6 cursor-pointer" onclick="openInquiryModal('Andalusia Private Palaces')">
+          <img src="https://images.unsplash.com/photo-1568084680786-a84f91d1153c?q=85&w=800&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Andalusia Spain">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"></div>
+          <div class="relative z-10 space-y-1">
+            <span class="text-[10px] uppercase tracking-widest text-brand-gold font-bold">Islamic Golden Age</span>
+            <h3 class="font-serif text-2xl font-bold text-white group-hover:text-brand-goldLight transition-colors">Moorish Spain</h3>
+            <p class="text-xs text-neutral-300 font-light line-clamp-2">VIP private access to Alhambra, historic Cordoba courtyards, and halal olive-estate dining.</p>
+            <span class="text-[11px] text-brand-gold font-semibold pt-1 inline-block">11 Days • From ৳ 768,000 / $6,400</span>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -1186,10 +1746,84 @@
       },
     });
 
-    // Mobile Navigation Toggle
-    function toggleMobileMenu() {
-      const menu = document.getElementById('mobileMenu');
-      menu.classList.toggle('hidden');
+    // Luxury Header Scroll Controller (300ms transition to #FAF8F3 past 40px)
+    function handleHeaderScroll() {
+      const header = document.getElementById('mainHeader');
+      if (!header) return;
+      if (window.scrollY > 40) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    }
+    window.addEventListener('scroll', handleHeaderScroll, { passive: true });
+    // Run on initial load
+    handleHeaderScroll();
+
+    // Verification state helpers
+    if (window.location.hash === '#test-scrolled' || window.location.search.includes('state=scrolled')) {
+      const header = document.getElementById('mainHeader');
+      if (header) header.classList.add('scrolled');
+    }
+    if (window.location.hash === '#test-menu-open' || window.location.search.includes('state=menu-open')) {
+      setTimeout(openLuxuryMobileMenu, 50);
+    }
+    if (window.location.hash === '#test-editorial') {
+      window.scrollTo(0, 1150);
+    }
+    if (window.location.hash === '#test-where-to-go') {
+      window.scrollTo(0, 1650);
+    }
+
+    // Mobile Slide-in Drawer Controller with Focus Trap & Body Scroll Lock
+    function openLuxuryMobileMenu() {
+      const drawer = document.getElementById('luxuryMobileDrawer');
+      const overlay = document.getElementById('luxuryDrawerOverlay');
+      const btn = document.getElementById('hamburgerBtn');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.add('active');
+      overlay.classList.add('active');
+      if (btn) btn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+
+      // Focus close button inside drawer for a11y
+      const closeBtn = drawer.querySelector('.luxury-drawer-close');
+      if (closeBtn) closeBtn.focus();
+    }
+
+    function closeLuxuryMobileMenu() {
+      const drawer = document.getElementById('luxuryMobileDrawer');
+      const overlay = document.getElementById('luxuryDrawerOverlay');
+      const btn = document.getElementById('hamburgerBtn');
+      if (!drawer || !overlay) return;
+
+      drawer.classList.remove('active');
+      overlay.classList.remove('active');
+      if (btn) {
+        btn.setAttribute('aria-expanded', 'false');
+        btn.focus();
+      }
+      document.body.style.overflow = '';
+    }
+
+    // Escape Key Listener to dismiss mobile drawer
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const drawer = document.getElementById('luxuryMobileDrawer');
+        if (drawer && drawer.classList.contains('active')) {
+          closeLuxuryMobileMenu();
+        }
+      }
+    });
+
+    // Search Icon Click Handler (Smooth scrolls to Journey Finder)
+    function handleJourneySearchClick(e) {
+      if (e) e.preventDefault();
+      const element = document.getElementById('journey-finder') || document.getElementById('destinations');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
     }
 
     // Currency Converter
@@ -1283,6 +1917,13 @@
       const element = document.getElementById('destinations');
       element.scrollIntoView({ behavior: 'smooth' });
     }
+
+    // Re-initialize Lucide Icons on document ready
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    });
   </script>
 </body>
 </html>
