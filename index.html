@@ -522,30 +522,88 @@
       background: #0B2019 !important;
       width: 28px !important;
     }
+    .top-utility-swiper {
+      height: 100%;
+      width: 100%;
+    }
+    .top-utility-swiper .swiper-slide {
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
   </style>
 </head>
 <body class="bg-brand-sand font-sans text-neutral-800 antialiased selection:bg-brand-gold selection:text-brand-emerald selection:font-semibold">
 
   <!-- ================= LUXURY HEADER & NAVIGATION ================= -->
   <header id="mainHeader" class="luxury-header-wrapper">
-    <!-- Top Utility Concierge Bar (36px, smoothly collapses on scroll) -->
+    <!-- Top Utility Concierge Bar (38px, smoothly collapses on scroll, powered by Swiper) -->
     <div id="topUtilityBar" class="luxury-utility-bar">
-      <div class="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between text-xs text-neutral-300">
-        <div class="flex items-center gap-4 lg:gap-6 min-w-0">
-          <a href="tel:+8801800000000" class="flex items-center gap-2 hover:text-brand-goldLight transition-colors whitespace-nowrap">
-            <i data-lucide="phone" class="w-3.5 h-3.5 text-brand-gold shrink-0"></i>
-            <span class="tracking-wider text-[11px] sm:text-xs">
-              <span class="hidden sm:inline">24/7 VIP CONCIERGE: </span><strong class="text-white font-medium">+880 1800-MAIJRUN</strong>
-            </span>
-          </a>
-          <span class="hidden xl:inline text-neutral-500">•</span>
-          <span class="hidden xl:flex items-center gap-1.5 text-neutral-300 whitespace-nowrap text-[11px]">
-            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-brand-gold"></i>
-            <span>100% Certified Halal Hospitality</span>
-          </span>
+      <div class="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between text-xs text-neutral-300 gap-4">
+        
+        <!-- SWIPER TICKER (Left/Center dynamic ticker) -->
+        <div class="flex-1 min-w-0 h-full overflow-hidden max-w-3xl">
+          <div class="swiper top-utility-swiper h-full w-full">
+            <div class="swiper-wrapper">
+              
+              <!-- Slide 1: Private Concierge Numbers (Dhaka & London) -->
+              <div class="swiper-slide h-full flex items-center">
+                <div class="flex items-center gap-2 whitespace-nowrap text-[11px] sm:text-xs text-neutral-200">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-brand-gold shrink-0"></i>
+                  <span class="text-brand-gold font-semibold uppercase tracking-wider text-[10px]">Private Concierge:</span>
+                  <a href="tel:+8809612888999" class="text-white hover:text-brand-goldLight font-medium transition-colors">
+                    +880 9612-888-999
+                  </a>
+                  <span class="text-neutral-500 hidden lg:inline">•</span>
+                  <span class="text-neutral-300 hidden lg:inline">London Desk:</span>
+                  <a href="tel:+442079460920" class="text-white hover:text-brand-goldLight font-medium transition-colors hidden lg:inline">
+                    +44 20 7946 0920
+                  </a>
+                </div>
+              </div>
+
+              <!-- Slide 2: 100% Certified Halal Standard -->
+              <div class="swiper-slide h-full flex items-center">
+                <div class="flex items-center gap-2 whitespace-nowrap text-[11px] sm:text-xs text-neutral-200">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-brand-gold shrink-0"></i>
+                  <span class="text-brand-gold font-semibold uppercase tracking-wider text-[10px]">100% Certified Halal Standard:</span>
+                  <span class="text-white font-medium">Strictly Alcohol-Free &amp; Michelin-Curated Halal Gastronomy</span>
+                </div>
+              </div>
+
+              <!-- Slide 3: 2026 Black Book Portfolio -->
+              <div class="swiper-slide h-full flex items-center">
+                <div class="flex items-center gap-2 whitespace-nowrap text-[11px] sm:text-xs text-neutral-200">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-brand-gold shrink-0"></i>
+                  <span class="text-brand-gold font-semibold uppercase tracking-wider text-[10px]">2026 Black Book Portfolio:</span>
+                  <span class="text-neutral-200">Private Island Sanctuaries &amp; Curated Royal Expeditions</span>
+                </div>
+              </div>
+
+              <!-- Slide 4: Absolute Privacy Guarantee -->
+              <div class="swiper-slide h-full flex items-center">
+                <div class="flex items-center gap-2 whitespace-nowrap text-[11px] sm:text-xs text-neutral-200">
+                  <i data-lucide="lock" class="w-3.5 h-3.5 text-brand-gold shrink-0"></i>
+                  <span class="text-brand-gold font-semibold uppercase tracking-wider text-[10px]">Absolute Privacy:</span>
+                  <span class="text-neutral-200">Zero-Sightline Family Pool Villas &amp; Private Chauffeured Jets</span>
+                </div>
+              </div>
+
+              <!-- Slide 5: VIP Ground Escort -->
+              <div class="swiper-slide h-full flex items-center">
+                <div class="flex items-center gap-2 whitespace-nowrap text-[11px] sm:text-xs text-neutral-200">
+                  <i data-lucide="compass" class="w-3.5 h-3.5 text-brand-gold shrink-0"></i>
+                  <span class="text-brand-gold font-semibold uppercase tracking-wider text-[10px]">VIP Ground Escort:</span>
+                  <span class="text-neutral-200">Airport Tarmac Limousine Transfers &amp; 24/7 Dedicated Butler Retinue</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
 
-        <div class="flex items-center gap-3 sm:gap-4 whitespace-nowrap">
+        <!-- RIGHT UTILITIES -->
+        <div class="flex items-center gap-3 sm:gap-4 whitespace-nowrap shrink-0">
           <div class="flex items-center gap-1.5">
             <i data-lucide="globe" class="w-3.5 h-3.5 text-brand-gold"></i>
             <select id="currencySelector" onchange="changeCurrency(this.value)" class="bg-transparent text-neutral-200 text-xs focus:outline-none cursor-pointer">
@@ -557,13 +615,13 @@
             </select>
           </div>
           <span class="hidden md:inline text-neutral-600">|</span>
-          <button onclick="openInquiryModal('Private Brochure Request')" class="hidden md:inline hover:text-brand-gold tracking-widest uppercase text-[11px] font-semibold transition-colors whitespace-nowrap">
+          <button onclick="openInquiryModal('Private Brochure Request')" class="hidden md:inline hover:text-brand-gold tracking-widest uppercase text-[11px] font-semibold transition-colors whitespace-nowrap cursor-pointer">
             Request Brochure
           </button>
           <span class="hidden sm:inline text-neutral-600">|</span>
-          <a href="/admin" class="hidden sm:inline-flex items-center gap-1.5 bg-brand-gold/20 hover:bg-brand-gold text-brand-gold hover:text-brand-emeraldDeep text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded transition-all whitespace-nowrap">
-            <i data-lucide="user" class="w-3 h-3"></i>
-            <span>Sign In / VIP Atelier</span>
+          <a href="/admin" class="hidden sm:inline-flex items-center gap-1.5 bg-brand-gold/15 hover:bg-brand-gold text-brand-gold hover:text-brand-emeraldDeep text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded transition-all whitespace-nowrap">
+            <i data-lucide="lock" class="w-3 h-3"></i>
+            <span>Client Portal</span>
           </a>
         </div>
       </div>
@@ -1670,6 +1728,19 @@
   <script>
     // Initialize Lucide Icons
     lucide.createIcons();
+
+    // 0. Swiper 11 Top Utility Concierge Ticker (Vertical Auto-Advancing)
+    const topBarSwiper = new Swiper('.top-utility-swiper', {
+      direction: 'vertical',
+      loop: true,
+      autoplay: {
+        delay: 4200,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      speed: 500,
+      allowTouchMove: true,
+    });
 
     // 1. Swiper 11 Hero Parallax & Fade Slider
     const heroSwiper = new Swiper('.hero-swiper', {

@@ -1,7 +1,71 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Phone, ShieldCheck, Globe, Search, Menu, X, ArrowRight } from 'lucide-react';
+import { Phone, ShieldCheck, Globe, Search, Menu, X, ArrowRight, Sparkles, Lock, Compass } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/autoplay';
+
+const TOP_TICKER_SLIDES = [
+  {
+    id: 'advisory',
+    icon: Phone,
+    content: (
+      <span className="flex items-center gap-2">
+        <span className="text-[#D4AF37] font-semibold uppercase tracking-wider text-[10px]">Private Concierge:</span>
+        <a href="tel:+8809612888999" className="text-white hover:text-[#F3E5AB] font-medium transition-colors">
+          +880 9612-888-999
+        </a>
+        <span className="text-neutral-500 hidden lg:inline">•</span>
+        <span className="text-neutral-300 hidden lg:inline">London Desk:</span>
+        <a href="tel:+442079460920" className="text-white hover:text-[#F3E5AB] font-medium transition-colors hidden lg:inline">
+          +44 20 7946 0920
+        </a>
+      </span>
+    ),
+  },
+  {
+    id: 'halal',
+    icon: ShieldCheck,
+    content: (
+      <span className="flex items-center gap-2">
+        <span className="text-[#D4AF37] font-semibold uppercase tracking-wider text-[10px]">100% Certified Halal Standard:</span>
+        <span className="text-white font-medium">Strictly Alcohol-Free & Michelin-Curated Halal Gastronomy</span>
+      </span>
+    ),
+  },
+  {
+    id: 'expeditions',
+    icon: Sparkles,
+    content: (
+      <span className="flex items-center gap-2">
+        <span className="text-[#D4AF37] font-semibold uppercase tracking-wider text-[10px]">2026 Black Book Portfolio:</span>
+        <span className="text-neutral-200">Private Island Sanctuaries & Curated Royal Expeditions</span>
+      </span>
+    ),
+  },
+  {
+    id: 'privacy',
+    icon: Lock,
+    content: (
+      <span className="flex items-center gap-2">
+        <span className="text-[#D4AF37] font-semibold uppercase tracking-wider text-[10px]">Absolute Privacy:</span>
+        <span className="text-neutral-200">Zero-Sightline Family Pool Villas & Private Chauffeured Jets</span>
+      </span>
+    ),
+  },
+  {
+    id: 'service',
+    icon: Compass,
+    content: (
+      <span className="flex items-center gap-2">
+        <span className="text-[#D4AF37] font-semibold uppercase tracking-wider text-[10px]">VIP Ground Escort:</span>
+        <span className="text-neutral-200">Airport Tarmac Limousine Transfers & 24/7 Dedicated Butler Retinue</span>
+      </span>
+    ),
+  },
+];
 
 interface NavbarProps {
   onOpenInquiry?: (type?: string) => void;
@@ -72,32 +136,43 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
-        {/* Top Utility Concierge Bar (36px, smoothly collapses on scroll) */}
+        {/* Top Utility Concierge Bar (38px, smoothly collapses on scroll, powered by Swiper) */}
         <div
           className={`overflow-hidden transition-all duration-300 bg-[#0B2019] border-b border-[#D4AF37]/20 ${
-            scrolled ? 'max-h-0 opacity-0 py-0 border-b-0 pointer-events-none' : 'h-[36px] max-h-[36px] opacity-100'
+            scrolled ? 'max-h-0 opacity-0 py-0 border-b-0 pointer-events-none' : 'h-[38px] max-h-[38px] opacity-100'
           }`}
         >
-          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between text-xs text-neutral-300">
-            <div className="flex items-center gap-4 lg:gap-6 min-w-0">
-              <a
-                href="tel:+8801800000000"
-                className="flex items-center gap-2 hover:text-[#F3E5AB] transition-colors whitespace-nowrap"
+          <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between text-xs text-neutral-300 gap-4">
+            {/* SWIPER TICKER (Left/Center dynamic ticker) */}
+            <div className="flex-1 min-w-0 h-full overflow-hidden max-w-3xl">
+              <Swiper
+                modules={[Autoplay]}
+                direction="vertical"
+                loop={true}
+                autoplay={{
+                  delay: 4200,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                }}
+                speed={500}
+                className="h-full w-full"
               >
-                <Phone className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                <span className="tracking-wider text-[11px] sm:text-xs">
-                  <span className="hidden sm:inline">24/7 VIP CONCIERGE: </span>
-                  <strong className="text-white font-medium">+880 1800-MAIJRUN</strong>
-                </span>
-              </a>
-              <span className="hidden xl:inline text-neutral-500">•</span>
-              <span className="hidden xl:flex items-center gap-1.5 text-neutral-300 whitespace-nowrap text-[11px]">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                <span>100% Certified Halal Hospitality</span>
-              </span>
+                {TOP_TICKER_SLIDES.map((slide) => {
+                  const IconComponent = slide.icon;
+                  return (
+                    <SwiperSlide key={slide.id} className="h-full flex items-center">
+                      <div className="flex items-center gap-2 whitespace-nowrap text-[11px] sm:text-xs text-neutral-200">
+                        <IconComponent className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                        {slide.content}
+                      </div>
+                    </SwiperSlide>
+                  );
+                })}
+              </Swiper>
             </div>
 
-            <div className="flex items-center gap-3 sm:gap-4 whitespace-nowrap">
+            {/* RIGHT UTILITIES */}
+            <div className="flex items-center gap-3 sm:gap-4 whitespace-nowrap shrink-0">
               <div className="flex items-center gap-1.5">
                 <Globe className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
                 <span className="text-neutral-200 text-xs font-medium">BDT (৳)</span>
@@ -106,16 +181,16 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
               <button
                 type="button"
                 onClick={() => handleInquiry('Private Brochure Request')}
-                className="hidden md:inline hover:text-[#D4AF37] tracking-widest uppercase text-[11px] font-semibold transition-colors whitespace-nowrap"
+                className="hidden md:inline hover:text-[#D4AF37] tracking-widest uppercase text-[11px] font-semibold transition-colors whitespace-nowrap cursor-pointer"
               >
                 Request Brochure
               </button>
               <span className="hidden sm:inline text-neutral-600">|</span>
               <a
                 href="/admin"
-                className="hidden sm:inline-flex items-center gap-1.5 bg-[#D4AF37]/20 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-[#061410] text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded transition-all whitespace-nowrap"
+                className="hidden sm:inline-flex items-center gap-1.5 border border-[#D4AF37]/40 hover:border-[#D4AF37] bg-[#D4AF37]/10 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-[#061410] text-[11px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full transition-all whitespace-nowrap"
               >
-                Sign In / VIP Atelier
+                Client Portal
               </a>
             </div>
           </div>
