@@ -34,7 +34,7 @@ Reverse-engineered from the architectural and aesthetic hallmarks of global lead
 
 ---
 
-## 🚀 How to Run & Preview
+## How to Run & Preview
 
 ### Option A: Instant Browser Preview (Zero Installation Needed)
 Simply open `index.html` in your web browser:
