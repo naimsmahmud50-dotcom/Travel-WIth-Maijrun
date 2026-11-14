@@ -108,6 +108,7 @@ function verifySessionToken(token) {
       typeof payload !== 'object' ||
       typeof payload.user !== 'string' ||
       !payload.user ||
+      !payload.user.trim() ||
       typeof payload.exp !== 'number' ||
       !Number.isFinite(payload.exp) ||
       Date.now() > payload.exp
@@ -308,11 +309,21 @@ const server = http.createServer((req, res) => {
   }
 
   // 5. GET & POST /api/inquiries
-  if (url.pathname === '/api/inquiries') {
+  if (url.pathname === '/api/inquiries' || url.pathname === '/api/inquiries/') {
+    const noCacheHeaders = {
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'X-Content-Type-Options': 'nosniff',
+    };
+
     if (req.method === 'GET') {
       const session = getSessionFromReq(req);
-      if (!session) {
-        res.writeHead(401, { 'Content-Type': 'application/json' });
+      if (!session || !session.user) {
+        res.writeHead(401, {
+          'Content-Type': 'application/json',
+          ...noCacheHeaders,
+        });
         res.end(JSON.stringify({ success: false, error: 'Unauthorized: Admin authentication clearance required.' }));
         return;
       }
@@ -325,8 +336,11 @@ const server = http.createServer((req, res) => {
       } catch {
         data = [];
       }
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, data }));
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        ...noCacheHeaders,
+      });
+      res.end(JSON.stringify({ success: true, count: data.length, data }));
       return;
     }
 
@@ -337,7 +351,10 @@ const server = http.createServer((req, res) => {
         body += chunk;
         if (body.length > 1e6) {
           isTooLarge = true;
-          res.writeHead(413, { 'Content-Type': 'application/json' });
+          res.writeHead(413, {
+            'Content-Type': 'application/json',
+            ...noCacheHeaders,
+          });
           res.end(JSON.stringify({ success: false, error: 'Payload Too Large' }));
           req.destroy();
         }
@@ -351,7 +368,10 @@ const server = http.createServer((req, res) => {
           const phone = typeof parsed.phone === 'string' ? parsed.phone.trim() : '';
 
           if (!name || !email || !phone) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.writeHead(400, {
+              'Content-Type': 'application/json',
+              ...noCacheHeaders,
+            });
             res.end(JSON.stringify({ success: false, error: 'Name, email, and phone are required fields.' }));
             return;
           }
@@ -385,15 +405,29 @@ const server = http.createServer((req, res) => {
           data.unshift(newInquiry);
           fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(data, null, 2));
 
-          res.writeHead(201, { 'Content-Type': 'application/json' });
+          res.writeHead(201, {
+            'Content-Type': 'application/json',
+            ...noCacheHeaders,
+          });
           res.end(JSON.stringify({ success: true, message: 'Inquiry saved successfully', inquiryId: newInquiry.id }));
         } catch {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.writeHead(400, {
+            'Content-Type': 'application/json',
+            ...noCacheHeaders,
+          });
           res.end(JSON.stringify({ success: false, error: 'Invalid JSON payload' }));
         }
       });
       return;
     }
+
+    res.writeHead(405, {
+      'Content-Type': 'application/json',
+      'Allow': 'GET, POST',
+      ...noCacheHeaders,
+    });
+    res.end(JSON.stringify({ success: false, error: 'Method Not Allowed' }));
+    return;
   }
 
   // 6. POST /api/newsletter

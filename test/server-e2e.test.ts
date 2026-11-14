@@ -146,22 +146,64 @@ async function run() {
     });
 
     // 7. GET /api/inquiries without auth -> 401
-    await testAsync('GET /api/inquiries: 401 Unauthorized for public visitors', async () => {
+    await testAsync('GET /api/inquiries: 401 Unauthorized for public visitors with zero data leakage', async () => {
       const res = await fetch(`${BASE_URL}/api/inquiries`);
+      assert.strictEqual(res.status, 401);
+      const cacheControl = res.headers.get('cache-control');
+      assert.ok(cacheControl && cacheControl.includes('no-store'), 'Must enforce Cache-Control: no-store');
+      const body = await res.json();
+      assert.strictEqual(body.success, false);
+      assert.strictEqual((body as any).data, undefined, 'Must not leak inquiries array on 401');
+    });
+
+    // 7b. GET /api/inquiries/ trailing slash without auth -> 401
+    await testAsync('GET /api/inquiries/: trailing slash strictly blocks unauthenticated access with 401', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries/`);
       assert.strictEqual(res.status, 401);
       const body = await res.json();
       assert.strictEqual(body.success, false);
     });
 
+    // 7c. GET /api/inquiries with tampered cookie -> 401
+    await testAsync('GET /api/inquiries: rejects forged cookie with 401', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Cookie: 'maijrun_admin_token=fake.tampered_signature' },
+      });
+      assert.strictEqual(res.status, 401);
+      const body = await res.json();
+      assert.strictEqual(body.success, false);
+      assert.strictEqual((body as any).data, undefined);
+    });
+
     // 8. GET /api/inquiries with auth -> 200 OK
-    await testAsync('GET /api/inquiries: 200 OK for authenticated admin', async () => {
+    await testAsync('GET /api/inquiries: 200 OK for authenticated admin with security headers', async () => {
       const res = await fetch(`${BASE_URL}/api/inquiries`, {
         headers: { Cookie: sessionCookie },
+      });
+      assert.strictEqual(res.status, 200);
+      const cacheControl = res.headers.get('cache-control');
+      assert.ok(cacheControl && cacheControl.includes('no-store'), 'Must enforce Cache-Control: no-store');
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(Array.isArray(body.data));
+    });
+
+    // 8b. GET /api/inquiries with Bearer auth -> 200 OK
+    await testAsync('GET /api/inquiries: 200 OK with Bearer Authorization header', async () => {
+      const tokenValue = sessionCookie.split('=')[1];
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Authorization: `Bearer ${tokenValue}` },
       });
       assert.strictEqual(res.status, 200);
       const body = await res.json();
       assert.strictEqual(body.success, true);
       assert.ok(Array.isArray(body.data));
+    });
+
+    // 8c. DELETE /api/inquiries -> 405 Method Not Allowed
+    await testAsync('DELETE /api/inquiries: returns 405 Method Not Allowed', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries`, { method: 'DELETE' });
+      assert.strictEqual(res.status, 405);
     });
 
     // 9. POST /api/inquiries without auth -> 201 OK

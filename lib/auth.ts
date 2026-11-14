@@ -189,6 +189,7 @@ export function verifySessionToken(
       typeof payload !== 'object' ||
       typeof payload.user !== 'string' ||
       !payload.user ||
+      !payload.user.trim() ||
       typeof payload.exp !== 'number' ||
       !Number.isFinite(payload.exp)
     ) {
@@ -199,7 +200,7 @@ export function verifySessionToken(
       return null; // Expired session
     }
 
-    return { user: payload.user, exp: payload.exp };
+    return { user: payload.user.trim(), exp: payload.exp };
   } catch {
     return null;
   }
@@ -220,9 +221,17 @@ export function getCookieOptions(remember: boolean = false) {
 
 export function getSessionFromRequest(request?: Request): { user: string; exp: number } | null {
   try {
-    if (request) {
+    if (request && request.headers) {
+      const getHeader = (name: string): string | null => {
+        if (typeof request.headers.get === 'function') {
+          return request.headers.get(name);
+        }
+        const val = (request.headers as any)[name] || (request.headers as any)[name.toLowerCase()];
+        return typeof val === 'string' ? val : null;
+      };
+
       // 1. Check Authorization header
-      const authHeader = request.headers.get('authorization');
+      const authHeader = getHeader('authorization');
       if (authHeader && authHeader.startsWith('Bearer ')) {
         const bearer = authHeader.slice(7).trim();
         const verified = verifySessionToken(bearer);
@@ -230,7 +239,7 @@ export function getSessionFromRequest(request?: Request): { user: string; exp: n
       }
 
       // 2. Check Cookie header from request
-      const cookieHeader = request.headers.get('cookie') || '';
+      const cookieHeader = getHeader('cookie') || '';
       const pairs = cookieHeader.split(';');
       for (const pair of pairs) {
         const [k, ...v] = pair.trim().split('=');

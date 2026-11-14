@@ -30,23 +30,45 @@ function readInquiries(): any[] {
 
 export const dynamic = 'force-dynamic';
 
+const NO_CACHE_SECURITY_HEADERS = {
+  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+  'Pragma': 'no-cache',
+  'Expires': '0',
+  'X-Content-Type-Options': 'nosniff',
+};
+
 export async function GET(request: Request) {
   try {
     const session = getSessionFromRequest(request);
-    if (!session) {
+    if (!session || !session.user) {
       return NextResponse.json(
         {
           success: false,
           error: 'Unauthorized: Admin authentication clearance required to access client dossiers.',
         },
-        { status: 401 }
+        {
+          status: 401,
+          headers: NO_CACHE_SECURITY_HEADERS,
+        }
       );
     }
 
     const inquiries = readInquiries();
-    return NextResponse.json({ success: true, count: inquiries.length, data: inquiries });
+    return NextResponse.json(
+      { success: true, count: inquiries.length, data: inquiries },
+      {
+        status: 200,
+        headers: NO_CACHE_SECURITY_HEADERS,
+      }
+    );
   } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to fetch inquiries' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch inquiries' },
+      {
+        status: 500,
+        headers: NO_CACHE_SECURITY_HEADERS,
+      }
+    );
   }
 }
 
@@ -62,7 +84,10 @@ export async function POST(request: Request) {
     if (!trimmedName || !trimmedEmail || !trimmedPhone) {
       return NextResponse.json(
         { success: false, error: 'Name, email, and phone/WhatsApp are required fields.' },
-        { status: 400 }
+        {
+          status: 400,
+          headers: NO_CACHE_SECURITY_HEADERS,
+        }
       );
     }
 
@@ -83,12 +108,24 @@ export async function POST(request: Request) {
     inquiries.unshift(newInquiry);
     fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(inquiries, null, 2));
 
-    return NextResponse.json({
-      success: true,
-      message: 'Bespoke inquiry received successfully. Our VIP director will contact you.',
-      inquiryId: newInquiry.id,
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        message: 'Bespoke inquiry received successfully. Our VIP director will contact you.',
+        inquiryId: newInquiry.id,
+      },
+      {
+        status: 200,
+        headers: NO_CACHE_SECURITY_HEADERS,
+      }
+    );
   } catch (error) {
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: 'Internal server error' },
+      {
+        status: 500,
+        headers: NO_CACHE_SECURITY_HEADERS,
+      }
+    );
   }
 }

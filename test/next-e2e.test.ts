@@ -165,18 +165,46 @@ async function run() {
     });
 
     // 8. GET /api/inquiries without auth -> 401 Unauthorized
-    await testAsync('GET /api/inquiries: strictly blocks unauthenticated access with 401', async () => {
+    await testAsync('GET /api/inquiries: strictly blocks unauthenticated access with 401 and zero data leakage', async () => {
       const res = await fetch(`${BASE_URL}/api/inquiries`);
       assert.strictEqual(res.status, 401);
+      const cacheControl = res.headers.get('cache-control');
+      assert.ok(cacheControl && cacheControl.includes('no-store'), 'Must enforce Cache-Control: no-store');
       const body = await res.json();
       assert.strictEqual(body.success, false);
+      assert.strictEqual((body as any).data, undefined, 'Must not leak client records on 401');
       assert.ok(body.error.toLowerCase().includes('unauthorized'));
     });
 
+    // 8b. GET /api/inquiries with tampered / forged cookie -> 401 Unauthorized
+    await testAsync('GET /api/inquiries: rejects tampered/forged session cookie with 401', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Cookie: 'maijrun_admin_token=eyJhbGciOiJIUzI1NiJ9.forged_signature_attack' },
+      });
+      assert.strictEqual(res.status, 401);
+      const body = await res.json();
+      assert.strictEqual(body.success, false);
+      assert.strictEqual((body as any).data, undefined);
+    });
+
     // 9. GET /api/inquiries with valid session -> 200 OK
-    await testAsync('GET /api/inquiries: grants access to inquiries for authorized session', async () => {
+    await testAsync('GET /api/inquiries: grants access to inquiries for authorized session with security headers', async () => {
       const res = await fetch(`${BASE_URL}/api/inquiries`, {
         headers: { Cookie: sessionCookie },
+      });
+      assert.strictEqual(res.status, 200);
+      const cacheControl = res.headers.get('cache-control');
+      assert.ok(cacheControl && cacheControl.includes('no-store'), 'Must enforce Cache-Control: no-store');
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(Array.isArray(body.data));
+    });
+
+    // 9b. GET /api/inquiries with Bearer token header -> 200 OK
+    await testAsync('GET /api/inquiries: grants access with valid Bearer Authorization header', async () => {
+      const tokenValue = sessionCookie.split('=')[1];
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Authorization: `Bearer ${tokenValue}` },
       });
       assert.strictEqual(res.status, 200);
       const body = await res.json();

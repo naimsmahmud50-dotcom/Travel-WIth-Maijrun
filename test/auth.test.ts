@@ -12,6 +12,7 @@ import {
   recordFailedLogin,
   clearLoginRateLimit,
   ADMIN_COOKIE_NAME,
+  getSessionFromRequest,
 } from '../lib/auth.ts';
 
 console.log('🧪 Starting Security & Authentication Test Suite...\n');
@@ -209,6 +210,40 @@ test('getCookieOptions: produces secure HttpOnly cookie config with expiry', () 
 
   const rememberOpts = getCookieOptions(true);
   assert.strictEqual(rememberOpts.maxAge, 2592000); // 30 days
+});
+
+// 6. Request Session Extraction & Verification Tests
+test('getSessionFromRequest: validates token from Cookie header', () => {
+  const token = createSessionToken('naimsmahmud50@gmail.com', false);
+  const req = new Request('http://localhost:3000/api/inquiries', {
+    headers: { cookie: `${ADMIN_COOKIE_NAME}=${token}` },
+  });
+  const session = getSessionFromRequest(req);
+  assert.ok(session !== null);
+  assert.strictEqual(session.user, 'naimsmahmud50@gmail.com');
+});
+
+test('getSessionFromRequest: validates token from Bearer Authorization header', () => {
+  const token = createSessionToken('admin', false);
+  const req = new Request('http://localhost:3000/api/inquiries', {
+    headers: { authorization: `Bearer ${token}` },
+  });
+  const session = getSessionFromRequest(req);
+  assert.ok(session !== null);
+  assert.strictEqual(session.user, 'admin');
+});
+
+test('getSessionFromRequest: rejects tampered or forged session token', () => {
+  const req = new Request('http://localhost:3000/api/inquiries', {
+    headers: { cookie: `${ADMIN_COOKIE_NAME}=forged.token.payload` },
+  });
+  assert.strictEqual(getSessionFromRequest(req), null);
+});
+
+test('getSessionFromRequest: returns null for unauthenticated request', () => {
+  const req = new Request('http://localhost:3000/api/inquiries');
+  assert.strictEqual(getSessionFromRequest(req), null);
+  assert.strictEqual(getSessionFromRequest(undefined), null);
 });
 
 console.log(`\n🎉 All ${passedTests} security & authentication unit tests passed!`);
