@@ -522,6 +522,11 @@
       background: #0B2019 !important;
       width: 28px !important;
     }
+    .swiper-button-disabled {
+      opacity: 0.35 !important;
+      pointer-events: none !important;
+      cursor: not-allowed !important;
+    }
     .top-utility-swiper {
       height: 100%;
       width: 100%;
@@ -2471,8 +2476,14 @@
         if (currentDestinationCategory !== 'all' && dCat !== currentDestinationCategory) {
           matches = false;
         }
-        if (currentJourneyFilter.destination !== 'all' && dDest !== currentJourneyFilter.destination) {
-          matches = false;
+        if (currentJourneyFilter.destination !== 'all') {
+          const searchedSlide = document.querySelector(`.destinations-swiper .swiper-slide[data-destination="${currentJourneyFilter.destination}"]`);
+          const searchedCat = searchedSlide ? searchedSlide.getAttribute('data-category') : null;
+          if (!searchedCat || currentDestinationCategory === 'all' || searchedCat === currentDestinationCategory) {
+            if (dDest !== currentJourneyFilter.destination) {
+              matches = false;
+            }
+          }
         }
         if (currentJourneyFilter.style !== 'all' && !dStyles.includes(currentJourneyFilter.style) && dCat !== currentJourneyFilter.style) {
           matches = false;
@@ -2535,6 +2546,19 @@
 
     function setDestinationCategory(cat) {
       currentDestinationCategory = cat;
+
+      // If user selected a category that conflicts with the currently searched destination,
+      // relax the destination constraint so the selected category can be viewed
+      if (currentJourneyFilter.destination !== 'all') {
+        const destSlide = document.querySelector(`.destinations-swiper .swiper-slide[data-destination="${currentJourneyFilter.destination}"]`);
+        const destCat = destSlide ? destSlide.getAttribute('data-category') : null;
+        if (cat === 'all' || (destCat && destCat !== cat)) {
+          currentJourneyFilter.destination = 'all';
+          const selDest = document.getElementById('filterDestination');
+          if (selDest) selDest.value = 'all';
+        }
+      }
+
       const pills = document.querySelectorAll('#destCategoryPills .dest-pill-btn');
       pills.forEach(pill => {
         if (pill.getAttribute('data-cat') === cat) {
@@ -2572,9 +2596,7 @@
       // Synchronize category pills based on external filter
       if (currentJourneyFilter.destination === 'saudi' || currentJourneyFilter.style === 'spiritual') {
         currentDestinationCategory = 'pilgrimage';
-      } else if ((currentJourneyFilter.destination === 'spain' || currentJourneyFilter.destination === 'turkey') && currentJourneyFilter.style === 'all') {
-        currentDestinationCategory = 'heritage';
-      } else if (currentJourneyFilter.style === 'heritage') {
+      } else if (currentJourneyFilter.destination === 'spain' || currentJourneyFilter.destination === 'turkey' || currentJourneyFilter.style === 'heritage') {
         currentDestinationCategory = 'heritage';
       } else if (currentJourneyFilter.destination === 'maldives') {
         currentDestinationCategory = 'island';
@@ -2596,7 +2618,7 @@
       applyDestinationsFilter();
 
       const element = document.getElementById('destinations');
-      if (element) {
+      if (element && typeof element.scrollIntoView === 'function') {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     }

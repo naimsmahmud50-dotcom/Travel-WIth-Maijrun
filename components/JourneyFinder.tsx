@@ -2,12 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Sliders, ChevronDown, Calendar, Compass } from 'lucide-react';
+import type { JourneyFilter } from '@/lib/destinations';
 
-export interface JourneyFilter {
-  destination: string;
-  style: string;
-  month: string;
-}
+export type { JourneyFilter };
 
 export interface JourneyFinderProps {
   onSearch?: (filter: JourneyFilter) => void;
@@ -37,7 +34,7 @@ export default function JourneyFinder({ onSearch, activeFilter }: JourneyFinderP
       onSearch({ destination, style, month });
     }
     const dest = document.getElementById('destinations');
-    dest?.scrollIntoView({ behavior: 'smooth' });
+    dest?.scrollIntoView?.({ behavior: 'smooth' });
   };
 
   return (

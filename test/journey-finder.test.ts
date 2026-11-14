@@ -1,6 +1,15 @@
 import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  DESTINATIONS,
+  filterDestinations,
+  determineCategoryFromFilter,
+  isSearchFilterActive,
+  DESTINATION_LABELS,
+  STYLE_LABELS,
+  MONTH_LABELS,
+} from '../lib/destinations.ts';
 
 console.log('🧪 Starting Journey Finder & Search Filtering Test Suite...\n');
 
@@ -20,10 +29,7 @@ function test(description: string, fn: () => void) {
 // 1. Static Contract & Interface Tests for JourneyFinder.tsx
 test('JourneyFinder.tsx: exports JourneyFilter and JourneyFinderProps types and binds 3 controlled fields', () => {
   const code = fs.readFileSync(path.resolve('components/JourneyFinder.tsx'), 'utf-8');
-  assert.ok(code.includes('export interface JourneyFilter'), 'Must export JourneyFilter interface');
-  assert.ok(code.includes('destination: string'), 'JourneyFilter must have destination');
-  assert.ok(code.includes('style: string'), 'JourneyFilter must have style');
-  assert.ok(code.includes('month: string'), 'JourneyFilter must have month');
+  assert.ok(code.includes('JourneyFilter'), 'Must export/use JourneyFilter interface');
   assert.ok(code.includes('onSearch?: (filter: JourneyFilter) => void'), 'Must accept onSearch callback prop');
   assert.ok(code.includes('activeFilter?: JourneyFilter | null'), 'Must accept activeFilter prop');
   assert.ok(code.includes('setDestination'), 'Must bind setDestination state');
@@ -35,7 +41,7 @@ test('JourneyFinder.tsx: triggers onSearch and smooth scrolls to #destinations o
   const code = fs.readFileSync(path.resolve('components/JourneyFinder.tsx'), 'utf-8');
   assert.ok(code.includes('onSearch({ destination, style, month })'), 'Must emit selected criteria to onSearch');
   assert.ok(code.includes("document.getElementById('destinations')"), 'Must locate destinations section');
-  assert.ok(code.includes("scrollIntoView({ behavior: 'smooth' })"), 'Must scroll smoothly to destinations');
+  assert.ok(code.includes("scrollIntoView"), 'Must scroll smoothly to destinations');
 });
 
 test('JourneyFinder.tsx: synchronizes with parent activeFilter changes', () => {
@@ -45,20 +51,17 @@ test('JourneyFinder.tsx: synchronizes with parent activeFilter changes', () => {
 });
 
 // 2. Static Contract & UI Tests for DestinationCards.tsx
-test('DestinationCards.tsx: accepts searchFilter and onResetFilter props', () => {
+test('DestinationCards.tsx: accepts searchFilter, onResetFilter, and onFilterChange props', () => {
   const code = fs.readFileSync(path.resolve('components/DestinationCards.tsx'), 'utf-8');
   assert.ok(code.includes('searchFilter?: JourneyFilter | null'), 'Must accept searchFilter prop');
   assert.ok(code.includes('onResetFilter?: () => void'), 'Must accept onResetFilter prop');
+  assert.ok(code.includes('onFilterChange?:'), 'Must accept onFilterChange prop');
 });
 
-test('DestinationCards.tsx: all 6 royal destinations have comprehensive filtering metadata', () => {
+test('DestinationCards.tsx: re-exports DESTINATIONS portfolio and metadata', () => {
   const code = fs.readFileSync(path.resolve('components/DestinationCards.tsx'), 'utf-8');
-  const requiredDestKeys = ['saudi', 'spain', 'maldives', 'switzerland', 'turkey', 'africa'];
-  for (const key of requiredDestKeys) {
-    assert.ok(code.includes(`destKey: '${key}'`), `Missing metadata destKey '${key}'`);
-  }
-  assert.ok(code.includes('styles:'), 'Destinations must have styles metadata array');
-  assert.ok(code.includes('seasons:'), 'Destinations must have seasons metadata array');
+  assert.ok(code.includes('export { DESTINATIONS }'), 'Must re-export DESTINATIONS');
+  assert.strictEqual(DESTINATIONS.length, 6, 'Portfolio must contain 6 luxury havens');
 });
 
 test('DestinationCards.tsx: renders luxury active filter badge with reset button', () => {
@@ -91,7 +94,7 @@ test('DestinationCards.tsx: category pills ("All", "Pilgrimage", "Heritage", "Is
   assert.ok(code.includes("'island'"), 'Must support island category');
   assert.ok(code.includes("'alpine'"), 'Must support alpine category');
   assert.ok(code.includes("'all'"), 'Must support all category');
-  assert.ok(code.includes('setActiveCategory'), 'Must allow category switching');
+  assert.ok(code.includes('handleCategorySelect'), 'Must invoke handleCategorySelect on tab clicks');
 });
 
 // 3. Static Contract Tests for app/page.tsx
@@ -126,119 +129,178 @@ test('index.html: implements interactive filter metadata, category pills, filter
   assert.ok(html.includes('function handleJourneySearch('), 'Must define handleJourneySearch');
 });
 
-// 5. Functional Filtering Logic & Edge Cases Verification
-interface MockDestination {
-  id: string;
-  destKey: string;
-  category: string;
-  styles: string[];
-  seasons: string[];
-}
+// 5. Functional Real-Data Filtering Tests using lib/destinations.ts
+test('Filtering logic: null / undefined filter returns all 6 destinations', () => {
+  const resNull = filterDestinations(DESTINATIONS, 'all', null);
+  assert.strictEqual(resNull.length, 6);
+  const resUndef = filterDestinations(DESTINATIONS, 'all', undefined);
+  assert.strictEqual(resUndef.length, 6);
+});
 
-const mockDestinations: MockDestination[] = [
-  { id: 'makkah', destKey: 'saudi', category: 'pilgrimage', styles: ['spiritual', 'family'], seasons: ['any', 'ramadan', 'winter', 'spring', 'summer'] },
-  { id: 'spain', destKey: 'spain', category: 'heritage', styles: ['heritage', 'honeymoon', 'family'], seasons: ['any', 'spring', 'summer', 'winter'] },
-  { id: 'maldives', destKey: 'maldives', category: 'island', styles: ['honeymoon', 'family'], seasons: ['any', 'winter', 'spring'] },
-  { id: 'switzerland', destKey: 'switzerland', category: 'alpine', styles: ['honeymoon', 'family', 'alpine'], seasons: ['any', 'winter', 'summer', 'spring'] },
-  { id: 'turkey', destKey: 'turkey', category: 'heritage', styles: ['heritage', 'honeymoon', 'family'], seasons: ['any', 'ramadan', 'spring', 'summer'] },
-  { id: 'safari', destKey: 'africa', category: 'alpine', styles: ['safari', 'family'], seasons: ['any', 'summer', 'winter', 'spring'] },
-];
-
-function filterPortfolio(
-  portfolio: MockDestination[],
-  activeCategory: string,
-  searchFilter: { destination: string; style: string; month: string } | null
-) {
-  return portfolio.filter((d) => {
-    if (activeCategory !== 'all' && d.category !== activeCategory) {
-      return false;
-    }
-    if (searchFilter?.destination && searchFilter.destination !== 'all') {
-      if (d.destKey !== searchFilter.destination && d.id !== searchFilter.destination) {
-        return false;
-      }
-    }
-    if (searchFilter?.style && searchFilter.style !== 'all') {
-      if (!d.styles.includes(searchFilter.style) && d.category !== searchFilter.style) {
-        return false;
-      }
-    }
-    if (searchFilter?.month && searchFilter.month !== 'any') {
-      if (!d.seasons.includes(searchFilter.month)) {
-        return false;
-      }
-    }
-    return true;
-  });
-}
-
-test('Filtering logic: "all" / null returns all 6 destinations', () => {
-  const res = filterPortfolio(mockDestinations, 'all', null);
+test('Filtering logic: "all" / "any" defaults return all 6 destinations', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'all', style: 'all', month: 'any' });
   assert.strictEqual(res.length, 6);
 });
 
 test('Filtering logic: destination "saudi" returns only Makkah & Madinah', () => {
-  const res = filterPortfolio(mockDestinations, 'all', { destination: 'saudi', style: 'all', month: 'any' });
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'saudi', style: 'all', month: 'any' });
   assert.strictEqual(res.length, 1);
   assert.strictEqual(res[0].id, 'makkah');
 });
 
+test('Filtering logic: destination "spain" returns only Moorish Splendors', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'spain', style: 'all', month: 'any' });
+  assert.strictEqual(res.length, 1);
+  assert.strictEqual(res[0].id, 'spain');
+});
+
+test('Filtering logic: destination "maldives" returns only Overwater Sanctuary', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'maldives', style: 'all', month: 'any' });
+  assert.strictEqual(res.length, 1);
+  assert.strictEqual(res[0].id, 'maldives');
+});
+
+test('Filtering logic: destination "turkey" returns only Sultans of the Bosphorus', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'turkey', style: 'all', month: 'any' });
+  assert.strictEqual(res.length, 1);
+  assert.strictEqual(res[0].id, 'turkey');
+});
+
+test('Filtering logic: destination "switzerland" returns only Matterhorn Majesty', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'switzerland', style: 'all', month: 'any' });
+  assert.strictEqual(res.length, 1);
+  assert.strictEqual(res[0].id, 'switzerland');
+});
+
 test('Filtering logic: destination "africa" returns only Serengeti Safari', () => {
-  const res = filterPortfolio(mockDestinations, 'all', { destination: 'africa', style: 'all', month: 'any' });
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'africa', style: 'all', month: 'any' });
   assert.strictEqual(res.length, 1);
   assert.strictEqual(res[0].id, 'safari');
 });
 
 test('Filtering logic: style "spiritual" returns only Makkah', () => {
-  const res = filterPortfolio(mockDestinations, 'all', { destination: 'all', style: 'spiritual', month: 'any' });
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'all', style: 'spiritual', month: 'any' });
   assert.strictEqual(res.length, 1);
   assert.strictEqual(res[0].id, 'makkah');
 });
 
 test('Filtering logic: style "heritage" returns Spain and Turkey', () => {
-  const res = filterPortfolio(mockDestinations, 'all', { destination: 'all', style: 'heritage', month: 'any' });
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'all', style: 'heritage', month: 'any' });
   assert.strictEqual(res.length, 2);
   const ids = res.map((r) => r.id).sort();
   assert.deepStrictEqual(ids, ['spain', 'turkey']);
 });
 
+test('Filtering logic: style "honeymoon" returns 4 secluded retreats', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'all', style: 'honeymoon', month: 'any' });
+  assert.strictEqual(res.length, 4);
+  const ids = res.map((r) => r.id).sort();
+  assert.deepStrictEqual(ids, ['maldives', 'spain', 'switzerland', 'turkey']);
+});
+
+test('Filtering logic: style "safari" returns Serengeti Safari', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'all', style: 'safari', month: 'any' });
+  assert.strictEqual(res.length, 1);
+  assert.strictEqual(res[0].id, 'safari');
+});
+
 test('Filtering logic: month "ramadan" returns Makkah and Turkey', () => {
-  const res = filterPortfolio(mockDestinations, 'all', { destination: 'all', style: 'all', month: 'ramadan' });
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'all', style: 'all', month: 'ramadan' });
   assert.strictEqual(res.length, 2);
   const ids = res.map((r) => r.id).sort();
   assert.deepStrictEqual(ids, ['makkah', 'turkey']);
 });
 
-test('Filtering logic: impossible combination returns 0 matches (triggers empty state)', () => {
-  // Saudi Arabia + Halal Wildlife Safari
-  const res1 = filterPortfolio(mockDestinations, 'all', { destination: 'saudi', style: 'safari', month: 'any' });
+test('Filtering logic: month "winter" returns 5 retreats', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', { destination: 'all', style: 'all', month: 'winter' });
+  assert.strictEqual(res.length, 5);
+  // Turkey is omitted in deep winter
+  assert.ok(!res.some((d) => d.id === 'turkey'));
+});
+
+test('Filtering logic: compound filter (Turkey + Heritage + Ramadan) returns Turkey', () => {
+  const res = filterDestinations(DESTINATIONS, 'all', {
+    destination: 'turkey',
+    style: 'heritage',
+    month: 'ramadan',
+  });
+  assert.strictEqual(res.length, 1);
+  assert.strictEqual(res[0].id, 'turkey');
+});
+
+test('Filtering logic: impossible combinations return 0 matches (triggers empty state)', () => {
+  // Saudi + Safari
+  const res1 = filterDestinations(DESTINATIONS, 'all', { destination: 'saudi', style: 'safari', month: 'any' });
   assert.strictEqual(res1.length, 0);
 
-  // Maldives + Sacred Spiritual Pilgrimage
-  const res2 = filterPortfolio(mockDestinations, 'all', { destination: 'maldives', style: 'spiritual', month: 'any' });
+  // Maldives + Spiritual
+  const res2 = filterDestinations(DESTINATIONS, 'all', { destination: 'maldives', style: 'spiritual', month: 'any' });
   assert.strictEqual(res2.length, 0);
 
-  // Switzerland + Ramadan season
-  const res3 = filterPortfolio(mockDestinations, 'all', { destination: 'switzerland', style: 'all', month: 'ramadan' });
+  // Switzerland + Ramadan
+  const res3 = filterDestinations(DESTINATIONS, 'all', { destination: 'switzerland', style: 'all', month: 'ramadan' });
   assert.strictEqual(res3.length, 0);
 });
 
-test('Filtering logic: category pills filter correctly within and without search', () => {
-  // Category pill only
-  const pilgrims = filterPortfolio(mockDestinations, 'pilgrimage', null);
-  assert.strictEqual(pilgrims.length, 1);
-  assert.strictEqual(pilgrims[0].id, 'makkah');
+// 6. Category Pill Synchronization Logic (determineCategoryFromFilter)
+test('Category synchronization: handles all single-destination and style mappings accurately', () => {
+  assert.strictEqual(determineCategoryFromFilter(null), 'all');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'all', style: 'all', month: 'any' }), 'all');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'saudi', style: 'all', month: 'any' }), 'pilgrimage');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'all', style: 'spiritual', month: 'any' }), 'pilgrimage');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'spain', style: 'family', month: 'any' }), 'heritage');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'turkey', style: 'honeymoon', month: 'any' }), 'heritage');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'all', style: 'heritage', month: 'any' }), 'heritage');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'maldives', style: 'all', month: 'any' }), 'island');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'switzerland', style: 'all', month: 'any' }), 'alpine');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'africa', style: 'all', month: 'any' }), 'alpine');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'all', style: 'safari', month: 'any' }), 'alpine');
+  // Multi-category styles default to 'all'
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'all', style: 'honeymoon', month: 'any' }), 'all');
+  assert.strictEqual(determineCategoryFromFilter({ destination: 'all', style: 'family', month: 'any' }), 'all');
+});
 
-  const islands = filterPortfolio(mockDestinations, 'island', null);
-  assert.strictEqual(islands.length, 1);
-  assert.strictEqual(islands[0].id, 'maldives');
+// 7. Category Switching & Dead-End Prevention
+test('Category switching: clicking category tab remains 100% functional and never deadlocks', () => {
+  // Scenario: user searched for Saudi, then clicks 'heritage' category pill
+  const heritageResults = filterDestinations(DESTINATIONS, 'heritage', {
+    destination: 'saudi',
+    style: 'all',
+    month: 'any',
+  });
+  // Must return Spain and Turkey instead of collapsing to 0
+  assert.strictEqual(heritageResults.length, 2);
+  const heritageIds = heritageResults.map((d) => d.id).sort();
+  assert.deepStrictEqual(heritageIds, ['spain', 'turkey']);
 
-  const alpines = filterPortfolio(mockDestinations, 'alpine', null);
-  assert.strictEqual(alpines.length, 2);
+  // Scenario: user searched for Saudi, then clicks 'island' category pill
+  const islandResults = filterDestinations(DESTINATIONS, 'island', {
+    destination: 'saudi',
+    style: 'all',
+    month: 'any',
+  });
+  assert.strictEqual(islandResults.length, 1);
+  assert.strictEqual(islandResults[0].id, 'maldives');
 
-  // Search for winter + category pill alpine
-  const winterAlpine = filterPortfolio(mockDestinations, 'alpine', { destination: 'all', style: 'all', month: 'winter' });
+  // Scenario: winter search + category pill filtering
+  const winterAlpine = filterDestinations(DESTINATIONS, 'alpine', {
+    destination: 'all',
+    style: 'all',
+    month: 'winter',
+  });
   assert.strictEqual(winterAlpine.length, 2);
+  const winterAlpineIds = winterAlpine.map((d) => d.id).sort();
+  assert.deepStrictEqual(winterAlpineIds, ['safari', 'switzerland']);
+});
+
+// 8. Helper isSearchFilterActive
+test('isSearchFilterActive: correctly identifies active vs inactive criteria', () => {
+  assert.strictEqual(isSearchFilterActive(null), false);
+  assert.strictEqual(isSearchFilterActive(undefined), false);
+  assert.strictEqual(isSearchFilterActive({ destination: 'all', style: 'all', month: 'any' }), false);
+  assert.strictEqual(isSearchFilterActive({ destination: 'saudi', style: 'all', month: 'any' }), true);
+  assert.strictEqual(isSearchFilterActive({ destination: 'all', style: 'spiritual', month: 'any' }), true);
+  assert.strictEqual(isSearchFilterActive({ destination: 'all', style: 'all', month: 'winter' }), true);
 });
 
 console.log(`\n🎉 All ${passedTests} Journey Finder & Search Filtering tests passed successfully!\n`);

@@ -49,6 +49,7 @@ export default function HomePage() {
         onOpenInquiry={handleOpenInquiry}
         searchFilter={journeyFilter}
         onResetFilter={handleResetFilter}
+        onFilterChange={setJourneyFilter}
       />
       <BespokeSection onOpenInquiry={handleOpenInquiry} />
       <Testimonials />

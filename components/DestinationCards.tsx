@@ -2,192 +2,42 @@
 
 import React, { useState, useEffect } from 'react';
 import { Sparkles, RotateCcw, Compass } from 'lucide-react';
-import { JourneyFilter } from '@/components/JourneyFinder';
+import {
+  DESTINATIONS,
+  type DestinationItem,
+  type JourneyFilter,
+  DESTINATION_LABELS,
+  STYLE_LABELS,
+  MONTH_LABELS,
+  determineCategoryFromFilter,
+  filterDestinations,
+  isSearchFilterActive,
+} from '@/lib/destinations';
+
+export { DESTINATIONS };
+export type { DestinationItem, JourneyFilter };
 
 export interface DestinationCardsProps {
   onOpenInquiry: (destination?: string) => void;
   searchFilter?: JourneyFilter | null;
   onResetFilter?: () => void;
+  onFilterChange?: (filter: JourneyFilter | null) => void;
 }
-
-export interface DestinationItem {
-  id: string;
-  category: 'pilgrimage' | 'heritage' | 'island' | 'alpine';
-  tag: string;
-  duration: string;
-  country: string;
-  region: string;
-  title: string;
-  desc: string;
-  priceBdt: string;
-  image: string;
-  destKey: string;
-  styles: string[];
-  seasons: string[];
-}
-
-export const DESTINATIONS: DestinationItem[] = [
-  {
-    id: 'makkah',
-    destKey: 'saudi',
-    category: 'pilgrimage',
-    tag: 'Royal Presidential',
-    duration: '10 Days • 9 Nights',
-    country: 'Saudi Arabia',
-    region: 'Bespoke Umrah',
-    title: 'The Sacred Sanctuaries: Makkah & Madinah',
-    desc: 'Direct Kaaba-view suites at Raffles or Dar Al Tawhid, Haram VIP access assistance, private luxury bullet train transfers, and scholars on retinue.',
-    priceBdt: '৳695,000',
-    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=75&w=640&auto=format&fit=crop',
-    styles: ['spiritual', 'family'],
-    seasons: ['any', 'ramadan', 'winter', 'spring', 'summer'],
-  },
-  {
-    id: 'spain',
-    destKey: 'spain',
-    category: 'heritage',
-    tag: 'Cultural Heritage',
-    duration: '12 Days • 11 Nights',
-    country: 'Spain',
-    region: 'Granada, Cordoba, Seville',
-    title: 'Echoes of Al-Andalus: Moorish Splendors',
-    desc: 'Private after-hours entry into the Alhambra and Great Mosque of Cordoba. Halal Andalusian culinary tastings and luxury historical estates.',
-    priceBdt: '৳768,000',
-    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=75&w=640&auto=format&fit=crop',
-    styles: ['heritage', 'honeymoon', 'family'],
-    seasons: ['any', 'spring', 'summer', 'winter'],
-  },
-  {
-    id: 'maldives',
-    destKey: 'maldives',
-    category: 'island',
-    tag: '100% Privacy',
-    duration: '7 Days • 6 Nights',
-    country: 'Maldives',
-    region: 'Bespoke Island Escape',
-    title: 'The Pearl Pavilions: Private Overwater Sanctuary',
-    desc: 'Enclosed lagoon infinity pool, halal private destination dining under the stars, zero public visibility, and dedicated private seaplane transfers.',
-    priceBdt: '৳864,000',
-    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=75&w=640&auto=format&fit=crop',
-    styles: ['honeymoon', 'family'],
-    seasons: ['any', 'winter', 'spring'],
-  },
-  {
-    id: 'switzerland',
-    destKey: 'switzerland',
-    category: 'alpine',
-    tag: 'Alpine Retreat',
-    duration: '9 Days • 8 Nights',
-    country: 'Switzerland',
-    region: 'Zermatt & St. Moritz',
-    title: 'Matterhorn Majesty: Swiss Alpine Chalets',
-    desc: 'Private luxury chalet with halal private chef, panoramic glacier express first-class carriage, helicopter scenic flights, and secluded wellness spas.',
-    priceBdt: '৳1,020,000',
-    image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=75&w=640&auto=format&fit=crop',
-    styles: ['honeymoon', 'family', 'alpine'],
-    seasons: ['any', 'winter', 'summer', 'spring'],
-  },
-  {
-    id: 'turkey',
-    destKey: 'turkey',
-    category: 'heritage',
-    tag: 'Palatial Journey',
-    duration: '10 Days • 9 Nights',
-    country: 'Turkey',
-    region: 'Bosphorus & Aegean Coast',
-    title: 'Sultans of the Bosphorus: Palaces & Yachts',
-    desc: 'Ciragan Palace Kempinski waterfront suites, chartered mega-yacht sunset cruise, Hagia Sophia after-hours tour, and secluded Bodrum coastal villa.',
-    priceBdt: '৳624,000',
-    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=75&w=640&auto=format&fit=crop',
-    styles: ['heritage', 'honeymoon', 'family'],
-    seasons: ['any', 'ramadan', 'spring', 'summer'],
-  },
-  {
-    id: 'safari',
-    destKey: 'africa',
-    category: 'alpine',
-    tag: 'Wildlife Safari',
-    duration: '8 Days • 7 Nights',
-    country: 'Tanzania',
-    region: 'Serengeti & Ngorongoro',
-    title: 'The Great Migration: Luxury Tented Haven',
-    desc: 'Singita luxury tented camp with certified halal gourmet catering, hot-air balloon dawn flight over the plains, and private open-roof 4x4 land cruisers.',
-    priceBdt: '৳1,176,000',
-    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=75&w=640&auto=format&fit=crop',
-    styles: ['safari', 'family'],
-    seasons: ['any', 'summer', 'winter', 'spring'],
-  },
-];
-
-const DESTINATION_LABELS: Record<string, string> = {
-  all: 'All Global Havens',
-  saudi: 'Makkah & Madinah',
-  spain: 'Andalusia & Granada',
-  maldives: 'Maldives',
-  turkey: 'Istanbul & Turkish Riviera',
-  switzerland: 'Swiss Alps',
-  africa: 'Serengeti & Masai Mara',
-};
-
-const STYLE_LABELS: Record<string, string> = {
-  all: 'All Travel Styles',
-  spiritual: 'Sacred Spiritual Pilgrimage',
-  heritage: 'Islamic Golden Age Heritage',
-  honeymoon: 'Secluded Honeymoon & Couples',
-  family: 'Private Family Multi-Gen Villa',
-  safari: 'Halal Wildlife Safari',
-};
-
-const MONTH_LABELS: Record<string, string> = {
-  any: 'Flexible / Year-round',
-  ramadan: 'Ramadan 2026 Season',
-  winter: 'Winter Retreats (Nov - Feb)',
-  spring: 'Spring Blossom (Mar - May)',
-  summer: 'Summer Escapes (Jun - Aug)',
-};
 
 export default function DestinationCards({
   onOpenInquiry,
   searchFilter,
   onResetFilter,
+  onFilterChange,
 }: DestinationCardsProps) {
   const [activeCategory, setActiveCategory] = useState('all');
 
   // Synchronize category pills whenever external search filter changes
   useEffect(() => {
-    if (!searchFilter) {
-      setActiveCategory('all');
-      return;
-    }
-
-    if (searchFilter.destination === 'saudi' || searchFilter.style === 'spiritual') {
-      setActiveCategory('pilgrimage');
-    } else if (
-      (searchFilter.destination === 'spain' || searchFilter.destination === 'turkey') &&
-      searchFilter.style === 'all'
-    ) {
-      setActiveCategory('heritage');
-    } else if (searchFilter.style === 'heritage') {
-      setActiveCategory('heritage');
-    } else if (searchFilter.destination === 'maldives') {
-      setActiveCategory('island');
-    } else if (
-      searchFilter.destination === 'switzerland' ||
-      searchFilter.destination === 'africa' ||
-      searchFilter.style === 'safari'
-    ) {
-      setActiveCategory('alpine');
-    } else {
-      setActiveCategory('all');
-    }
+    setActiveCategory(determineCategoryFromFilter(searchFilter));
   }, [searchFilter]);
 
-  const isSearchActive = Boolean(
-    searchFilter &&
-      (searchFilter.destination !== 'all' ||
-        searchFilter.style !== 'all' ||
-        (searchFilter.month && searchFilter.month !== 'any'))
-  );
+  const isSearchActive = isSearchFilterActive(searchFilter);
 
   const handleReset = () => {
     setActiveCategory('all');
@@ -196,35 +46,41 @@ export default function DestinationCards({
     }
   };
 
-  const filtered = DESTINATIONS.filter((d) => {
-    // 1. Category pill filter
-    if (activeCategory !== 'all' && d.category !== activeCategory) {
-      return false;
-    }
+  const handleCategorySelect = (catId: string) => {
+    setActiveCategory(catId);
 
-    // 2. Search destination filter
-    if (searchFilter?.destination && searchFilter.destination !== 'all') {
-      if (d.destKey !== searchFilter.destination && d.id !== searchFilter.destination) {
-        return false;
+    // If a category pill is explicitly clicked by user:
+    if (catId === 'all') {
+      // If destination was set, clicking 'All' clears the destination constraint
+      if (searchFilter?.destination && searchFilter.destination !== 'all') {
+        if (onFilterChange) {
+          onFilterChange(
+            searchFilter.style === 'all' && (searchFilter.month === 'any' || !searchFilter.month)
+              ? null
+              : { ...searchFilter, destination: 'all' }
+          );
+        } else if (onResetFilter && searchFilter.style === 'all' && (searchFilter.month === 'any' || !searchFilter.month)) {
+          onResetFilter();
+        }
+      }
+    } else {
+      // If destination belongs to another category, clear conflicting destination
+      if (searchFilter?.destination && searchFilter.destination !== 'all') {
+        const destItem = DESTINATIONS.find(
+          (d) => d.destKey === searchFilter.destination || d.id === searchFilter.destination
+        );
+        if (destItem && destItem.category !== catId) {
+          if (onFilterChange) {
+            onFilterChange({ ...searchFilter, destination: 'all' });
+          } else if (onResetFilter) {
+            onResetFilter();
+          }
+        }
       }
     }
+  };
 
-    // 3. Search style filter
-    if (searchFilter?.style && searchFilter.style !== 'all') {
-      if (!d.styles.includes(searchFilter.style) && d.category !== searchFilter.style) {
-        return false;
-      }
-    }
-
-    // 4. Search month filter
-    if (searchFilter?.month && searchFilter.month !== 'any') {
-      if (!d.seasons.includes(searchFilter.month)) {
-        return false;
-      }
-    }
-
-    return true;
-  });
+  const filtered = filterDestinations(DESTINATIONS, activeCategory, searchFilter);
 
   return (
     <section id="destinations" className="py-20 bg-white border-y border-brand-sandDark/70 scroll-mt-20">
@@ -247,7 +103,7 @@ export default function DestinationCards({
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveCategory(tab.id)}
+                onClick={() => handleCategorySelect(tab.id)}
                 className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all whitespace-nowrap ${
                   activeCategory === tab.id
                     ? 'bg-brand-emerald text-white shadow-sm'
