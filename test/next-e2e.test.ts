@@ -176,7 +176,16 @@ async function run() {
       assert.ok(body.error.toLowerCase().includes('unauthorized'));
     });
 
-    // 8b. GET /api/inquiries with tampered / forged cookie -> 401 Unauthorized
+    // 8b. GET /api/inquiries/ with trailing slash without auth -> strictly blocked
+    await testAsync('GET /api/inquiries/: trailing slash strictly blocks unauthenticated access', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries/`);
+      assert.strictEqual(res.status, 401);
+      const body = await res.json();
+      assert.strictEqual(body.success, false);
+      assert.strictEqual((body as any).data, undefined);
+    });
+
+    // 8c. GET /api/inquiries with tampered / forged cookie -> 401 Unauthorized
     await testAsync('GET /api/inquiries: rejects tampered/forged session cookie with 401', async () => {
       const res = await fetch(`${BASE_URL}/api/inquiries`, {
         headers: { Cookie: 'maijrun_admin_token=eyJhbGciOiJIUzI1NiJ9.forged_signature_attack' },
@@ -185,6 +194,12 @@ async function run() {
       const body = await res.json();
       assert.strictEqual(body.success, false);
       assert.strictEqual((body as any).data, undefined);
+    });
+
+    // 8d. DELETE /api/inquiries -> 405 Method Not Allowed
+    await testAsync('DELETE /api/inquiries: returns 405 Method Not Allowed', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries`, { method: 'DELETE' });
+      assert.strictEqual(res.status, 405);
     });
 
     // 9. GET /api/inquiries with valid session -> 200 OK
@@ -200,11 +215,35 @@ async function run() {
       assert.ok(Array.isArray(body.data));
     });
 
-    // 9b. GET /api/inquiries with Bearer token header -> 200 OK
+    // 9b. GET /api/inquiries with quoted session cookie -> 200 OK
+    await testAsync('GET /api/inquiries: grants access with RFC 6265 quoted session cookie', async () => {
+      const tokenValue = sessionCookie.split('=')[1];
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Cookie: `maijrun_admin_token="${tokenValue}"` },
+      });
+      assert.strictEqual(res.status, 200);
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(Array.isArray(body.data));
+    });
+
+    // 9c. GET /api/inquiries with Bearer token header -> 200 OK
     await testAsync('GET /api/inquiries: grants access with valid Bearer Authorization header', async () => {
       const tokenValue = sessionCookie.split('=')[1];
       const res = await fetch(`${BASE_URL}/api/inquiries`, {
         headers: { Authorization: `Bearer ${tokenValue}` },
+      });
+      assert.strictEqual(res.status, 200);
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(Array.isArray(body.data));
+    });
+
+    // 9d. GET /api/inquiries with lowercase bearer token header -> 200 OK
+    await testAsync('GET /api/inquiries: grants access with lowercase bearer Authorization header', async () => {
+      const tokenValue = sessionCookie.split('=')[1];
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Authorization: `bearer ${tokenValue}` },
       });
       assert.strictEqual(res.status, 200);
       const body = await res.json();
@@ -228,6 +267,18 @@ async function run() {
       const body = await res.json();
       assert.strictEqual(body.success, true);
       assert.ok(body.inquiryId);
+    });
+
+    // 10b. POST /api/inquiries with invalid JSON -> 400 Bad Request
+    await testAsync('POST /api/inquiries: rejects invalid JSON payload with 400', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{ malformed json: not valid',
+      });
+      assert.strictEqual(res.status, 400);
+      const body = await res.json();
+      assert.strictEqual(body.success, false);
     });
 
     // 11. POST /api/admin/logout -> clears cookie

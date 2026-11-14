@@ -164,7 +164,12 @@ export function verifySessionToken(
 ): { user: string; exp: number } | null {
   if (!token || typeof token !== 'string') return null;
 
-  const parts = token.split('.');
+  let cleanToken = token.trim();
+  if (cleanToken.startsWith('"') && cleanToken.endsWith('"')) {
+    cleanToken = cleanToken.slice(1, -1).trim();
+  }
+
+  const parts = cleanToken.split('.');
   if (parts.length !== 2) return null;
 
   const [data, signature] = parts;
@@ -230,21 +235,25 @@ export function getSessionFromRequest(request?: Request): { user: string; exp: n
         return typeof val === 'string' ? val : null;
       };
 
-      // 1. Check Authorization header
+      // 1. Check Authorization header (case-insensitive Bearer)
       const authHeader = getHeader('authorization');
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        const bearer = authHeader.slice(7).trim();
+      if (authHeader && /^bearer\s+/i.test(authHeader)) {
+        const bearer = authHeader.replace(/^bearer\s+/i, '').trim();
         const verified = verifySessionToken(bearer);
         if (verified) return verified;
       }
 
       // 2. Check Cookie header from request
       const cookieHeader = getHeader('cookie') || '';
-      const pairs = cookieHeader.split(';');
+      const pairs = cookieHeader.split(/[;,]/);
       for (const pair of pairs) {
-        const [k, ...v] = pair.trim().split('=');
-        if (k === ADMIN_COOKIE_NAME) {
-          const val = v.join('=');
+        const [k, ...v] = pair.split('=');
+        const key = k ? k.trim() : '';
+        let val = v.length > 0 ? v.join('=').trim() : '';
+        if (val.startsWith('"') && val.endsWith('"')) {
+          val = val.slice(1, -1).trim();
+        }
+        if (key === ADMIN_COOKIE_NAME) {
           try {
             const verified = verifySessionToken(decodeURIComponent(val));
             if (verified) return verified;

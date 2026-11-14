@@ -74,8 +74,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { name, email, phone, destination, guests, preferences } = body;
+    let body: any;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { success: false, error: 'Invalid JSON payload in request body.' },
+        {
+          status: 400,
+          headers: NO_CACHE_SECURITY_HEADERS,
+        }
+      );
+    }
+    const { name, email, phone, destination, guests, preferences } = body || {};
 
     const trimmedName = typeof name === 'string' ? name.trim() : '';
     const trimmedEmail = typeof email === 'string' ? email.trim() : '';

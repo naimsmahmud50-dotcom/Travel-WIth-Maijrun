@@ -188,7 +188,19 @@ async function run() {
       assert.ok(Array.isArray(body.data));
     });
 
-    // 8b. GET /api/inquiries with Bearer auth -> 200 OK
+    // 8b. GET /api/inquiries with quoted Cookie -> 200 OK
+    await testAsync('GET /api/inquiries: 200 OK with RFC 6265 quoted session cookie', async () => {
+      const tokenValue = sessionCookie.split('=')[1];
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Cookie: `maijrun_admin_token="${tokenValue}"` },
+      });
+      assert.strictEqual(res.status, 200);
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(Array.isArray(body.data));
+    });
+
+    // 8c. GET /api/inquiries with Bearer auth -> 200 OK
     await testAsync('GET /api/inquiries: 200 OK with Bearer Authorization header', async () => {
       const tokenValue = sessionCookie.split('=')[1];
       const res = await fetch(`${BASE_URL}/api/inquiries`, {
@@ -200,7 +212,19 @@ async function run() {
       assert.ok(Array.isArray(body.data));
     });
 
-    // 8c. DELETE /api/inquiries -> 405 Method Not Allowed
+    // 8d. GET /api/inquiries with lowercase bearer auth -> 200 OK
+    await testAsync('GET /api/inquiries: 200 OK with lowercase bearer Authorization header', async () => {
+      const tokenValue = sessionCookie.split('=')[1];
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        headers: { Authorization: `bearer ${tokenValue}` },
+      });
+      assert.strictEqual(res.status, 200);
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.ok(Array.isArray(body.data));
+    });
+
+    // 8e. DELETE /api/inquiries -> 405 Method Not Allowed
     await testAsync('DELETE /api/inquiries: returns 405 Method Not Allowed', async () => {
       const res = await fetch(`${BASE_URL}/api/inquiries`, { method: 'DELETE' });
       assert.strictEqual(res.status, 405);

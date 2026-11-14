@@ -96,7 +96,11 @@ function createSessionToken(user, remember) {
 
 function verifySessionToken(token) {
   if (!token || typeof token !== 'string') return null;
-  const parts = token.split('.');
+  let cleanToken = token.trim();
+  if (cleanToken.startsWith('"') && cleanToken.endsWith('"')) {
+    cleanToken = cleanToken.slice(1, -1).trim();
+  }
+  const parts = cleanToken.split('.');
   if (parts.length !== 2) return null;
   const [data, signature] = parts;
   const expectedSig = crypto.createHmac('sha256', ADMIN_SESSION_SECRET).update(data).digest('base64url');
@@ -122,23 +126,28 @@ function verifySessionToken(token) {
 }
 
 function getSessionFromReq(req) {
-  // Check auth header
+  // Check auth header (case-insensitive Bearer)
   const auth = req.headers['authorization'];
-  if (auth && auth.startsWith('Bearer ')) {
-    const token = auth.slice(7).trim();
+  if (auth && /^bearer\s+/i.test(auth)) {
+    const token = auth.replace(/^bearer\s+/i, '').trim();
     const valid = verifySessionToken(token);
     if (valid) return valid;
   }
 
   // Check cookie
   const cookieHeader = req.headers['cookie'] || '';
-  const pairs = cookieHeader.split(';');
+  const pairs = cookieHeader.split(/[;,]/);
   for (const pair of pairs) {
-    const [k, ...v] = pair.trim().split('=');
-    if (k === ADMIN_COOKIE_NAME) {
+    const [k, ...v] = pair.split('=');
+    const key = k ? k.trim() : '';
+    let val = v.length > 0 ? v.join('=').trim() : '';
+    if (val.startsWith('"') && val.endsWith('"')) {
+      val = val.slice(1, -1).trim();
+    }
+    if (key === ADMIN_COOKIE_NAME) {
       try {
-        const val = decodeURIComponent(v.join('='));
-        const valid = verifySessionToken(val);
+        const decoded = decodeURIComponent(val);
+        const valid = verifySessionToken(decoded);
         if (valid) return valid;
       } catch {
         // Malformed URI encoding

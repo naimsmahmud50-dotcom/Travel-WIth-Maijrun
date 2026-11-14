@@ -233,6 +233,43 @@ test('getSessionFromRequest: validates token from Bearer Authorization header', 
   assert.strictEqual(session.user, 'admin');
 });
 
+test('getSessionFromRequest: validates token from Cookie header with surrounding RFC 6265 quotes', () => {
+  const token = createSessionToken('naimsmahmud50@gmail.com', false);
+  const req = new Request('http://localhost:3000/api/inquiries', {
+    headers: { cookie: `${ADMIN_COOKIE_NAME}="${token}"` },
+  });
+  const session = getSessionFromRequest(req);
+  assert.ok(session !== null);
+  assert.strictEqual(session.user, 'naimsmahmud50@gmail.com');
+});
+
+test('getSessionFromRequest: handles cookies with whitespace around equals and comma delimiters', () => {
+  const token = createSessionToken('admin', false);
+  const req = new Request('http://localhost:3000/api/inquiries', {
+    headers: { cookie: `other_pref=luxury, ${ADMIN_COOKIE_NAME} = ${token} ; session_hint=vip` },
+  });
+  const session = getSessionFromRequest(req);
+  assert.ok(session !== null);
+  assert.strictEqual(session.user, 'admin');
+});
+
+test('getSessionFromRequest: validates token with case-insensitive bearer schemes (bearer / BEARER)', () => {
+  const token = createSessionToken('admin', false);
+  const reqLower = new Request('http://localhost:3000/api/inquiries', {
+    headers: { authorization: `bearer ${token}` },
+  });
+  const sessionLower = getSessionFromRequest(reqLower);
+  assert.ok(sessionLower !== null);
+  assert.strictEqual(sessionLower.user, 'admin');
+
+  const reqUpper = new Request('http://localhost:3000/api/inquiries', {
+    headers: { authorization: `BEARER ${token}` },
+  });
+  const sessionUpper = getSessionFromRequest(reqUpper);
+  assert.ok(sessionUpper !== null);
+  assert.strictEqual(sessionUpper.user, 'admin');
+});
+
 test('getSessionFromRequest: rejects tampered or forged session token', () => {
   const req = new Request('http://localhost:3000/api/inquiries', {
     headers: { cookie: `${ADMIN_COOKIE_NAME}=forged.token.payload` },
