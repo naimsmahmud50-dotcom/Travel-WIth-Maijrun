@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 import { getSessionFromRequest } from '@/lib/auth';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -13,6 +14,17 @@ function ensureDataFile() {
   }
   if (!fs.existsSync(INQUIRIES_FILE)) {
     fs.writeFileSync(INQUIRIES_FILE, JSON.stringify([], null, 2));
+  }
+}
+
+function readInquiries(): any[] {
+  ensureDataFile();
+  try {
+    const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
+    const inquiries = data ? JSON.parse(data) : [];
+    return Array.isArray(inquiries) ? inquiries : [];
+  } catch {
+    return [];
   }
 }
 
@@ -31,9 +43,7 @@ export async function GET(request: Request) {
       );
     }
 
-    ensureDataFile();
-    const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
-    const inquiries = JSON.parse(data);
+    const inquiries = readInquiries();
     return NextResponse.json({ success: true, count: inquiries.length, data: inquiries });
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to fetch inquiries' }, { status: 500 });
@@ -45,25 +55,27 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { name, email, phone, destination, guests, preferences } = body;
 
-    if (!name || !email || !phone) {
+    const trimmedName = typeof name === 'string' ? name.trim() : '';
+    const trimmedEmail = typeof email === 'string' ? email.trim() : '';
+    const trimmedPhone = typeof phone === 'string' ? phone.trim() : '';
+
+    if (!trimmedName || !trimmedEmail || !trimmedPhone) {
       return NextResponse.json(
         { success: false, error: 'Name, email, and phone/WhatsApp are required fields.' },
         { status: 400 }
       );
     }
 
-    ensureDataFile();
-    const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
-    const inquiries = JSON.parse(data);
-
+    const inquiries = readInquiries();
+    const entropy = crypto.randomBytes(4).toString('hex');
     const newInquiry = {
-      id: `INQ-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`,
-      name,
-      email,
-      phone,
-      destination: destination || 'Custom Itinerary',
-      guests: guests || 'Couples / 2 Guests',
-      preferences: preferences || 'None specified',
+      id: `INQ-${Date.now()}-${entropy}`,
+      name: trimmedName,
+      email: trimmedEmail,
+      phone: trimmedPhone,
+      destination: (typeof destination === 'string' && destination.trim()) || 'Custom Bespoke',
+      guests: (typeof guests === 'string' && guests.trim()) || 'Couples / 2 Guests',
+      preferences: (typeof preferences === 'string' && preferences.trim()) || 'None specified',
       status: 'NEW',
       createdAt: new Date().toISOString(),
     };

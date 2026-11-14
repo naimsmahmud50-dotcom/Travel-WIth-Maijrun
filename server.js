@@ -317,33 +317,68 @@ const server = http.createServer((req, res) => {
         return;
       }
 
-      const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
+      let data = [];
+      try {
+        const raw = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
+        data = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(data)) data = [];
+      } catch {
+        data = [];
+      }
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: true, data: JSON.parse(data) }));
+      res.end(JSON.stringify({ success: true, data }));
       return;
     }
 
     if (req.method === 'POST') {
       let body = '';
-      req.on('data', (chunk) => (body += chunk));
+      let isTooLarge = false;
+      req.on('data', (chunk) => {
+        body += chunk;
+        if (body.length > 1e6) {
+          isTooLarge = true;
+          res.writeHead(413, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'Payload Too Large' }));
+          req.destroy();
+        }
+      });
       req.on('end', () => {
+        if (isTooLarge) return;
         try {
           const parsed = JSON.parse(body);
-          if (!parsed.name || !parsed.email || !parsed.phone) {
+          const name = typeof parsed.name === 'string' ? parsed.name.trim() : '';
+          const email = typeof parsed.email === 'string' ? parsed.email.trim() : '';
+          const phone = typeof parsed.phone === 'string' ? parsed.phone.trim() : '';
+
+          if (!name || !email || !phone) {
             res.writeHead(400, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ success: false, error: 'Name, email, and phone are required fields.' }));
             return;
           }
 
-          const data = JSON.parse(fs.readFileSync(INQUIRIES_FILE, 'utf-8'));
+          if (!fs.existsSync(DATA_DIR)) {
+            fs.mkdirSync(DATA_DIR, { recursive: true });
+          }
+          let data = [];
+          if (fs.existsSync(INQUIRIES_FILE)) {
+            try {
+              const fileContent = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
+              data = fileContent ? JSON.parse(fileContent) : [];
+              if (!Array.isArray(data)) data = [];
+            } catch {
+              data = [];
+            }
+          }
+
+          const entropy = crypto.randomBytes(4).toString('hex');
           const newInquiry = {
-            id: `INQ-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`,
-            name: parsed.name,
-            email: parsed.email,
-            phone: parsed.phone,
-            destination: parsed.destination || 'Custom Bespoke',
-            guests: parsed.guests || '2 Guests',
-            preferences: parsed.preferences || '',
+            id: `INQ-${Date.now()}-${entropy}`,
+            name,
+            email,
+            phone,
+            destination: (typeof parsed.destination === 'string' && parsed.destination.trim()) || 'Custom Bespoke',
+            guests: (typeof parsed.guests === 'string' && parsed.guests.trim()) || 'Couples / 2 Guests',
+            preferences: (typeof parsed.preferences === 'string' && parsed.preferences.trim()) || 'None specified',
             status: 'NEW',
             createdAt: new Date().toISOString(),
           };

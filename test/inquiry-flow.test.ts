@@ -121,6 +121,16 @@ async function run() {
       const data = await res.json();
       assert.strictEqual(data.success, false);
       assert.ok(data.error.includes('required'));
+
+      // Verify whitespace-only payloads are also rejected
+      const resWhitespace = await fetch(`${BASE_URL}/api/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: '   ', email: '   ', phone: '   ' }),
+      });
+      assert.strictEqual(resWhitespace.status, 400);
+      const dataWhitespace = await resWhitespace.json();
+      assert.strictEqual(dataWhitespace.success, false);
     });
 
     await testAsync('POST /api/inquiries: saves full bespoke dossier to data/inquiries.json', async () => {
@@ -184,6 +194,8 @@ async function run() {
       const submissions = [
         { name: 'Concurrent Client Alpha', email: 'alpha@vip.com', phone: '+8801711111111', destination: 'Maldives' },
         { name: 'Concurrent Client Beta', email: 'beta@vip.com', phone: '+8801722222222', destination: 'Andalusia' },
+        { name: 'Concurrent Client Gamma', email: 'gamma@vip.com', phone: '+8801733333333', destination: 'Makkah' },
+        { name: 'Concurrent Client Delta', email: 'delta@vip.com', phone: '+8801744444444', destination: 'Swiss Alps' },
       ];
 
       const responses = await Promise.all(
@@ -205,9 +217,13 @@ async function run() {
       assert.strictEqual(results[1].success, true);
       assert.notStrictEqual(results[0].inquiryId, results[1].inquiryId, 'Inquiry IDs must be distinct');
 
+      const idSet = new Set(results.map((r) => r.inquiryId));
+      assert.strictEqual(idSet.size, submissions.length, 'All concurrent inquiry IDs must be distinct');
+
       const fileData = JSON.parse(fs.readFileSync(INQUIRIES_PATH, 'utf-8'));
-      assert.ok(fileData.some((item: any) => item.id === results[0].inquiryId));
-      assert.ok(fileData.some((item: any) => item.id === results[1].inquiryId));
+      for (const r of results) {
+        assert.ok(fileData.some((item: any) => item.id === r.inquiryId));
+      }
     });
 
     restoreData();
