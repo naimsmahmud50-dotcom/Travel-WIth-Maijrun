@@ -8,6 +8,9 @@ import {
   createSessionToken,
   verifySessionToken,
   getCookieOptions,
+  checkLoginRateLimit,
+  recordFailedLogin,
+  clearLoginRateLimit,
   ADMIN_COOKIE_NAME,
 } from '../lib/auth.ts';
 
@@ -37,6 +40,13 @@ test('safeCompare: different strings return false without error', () => {
   assert.strictEqual(safeCompare('securePass123', 'wrongPass'), false);
   assert.strictEqual(safeCompare('short', 'muchLongerStringHere!'), false);
   assert.strictEqual(safeCompare('', 'something'), false);
+});
+
+test('safeCompare: non-string inputs safely return false without throwing', () => {
+  assert.strictEqual(safeCompare(null as any, null as any), false);
+  assert.strictEqual(safeCompare(undefined as any, undefined as any), false);
+  assert.strictEqual(safeCompare(123 as any, 123 as any), false);
+  assert.strictEqual(safeCompare({} as any, {} as any), false);
 });
 
 // 2. Admin Credentials & Environment Configuration Tests
@@ -92,7 +102,30 @@ test('validateAdminCredentials: empty/missing credentials fail', () => {
   assert.strictEqual(validateAdminCredentials('admin', '').valid, false);
 });
 
-// 3. Session Token Generation & Verification Tests
+// 3. Rate Limiting Tests (Anti-Brute-Force)
+test('checkLoginRateLimit: allows initial requests and blocks after 5 failures', () => {
+  const testIp = '192.0.2.10';
+  clearLoginRateLimit(testIp);
+
+  // Initially allowed
+  assert.strictEqual(checkLoginRateLimit(testIp).allowed, true);
+
+  // 5 failed attempts
+  for (let i = 0; i < 5; i++) {
+    recordFailedLogin(testIp);
+  }
+
+  // 6th attempt should be blocked
+  const blocked = checkLoginRateLimit(testIp);
+  assert.strictEqual(blocked.allowed, false);
+  assert.ok(blocked.retryAfterSeconds > 0);
+
+  // Clear resets lockout
+  clearLoginRateLimit(testIp);
+  assert.strictEqual(checkLoginRateLimit(testIp).allowed, true);
+});
+
+// 4. Session Token Generation & Verification Tests
 test('createSessionToken & verifySessionToken: valid token round-trip', () => {
   const user = 'naimsmahmud50@gmail.com';
   const token = createSessionToken(user, false);
@@ -146,6 +179,16 @@ test('verifySessionToken: expired token is rejected', () => {
   assert.strictEqual(verified, null);
 });
 
+test('verifySessionToken: malformed payload with non-number exp is rejected', () => {
+  const invalidPayload = { user: 'admin', exp: 'infinite' };
+  const data = Buffer.from(JSON.stringify(invalidPayload)).toString('base64url');
+  const secret = process.env.ADMIN_SESSION_SECRET || 'maijrun_vip_luxury_atelier_secret_key_2026_q8w9e1r2t3y4';
+  const sig = crypto.createHmac('sha256', secret).update(data).digest('base64url');
+  const invalidToken = `${data}.${sig}`;
+
+  assert.strictEqual(verifySessionToken(invalidToken), null);
+});
+
 test('verifySessionToken: invalid/garbage tokens return null', () => {
   assert.strictEqual(verifySessionToken(''), null);
   assert.strictEqual(verifySessionToken(null), null);
@@ -154,14 +197,15 @@ test('verifySessionToken: invalid/garbage tokens return null', () => {
   assert.strictEqual(verifySessionToken('part1.part2.part3'), null);
 });
 
-// 4. Cookie Configuration Tests
-test('getCookieOptions: produces secure HttpOnly cookie config', () => {
+// 5. Cookie Configuration Tests
+test('getCookieOptions: produces secure HttpOnly cookie config with expiry', () => {
   const opts = getCookieOptions(false);
   assert.strictEqual(opts.name, ADMIN_COOKIE_NAME);
   assert.strictEqual(opts.httpOnly, true);
   assert.strictEqual(opts.sameSite, 'lax');
   assert.strictEqual(opts.path, '/');
   assert.strictEqual(opts.maxAge, 86400); // 24 hours
+  assert.ok(opts.expires instanceof Date);
 
   const rememberOpts = getCookieOptions(true);
   assert.strictEqual(rememberOpts.maxAge, 2592000); // 30 days

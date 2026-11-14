@@ -41,12 +41,47 @@ const ADMIN_USERS = (process.env.ADMIN_USERS || 'naimsmahmud50@gmail.com,admin,m
 // Helper for constant-time comparison
 function safeCompare(a, b) {
   try {
+    if (typeof a !== 'string' || typeof b !== 'string') return false;
     const hashA = crypto.createHash('sha256').update(String(a)).digest();
     const hashB = crypto.createHash('sha256').update(String(b)).digest();
     return crypto.timingSafeEqual(hashA, hashB);
   } catch {
     return false;
   }
+}
+
+// IP-based Rate Limiting for Admin Authentication
+const loginRateLimitMap = new Map();
+
+function getClientIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return req.socket.remoteAddress || '127.0.0.1';
+}
+
+function checkLoginRateLimit(ip) {
+  const now = Date.now();
+  const entry = loginRateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) return { allowed: true, retryAfterSeconds: 0 };
+  if (entry.count >= 5) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
+    return { allowed: false, retryAfterSeconds };
+  }
+  return { allowed: true, retryAfterSeconds: 0 };
+}
+
+function recordFailedLogin(ip) {
+  const now = Date.now();
+  const entry = loginRateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    loginRateLimitMap.set(ip, { count: 1, resetAt: now + 60 * 1000 });
+  } else {
+    entry.count += 1;
+  }
+}
+
+function clearLoginRateLimit(ip) {
+  loginRateLimitMap.delete(ip);
 }
 
 // Session Helpers
@@ -68,7 +103,17 @@ function verifySessionToken(token) {
   if (!safeCompare(signature, expectedSig)) return null;
   try {
     const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf-8'));
-    if (!payload.user || !payload.exp || Date.now() > payload.exp) return null;
+    if (
+      !payload ||
+      typeof payload !== 'object' ||
+      typeof payload.user !== 'string' ||
+      !payload.user ||
+      typeof payload.exp !== 'number' ||
+      !Number.isFinite(payload.exp) ||
+      Date.now() > payload.exp
+    ) {
+      return null;
+    }
     return payload;
   } catch {
     return null;
@@ -90,9 +135,13 @@ function getSessionFromReq(req) {
   for (const pair of pairs) {
     const [k, ...v] = pair.trim().split('=');
     if (k === ADMIN_COOKIE_NAME) {
-      const val = decodeURIComponent(v.join('='));
-      const valid = verifySessionToken(val);
-      if (valid) return valid;
+      try {
+        const val = decodeURIComponent(v.join('='));
+        const valid = verifySessionToken(val);
+        if (valid) return valid;
+      } catch {
+        // Malformed URI encoding
+      }
     }
   }
   return null;
@@ -179,6 +228,23 @@ const server = http.createServer((req, res) => {
 
   // 2. POST /api/admin/login
   if (req.method === 'POST' && url.pathname === '/api/admin/login') {
+    const clientIp = getClientIp(req);
+    const rateCheck = checkLoginRateLimit(clientIp);
+
+    if (!rateCheck.allowed) {
+      res.writeHead(429, {
+        'Content-Type': 'application/json',
+        'Retry-After': String(rateCheck.retryAfterSeconds),
+      });
+      res.end(
+        JSON.stringify({
+          success: false,
+          error: `Too many failed login attempts. Atelier access temporarily locked. Please try again in ${rateCheck.retryAfterSeconds} seconds.`,
+        })
+      );
+      return;
+    }
+
     let body = '';
     req.on('data', (chunk) => (body += chunk));
     req.on('end', () => {
@@ -197,16 +263,20 @@ const server = http.createServer((req, res) => {
         const isPassValid = safeCompare(cleanPass, ADMIN_PASSWORD);
 
         if (!isUserAllowed || !isPassValid) {
+          recordFailedLogin(clientIp);
           res.writeHead(401, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ success: false, error: 'Authentication rejected. Invalid Executive Identifier or Master Passcode.' }));
           return;
         }
 
+        clearLoginRateLimit(clientIp);
+
         const displayName = cleanId.includes('@') ? cleanId : 'Sheikh Mahmud Hasan (VIP Admin)';
         const token = createSessionToken(displayName, Boolean(remember));
         const maxAge = remember ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+        const expires = new Date(Date.now() + maxAge * 1000).toUTCString();
 
-        res.setHeader('Set-Cookie', `${ADMIN_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`);
+        res.setHeader('Set-Cookie', `${ADMIN_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}; Expires=${expires}`);
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, user: displayName, message: 'VIP Atelier clearance granted.' }));
       } catch {
@@ -231,7 +301,7 @@ const server = http.createServer((req, res) => {
 
   // 4. POST /api/admin/logout
   if (req.method === 'POST' && url.pathname === '/api/admin/logout') {
-    res.setHeader('Set-Cookie', `${ADMIN_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+    res.setHeader('Set-Cookie', `${ADMIN_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT`);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ success: true, message: 'Signed out successfully.' }));
     return;
@@ -259,6 +329,12 @@ const server = http.createServer((req, res) => {
       req.on('end', () => {
         try {
           const parsed = JSON.parse(body);
+          if (!parsed.name || !parsed.email || !parsed.phone) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ success: false, error: 'Name, email, and phone are required fields.' }));
+            return;
+          }
+
           const data = JSON.parse(fs.readFileSync(INQUIRIES_FILE, 'utf-8'));
           const newInquiry = {
             id: `INQ-${Date.now()}`,
@@ -292,6 +368,11 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
       try {
         const { email } = JSON.parse(body);
+        if (!email || !email.includes('@')) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'Invalid email address' }));
+          return;
+        }
         const data = JSON.parse(fs.readFileSync(SUBSCRIBERS_FILE, 'utf-8'));
         if (!data.some((s) => s.email === email)) {
           data.push({ email, subscribedAt: new Date().toISOString() });
@@ -301,44 +382,31 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify({ success: true, message: 'Subscribed successfully' }));
       } catch {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: false, error: 'Invalid email' }));
+        res.end(JSON.stringify({ success: false, error: 'Invalid JSON payload' }));
       }
     });
     return;
   }
 
-  // 7. Static File Server (Serving index.html and admin.html)
-  let requestedPath = url.pathname;
-  if (requestedPath === '/admin' || requestedPath === '/admin/') {
-    requestedPath = 'admin.html';
-  } else if (requestedPath === '/') {
-    requestedPath = 'index.html';
-  }
-  let filePath = path.join(__dirname, requestedPath);
-  if (!fs.existsSync(filePath)) {
-    filePath = path.join(__dirname, 'index.html');
+  // 7. Static File Server (Serving ONLY authorized public landing pages)
+  const pathname = url.pathname;
+  if (pathname === '/' || pathname === '/index.html') {
+    const filePath = path.join(__dirname, 'index.html');
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    fs.createReadStream(filePath).pipe(res);
+    return;
   }
 
-  const ext = path.extname(filePath);
-  const mimeTypes = {
-    '.html': 'text/html',
-    '.css': 'text/css',
-    '.js': 'text/javascript',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-  };
+  if (pathname === '/admin' || pathname === '/admin.html') {
+    const filePath = path.join(__dirname, 'admin.html');
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    fs.createReadStream(filePath).pipe(res);
+    return;
+  }
 
-  const contentType = mimeTypes[ext] || 'text/html';
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      res.writeHead(500);
-      res.end('Server Error');
-    } else {
-      res.writeHead(200, { 'Content-Type': contentType });
-      res.end(content, 'utf-8');
-    }
-  });
+  // Strictly block any other files (protects .env.local, inquiries.json, source code, node_modules)
+  res.writeHead(404, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ error: 'Not Found' }));
 });
 
 server.listen(PORT, () => {

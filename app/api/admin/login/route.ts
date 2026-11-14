@@ -3,10 +3,30 @@ import {
   validateAdminCredentials,
   createSessionToken,
   getCookieOptions,
+  checkLoginRateLimit,
+  recordFailedLogin,
+  clearLoginRateLimit,
+  getClientIp,
 } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    const clientIp = getClientIp(request);
+    const rateCheck = checkLoginRateLimit(clientIp);
+
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Too many failed login attempts. Atelier access temporarily locked. Please try again in ${rateCheck.retryAfterSeconds} seconds.`,
+        },
+        {
+          status: 429,
+          headers: { 'Retry-After': String(rateCheck.retryAfterSeconds) },
+        }
+      );
+    }
+
     const body = await request.json().catch(() => ({}));
     const { identifier, password, remember } = body;
 
@@ -22,6 +42,7 @@ export async function POST(request: Request) {
 
     const result = validateAdminCredentials(identifier, password);
     if (!result.valid || !result.user) {
+      recordFailedLogin(clientIp);
       return NextResponse.json(
         {
           success: false,
@@ -30,6 +51,9 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
+
+    // Authentication succeeded -> clear any failed attempts
+    clearLoginRateLimit(clientIp);
 
     const token = createSessionToken(result.user, Boolean(remember));
     const cookieOpts = getCookieOptions(Boolean(remember));
@@ -48,6 +72,7 @@ export async function POST(request: Request) {
       sameSite: cookieOpts.sameSite,
       path: cookieOpts.path,
       maxAge: cookieOpts.maxAge,
+      expires: cookieOpts.expires,
     });
 
     return response;

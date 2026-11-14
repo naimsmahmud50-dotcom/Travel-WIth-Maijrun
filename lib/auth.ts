@@ -13,10 +13,13 @@ try {
 }
 
 // Safe constant-time string equality check to prevent timing attacks
-export function safeCompare(a: string, b: string): boolean {
+export function safeCompare(a: unknown, b: unknown): boolean {
   try {
-    const hashA = crypto.createHash('sha256').update(String(a)).digest();
-    const hashB = crypto.createHash('sha256').update(String(b)).digest();
+    if (typeof a !== 'string' || typeof b !== 'string') {
+      return false;
+    }
+    const hashA = crypto.createHash('sha256').update(a).digest();
+    const hashB = crypto.createHash('sha256').update(b).digest();
     return crypto.timingSafeEqual(hashA, hashB);
   } catch {
     return false;
@@ -44,6 +47,51 @@ export function getSessionSecret(): string {
     process.env.ADMIN_SESSION_SECRET ||
     'maijrun_vip_luxury_atelier_secret_key_2026_q8w9e1r2t3y4'
   );
+}
+
+// IP-based Rate Limiting for Admin Authentication (Anti-Brute-Force)
+// Max 5 failed attempts within a 60-second window
+interface RateLimitEntry {
+  count: number;
+  resetAt: number;
+}
+const loginRateLimitMap = new Map<string, RateLimitEntry>();
+
+export function getClientIp(request: Request): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp) return realIp.trim();
+  return '127.0.0.1';
+}
+
+export function checkLoginRateLimit(ip: string): { allowed: boolean; retryAfterSeconds: number } {
+  const now = Date.now();
+  const entry = loginRateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    return { allowed: true, retryAfterSeconds: 0 };
+  }
+  if (entry.count >= 5) {
+    const retryAfterSeconds = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
+    return { allowed: false, retryAfterSeconds };
+  }
+  return { allowed: true, retryAfterSeconds: 0 };
+}
+
+export function recordFailedLogin(ip: string): void {
+  const now = Date.now();
+  const entry = loginRateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    loginRateLimitMap.set(ip, { count: 1, resetAt: now + 60 * 1000 });
+  } else {
+    entry.count += 1;
+  }
+}
+
+export function clearLoginRateLimit(ip: string): void {
+  loginRateLimitMap.delete(ip);
 }
 
 export interface AdminUserValidation {
@@ -134,9 +182,16 @@ export function verifySessionToken(
 
   try {
     const jsonStr = Buffer.from(data, 'base64url').toString('utf-8');
-    const payload: SessionPayload = JSON.parse(jsonStr);
+    const payload = JSON.parse(jsonStr);
 
-    if (!payload.user || !payload.exp) {
+    if (
+      !payload ||
+      typeof payload !== 'object' ||
+      typeof payload.user !== 'string' ||
+      !payload.user ||
+      typeof payload.exp !== 'number' ||
+      !Number.isFinite(payload.exp)
+    ) {
       return null;
     }
 
@@ -159,6 +214,7 @@ export function getCookieOptions(remember: boolean = false) {
     sameSite: 'lax' as const,
     path: '/',
     maxAge,
+    expires: new Date(Date.now() + maxAge * 1000),
   };
 }
 
@@ -180,8 +236,12 @@ export function getSessionFromRequest(request?: Request): { user: string; exp: n
         const [k, ...v] = pair.trim().split('=');
         if (k === ADMIN_COOKIE_NAME) {
           const val = v.join('=');
-          const verified = verifySessionToken(decodeURIComponent(val));
-          if (verified) return verified;
+          try {
+            const verified = verifySessionToken(decodeURIComponent(val));
+            if (verified) return verified;
+          } catch {
+            // Malformed URI encoding in cookie value
+          }
         }
       }
     }

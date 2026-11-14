@@ -164,14 +164,14 @@ export default function AdminDashboard() {
     if (inquiries.length === 0) return;
     const headers = ['ID', 'Name', 'Email', 'Phone', 'Destination', 'Guests', 'Preferences', 'Date'];
     const rows = inquiries.map((i) => [
-      i.id,
-      `"${i.name}"`,
-      `"${i.email}"`,
-      `"${i.phone}"`,
-      `"${i.destination}"`,
-      `"${i.guests}"`,
-      `"${i.preferences.replace(/"/g, '""')}"`,
-      i.createdAt,
+      i.id || '',
+      `"${(i.name || '').replace(/"/g, '""')}"`,
+      `"${(i.email || '').replace(/"/g, '""')}"`,
+      `"${(i.phone || '').replace(/"/g, '""')}"`,
+      `"${(i.destination || '').replace(/"/g, '""')}"`,
+      `"${(i.guests || '').replace(/"/g, '""')}"`,
+      `"${(i.preferences || '').replace(/"/g, '""')}"`,
+      i.createdAt || '',
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
