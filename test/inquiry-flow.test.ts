@@ -102,6 +102,66 @@ async function run() {
       assert.ok(code.includes("setDestination('')"), 'Must reset destination on success');
     });
 
+    // 2. Contact Information Consistency & Authenticity Verification
+    await testAsync('Site surfaces strictly display authentic contact number (+880 1767-850859)', () => {
+      const navbarCode = fs.readFileSync(path.resolve('components/Navbar.tsx'), 'utf-8');
+      const footerCode = fs.readFileSync(path.resolve('components/Footer.tsx'), 'utf-8');
+      const inquiryCode = fs.readFileSync(COMPONENT_PATH, 'utf-8');
+      const adminNextCode = fs.readFileSync(path.resolve('app/admin/page.tsx'), 'utf-8');
+      const indexHtml = fs.readFileSync(path.resolve('index.html'), 'utf-8');
+      const adminHtml = fs.readFileSync(path.resolve('admin.html'), 'utf-8');
+
+      // Verify authentic number presence
+      assert.ok(navbarCode.includes('+880 1767-850859'), 'Navbar must contain +880 1767-850859');
+      assert.ok(navbarCode.includes('tel:+8801767850859'), 'Navbar must contain tel:+8801767850859');
+      assert.ok(navbarCode.includes('https://wa.me/8801767850859'), 'Navbar must contain wa.me/8801767850859');
+
+      assert.ok(footerCode.includes('+880 1767-850859'), 'Footer must contain +880 1767-850859');
+      assert.ok(footerCode.includes('tel:+8801767850859'), 'Footer must contain tel:+8801767850859');
+      assert.ok(footerCode.includes('https://wa.me/8801767850859'), 'Footer must contain wa.me/8801767850859');
+
+      assert.ok(inquiryCode.includes('placeholder="+880 1767-850859"'), 'InquiryModal must have standard placeholder');
+      assert.ok(adminNextCode.includes('+880 1767-850859'), 'Admin page must contain +880 1767-850859');
+      assert.ok(adminNextCode.includes('tel:+8801767850859'), 'Admin page must contain tel:+8801767850859');
+
+      assert.ok(indexHtml.includes('+880 1767-850859'), 'index.html must contain +880 1767-850859');
+      assert.ok(indexHtml.includes('tel:+8801767850859'), 'index.html must contain tel:+8801767850859');
+      assert.ok(indexHtml.includes('https://wa.me/8801767850859'), 'index.html must contain wa.me/8801767850859');
+
+      assert.ok(adminHtml.includes('+880 1767-850859'), 'admin.html must contain +880 1767-850859');
+      assert.ok(adminHtml.includes('tel:+8801767850859'), 'admin.html must contain tel:+8801767850859');
+    });
+
+    await testAsync('Site surfaces strictly eradicate obsolete placeholder contact numbers', () => {
+      const filesToCheck = [
+        'components/Navbar.tsx',
+        'components/Footer.tsx',
+        'components/InquiryModal.tsx',
+        'app/admin/page.tsx',
+        'index.html',
+        'admin.html',
+      ];
+      const obsoletePatterns = [
+        '9612-888-999',
+        '9612888999',
+        '7946 0920',
+        '79460920',
+        '1800-MAIJRUN',
+        '1800000000',
+      ];
+
+      for (const relPath of filesToCheck) {
+        const content = fs.readFileSync(path.resolve(relPath), 'utf-8');
+        for (const pattern of obsoletePatterns) {
+          assert.strictEqual(
+            content.includes(pattern),
+            false,
+            `File ${relPath} must not contain obsolete pattern ${pattern}`
+          );
+        }
+      }
+    });
+
     // 2. Start server to test API persistence
     serverProcess = spawn('node', ['server.js'], {
       env: { ...process.env, PORT: String(PORT) },
