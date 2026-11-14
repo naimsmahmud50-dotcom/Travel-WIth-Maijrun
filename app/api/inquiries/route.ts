@@ -57,7 +57,7 @@ export async function POST(request: Request) {
     const inquiries = JSON.parse(data);
 
     const newInquiry = {
-      id: `INQ-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      id: `INQ-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`,
       name,
       email,
       phone,

@@ -337,7 +337,7 @@ const server = http.createServer((req, res) => {
 
           const data = JSON.parse(fs.readFileSync(INQUIRIES_FILE, 'utf-8'));
           const newInquiry = {
-            id: `INQ-${Date.now()}`,
+            id: `INQ-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`,
             name: parsed.name,
             email: parsed.email,
             phone: parsed.phone,
