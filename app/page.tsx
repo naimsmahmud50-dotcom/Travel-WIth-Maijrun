@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSlider from '@/components/HeroSlider';
-import JourneyFinder from '@/components/JourneyFinder';
+import JourneyFinder, { JourneyFilter } from '@/components/JourneyFinder';
 import HalalPillars from '@/components/HalalPillars';
 import SignatureJourneys from '@/components/SignatureJourneys';
 import DestinationCards from '@/components/DestinationCards';
@@ -15,6 +15,7 @@ import InquiryModal from '@/components/InquiryModal';
 export default function HomePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTarget, setSelectedTarget] = useState<string | undefined>();
+  const [journeyFilter, setJourneyFilter] = useState<JourneyFilter | null>(null);
 
   const handleOpenInquiry = (destination?: string) => {
     setSelectedTarget(destination);
@@ -26,14 +27,29 @@ export default function HomePage() {
     setSelectedTarget(undefined);
   };
 
+  const handleSearchJourneys = (filter: JourneyFilter) => {
+    setJourneyFilter(filter);
+  };
+
+  const handleResetFilter = () => {
+    setJourneyFilter(null);
+  };
+
   return (
     <main className="min-h-screen bg-brand-sand">
       <Navbar onOpenInquiry={handleOpenInquiry} />
       <HeroSlider onOpenInquiry={handleOpenInquiry} />
-      <JourneyFinder />
+      <JourneyFinder
+        onSearch={handleSearchJourneys}
+        activeFilter={journeyFilter}
+      />
       <SignatureJourneys onOpenInquiry={handleOpenInquiry} />
       <HalalPillars />
-      <DestinationCards onOpenInquiry={handleOpenInquiry} />
+      <DestinationCards
+        onOpenInquiry={handleOpenInquiry}
+        searchFilter={journeyFilter}
+        onResetFilter={handleResetFilter}
+      />
       <BespokeSection onOpenInquiry={handleOpenInquiry} />
       <Testimonials />
       <Footer />

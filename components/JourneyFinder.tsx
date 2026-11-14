@@ -1,11 +1,41 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sliders, ChevronDown, Calendar, Compass } from 'lucide-react';
 
-export default function JourneyFinder() {
+export interface JourneyFilter {
+  destination: string;
+  style: string;
+  month: string;
+}
+
+export interface JourneyFinderProps {
+  onSearch?: (filter: JourneyFilter) => void;
+  activeFilter?: JourneyFilter | null;
+}
+
+export default function JourneyFinder({ onSearch, activeFilter }: JourneyFinderProps) {
+  const [destination, setDestination] = useState(activeFilter?.destination || 'all');
+  const [style, setStyle] = useState(activeFilter?.style || 'all');
+  const [month, setMonth] = useState(activeFilter?.month || 'any');
+
+  useEffect(() => {
+    if (activeFilter) {
+      setDestination(activeFilter.destination || 'all');
+      setStyle(activeFilter.style || 'all');
+      setMonth(activeFilter.month || 'any');
+    } else {
+      setDestination('all');
+      setStyle('all');
+      setMonth('any');
+    }
+  }, [activeFilter]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (onSearch) {
+      onSearch({ destination, style, month });
+    }
     const dest = document.getElementById('destinations');
     dest?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -23,9 +53,17 @@ export default function JourneyFinder() {
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-wider font-semibold text-neutral-500">Destination</label>
+            <label htmlFor="finder-destination" className="text-[11px] uppercase tracking-wider font-semibold text-neutral-500 block">
+              Destination
+            </label>
             <div className="relative">
-              <select className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3 text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-gold transition-colors appearance-none cursor-pointer">
+              <select
+                id="finder-destination"
+                name="destination"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+                className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3 text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-gold transition-colors appearance-none cursor-pointer"
+              >
                 <option value="all">All Global Havens</option>
                 <option value="saudi">Makkah & Madinah (Royal Umrah)</option>
                 <option value="spain">Andalusia & Granada (Spain)</option>
@@ -39,9 +77,17 @@ export default function JourneyFinder() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-wider font-semibold text-neutral-500">Journey Style</label>
+            <label htmlFor="finder-style" className="text-[11px] uppercase tracking-wider font-semibold text-neutral-500 block">
+              Journey Style
+            </label>
             <div className="relative">
-              <select className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3 text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-gold transition-colors appearance-none cursor-pointer">
+              <select
+                id="finder-style"
+                name="style"
+                value={style}
+                onChange={(e) => setStyle(e.target.value)}
+                className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3 text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-gold transition-colors appearance-none cursor-pointer"
+              >
                 <option value="all">All Travel Styles</option>
                 <option value="spiritual">Sacred Spiritual Pilgrimage</option>
                 <option value="heritage">Islamic Golden Age Heritage</option>
@@ -54,9 +100,17 @@ export default function JourneyFinder() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] uppercase tracking-wider font-semibold text-neutral-500">Month of Departure</label>
+            <label htmlFor="finder-month" className="text-[11px] uppercase tracking-wider font-semibold text-neutral-500 block">
+              Month of Departure
+            </label>
             <div className="relative">
-              <select className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3 text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-gold transition-colors appearance-none cursor-pointer">
+              <select
+                id="finder-month"
+                name="month"
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+                className="w-full bg-white border border-neutral-200 rounded-xl px-4 py-3 text-sm font-medium text-neutral-800 focus:outline-none focus:border-brand-gold transition-colors appearance-none cursor-pointer"
+              >
                 <option value="any">Flexible / Year-round</option>
                 <option value="ramadan">Ramadan 2026 Season</option>
                 <option value="winter">Winter Retreats (Nov - Feb)</option>
@@ -68,7 +122,10 @@ export default function JourneyFinder() {
           </div>
 
           <div className="flex items-end">
-            <button type="submit" className="w-full bg-brand-emerald hover:bg-brand-gold text-white hover:text-brand-emeraldDeep font-semibold text-xs tracking-widest uppercase py-3.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg">
+            <button
+              type="submit"
+              className="w-full bg-brand-emerald hover:bg-brand-gold text-white hover:text-brand-emeraldDeep font-semibold text-xs tracking-widest uppercase py-3.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-lg"
+            >
               <Compass className="w-4 h-4" />
               <span>Curate My Escape</span>
             </button>
