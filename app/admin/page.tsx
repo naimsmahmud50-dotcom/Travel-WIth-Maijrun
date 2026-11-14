@@ -34,13 +34,6 @@ interface Inquiry {
   createdAt: string;
 }
 
-// Allowed Admin Credentials
-const VALID_CREDENTIALS = [
-  { id: 'naimsmahmud50@gmail.com', pass: 'Maijrun@VIP2026!' },
-  { id: 'admin', pass: 'Maijrun@VIP2026!' },
-  { id: 'maijrun_vip', pass: 'Maijrun@VIP2026!' },
-];
-
 export default function AdminDashboard() {
   // Authentication State
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -57,22 +50,31 @@ export default function AdminDashboard() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Check existing session on mount
+  // Check existing session on mount via secure server-side endpoint
   useEffect(() => {
-    try {
-      const sessionAuth = sessionStorage.getItem('maijrun_admin_auth');
-      const localAuth = localStorage.getItem('maijrun_admin_auth');
-      const savedUser = sessionStorage.getItem('maijrun_admin_user') || localStorage.getItem('maijrun_admin_user');
-
-      if (sessionAuth === 'true' || localAuth === 'true') {
-        setIsAuthenticated(true);
-        if (savedUser) setCurrentAdminUser(savedUser);
+    let isMounted = true;
+    async function checkSession() {
+      try {
+        const res = await fetch('/api/admin/session');
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.authenticated) {
+            setIsAuthenticated(true);
+            if (data.user) setCurrentAdminUser(data.user);
+          }
+        }
+      } catch {
+        // Network or server error fallback
+      } finally {
+        if (isMounted) {
+          setIsCheckingAuth(false);
+        }
       }
-    } catch {
-      // Storage unavailable fallback
-    } finally {
-      setIsCheckingAuth(false);
     }
+    checkSession();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Fetch inquiries when authenticated
@@ -86,9 +88,14 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const res = await fetch('/api/inquiries');
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        setAuthError('Executive session expired or unauthorized. Please re-authenticate.');
+        return;
+      }
       const data = await res.json();
       if (data.success) {
-        setInquiries(data.data);
+        setInquiries(data.data || []);
       }
     } catch (err) {
       console.error(err);
@@ -97,42 +104,49 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
     setIsAuthenticating(true);
 
-    const cleanId = adminIdentifier.trim().toLowerCase();
-    const cleanPass = adminPassword.trim();
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: adminIdentifier,
+          password: adminPassword,
+          remember: rememberDevice,
+        }),
+      });
 
-    setTimeout(() => {
-      const matched = VALID_CREDENTIALS.some(
-        (cred) => cred.id.toLowerCase() === cleanId && cred.pass === cleanPass
-      );
+      const data = await res.json().catch(() => ({}));
 
-      if (matched) {
-        const userName = cleanId.includes('@') ? cleanId : 'Sheikh Mahmud Hasan (VIP Admin)';
+      if (res.ok && data.success) {
+        const userName = data.user || 'Sheikh Mahmud Hasan (VIP Admin)';
         setCurrentAdminUser(userName);
         setIsAuthenticated(true);
-
-        try {
-          sessionStorage.setItem('maijrun_admin_auth', 'true');
-          sessionStorage.setItem('maijrun_admin_user', userName);
-          if (rememberDevice) {
-            localStorage.setItem('maijrun_admin_auth', 'true');
-            localStorage.setItem('maijrun_admin_user', userName);
-          }
-        } catch {
-          // ignore storage errors
-        }
+        setAdminPassword('');
+        setAuthError('');
       } else {
-        setAuthError('Authentication rejected. Invalid Executive Identifier or Master Passcode.');
+        setAuthError(
+          data.error ||
+            'Authentication rejected. Invalid Executive Identifier or Master Passcode.'
+        );
       }
+    } catch {
+      setAuthError('Secure connection failed. Please ensure the server is operational.');
+    } finally {
       setIsAuthenticating(false);
-    }, 600);
+    }
   };
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch {
+      // ignore
+    }
     try {
       sessionStorage.removeItem('maijrun_admin_auth');
       sessionStorage.removeItem('maijrun_admin_user');

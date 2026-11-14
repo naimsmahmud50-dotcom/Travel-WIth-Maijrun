@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { getSessionFromRequest } from '@/lib/auth';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const INQUIRIES_FILE = path.join(DATA_DIR, 'inquiries.json');
@@ -15,8 +16,21 @@ function ensureDataFile() {
   }
 }
 
-export async function GET() {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: Request) {
   try {
+    const session = getSessionFromRequest(request);
+    if (!session) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Unauthorized: Admin authentication clearance required to access client dossiers.',
+        },
+        { status: 401 }
+      );
+    }
+
     ensureDataFile();
     const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
     const inquiries = JSON.parse(data);

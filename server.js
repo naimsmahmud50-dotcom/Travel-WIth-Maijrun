@@ -6,11 +6,97 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+
+// Load environment variables from .env.local if present
+const envLocalPath = path.join(__dirname, '.env.local');
+if (fs.existsSync(envLocalPath)) {
+  const content = fs.readFileSync(envLocalPath, 'utf-8');
+  content.split('\n').forEach((line) => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+      const idx = trimmed.indexOf('=');
+      const key = trimmed.slice(0, idx).trim();
+      let val = trimmed.slice(idx + 1).trim();
+      if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+        val = val.slice(1, -1);
+      }
+      if (!process.env[key]) process.env[key] = val;
+    }
+  });
+}
 
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const INQUIRIES_FILE = path.join(DATA_DIR, 'inquiries.json');
 const SUBSCRIBERS_FILE = path.join(DATA_DIR, 'subscribers.json');
+
+const ADMIN_COOKIE_NAME = 'maijrun_admin_token';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Maijrun#RoyalElite@2026!Secured';
+const ADMIN_SESSION_SECRET = process.env.ADMIN_SESSION_SECRET || 'maijrun_vip_luxury_atelier_secret_key_2026_q8w9e1r2t3y4';
+const ADMIN_USERS = (process.env.ADMIN_USERS || 'naimsmahmud50@gmail.com,admin,maijrun_vip')
+  .split(',')
+  .map((u) => u.trim().toLowerCase());
+
+// Helper for constant-time comparison
+function safeCompare(a, b) {
+  try {
+    const hashA = crypto.createHash('sha256').update(String(a)).digest();
+    const hashB = crypto.createHash('sha256').update(String(b)).digest();
+    return crypto.timingSafeEqual(hashA, hashB);
+  } catch {
+    return false;
+  }
+}
+
+// Session Helpers
+function createSessionToken(user, remember) {
+  const now = Date.now();
+  const durationMs = remember ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+  const payload = { user, iat: now, exp: now + durationMs };
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = crypto.createHmac('sha256', ADMIN_SESSION_SECRET).update(data).digest('base64url');
+  return `${data}.${signature}`;
+}
+
+function verifySessionToken(token) {
+  if (!token || typeof token !== 'string') return null;
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+  const [data, signature] = parts;
+  const expectedSig = crypto.createHmac('sha256', ADMIN_SESSION_SECRET).update(data).digest('base64url');
+  if (!safeCompare(signature, expectedSig)) return null;
+  try {
+    const payload = JSON.parse(Buffer.from(data, 'base64url').toString('utf-8'));
+    if (!payload.user || !payload.exp || Date.now() > payload.exp) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function getSessionFromReq(req) {
+  // Check auth header
+  const auth = req.headers['authorization'];
+  if (auth && auth.startsWith('Bearer ')) {
+    const token = auth.slice(7).trim();
+    const valid = verifySessionToken(token);
+    if (valid) return valid;
+  }
+
+  // Check cookie
+  const cookieHeader = req.headers['cookie'] || '';
+  const pairs = cookieHeader.split(';');
+  for (const pair of pairs) {
+    const [k, ...v] = pair.trim().split('=');
+    if (k === ADMIN_COOKIE_NAME) {
+      const val = decodeURIComponent(v.join('='));
+      const valid = verifySessionToken(val);
+      if (valid) return valid;
+    }
+  }
+  return null;
+}
 
 // Ensure data directory and files exist
 if (!fs.existsSync(DATA_DIR)) {
@@ -71,9 +157,10 @@ const DESTINATIONS = [
 
 const server = http.createServer((req, res) => {
   // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
@@ -90,9 +177,76 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 2. GET & POST /api/inquiries
+  // 2. POST /api/admin/login
+  if (req.method === 'POST' && url.pathname === '/api/admin/login') {
+    let body = '';
+    req.on('data', (chunk) => (body += chunk));
+    req.on('end', () => {
+      try {
+        const { identifier, password, remember } = JSON.parse(body);
+        const cleanId = (identifier || '').trim().toLowerCase();
+        const cleanPass = (password || '').trim();
+
+        if (!cleanId || !cleanPass) {
+          res.writeHead(400, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'Identifier and password are required.' }));
+          return;
+        }
+
+        const isUserAllowed = ADMIN_USERS.includes(cleanId);
+        const isPassValid = safeCompare(cleanPass, ADMIN_PASSWORD);
+
+        if (!isUserAllowed || !isPassValid) {
+          res.writeHead(401, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({ success: false, error: 'Authentication rejected. Invalid Executive Identifier or Master Passcode.' }));
+          return;
+        }
+
+        const displayName = cleanId.includes('@') ? cleanId : 'Sheikh Mahmud Hasan (VIP Admin)';
+        const token = createSessionToken(displayName, Boolean(remember));
+        const maxAge = remember ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
+
+        res.setHeader('Set-Cookie', `${ADMIN_COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}`);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: true, user: displayName, message: 'VIP Atelier clearance granted.' }));
+      } catch {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: 'Invalid JSON payload' }));
+      }
+    });
+    return;
+  }
+
+  // 3. GET /api/admin/session
+  if (req.method === 'GET' && url.pathname === '/api/admin/session') {
+    const session = getSessionFromReq(req);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    if (session) {
+      res.end(JSON.stringify({ authenticated: true, user: session.user, expiresAt: session.exp }));
+    } else {
+      res.end(JSON.stringify({ authenticated: false }));
+    }
+    return;
+  }
+
+  // 4. POST /api/admin/logout
+  if (req.method === 'POST' && url.pathname === '/api/admin/logout') {
+    res.setHeader('Set-Cookie', `${ADMIN_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ success: true, message: 'Signed out successfully.' }));
+    return;
+  }
+
+  // 5. GET & POST /api/inquiries
   if (url.pathname === '/api/inquiries') {
     if (req.method === 'GET') {
+      const session = getSessionFromReq(req);
+      if (!session) {
+        res.writeHead(401, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ success: false, error: 'Unauthorized: Admin authentication clearance required.' }));
+        return;
+      }
+
       const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ success: true, data: JSON.parse(data) }));
@@ -122,7 +276,7 @@ const server = http.createServer((req, res) => {
 
           res.writeHead(201, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ success: true, message: 'Inquiry saved successfully', inquiryId: newInquiry.id }));
-        } catch (e) {
+        } catch {
           res.writeHead(400, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify({ success: false, error: 'Invalid JSON payload' }));
         }
@@ -131,7 +285,7 @@ const server = http.createServer((req, res) => {
     }
   }
 
-  // 3. POST /api/newsletter
+  // 6. POST /api/newsletter
   if (req.method === 'POST' && url.pathname === '/api/newsletter') {
     let body = '';
     req.on('data', (chunk) => (body += chunk));
@@ -145,7 +299,7 @@ const server = http.createServer((req, res) => {
         }
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, message: 'Subscribed successfully' }));
-      } catch (e) {
+      } catch {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: false, error: 'Invalid email' }));
       }
@@ -153,7 +307,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // 4. Static File Server (Serving index.html and admin.html)
+  // 7. Static File Server (Serving index.html and admin.html)
   let requestedPath = url.pathname;
   if (requestedPath === '/admin' || requestedPath === '/admin/') {
     requestedPath = 'admin.html';

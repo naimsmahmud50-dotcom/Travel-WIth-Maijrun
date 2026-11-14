@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "node --experimental-strip-types test/auth.test.ts && node --experimental-strip-types test/server-e2e.test.ts && node --experimental-strip-types test/next-e2e.test.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

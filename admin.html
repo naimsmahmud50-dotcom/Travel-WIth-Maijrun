@@ -772,6 +772,10 @@
     async function loadInquiries() {
       try {
         const res = await fetch('/api/inquiries');
+        if (res.status === 401) {
+          checkAuth();
+          return;
+        }
         const json = await res.json();
         if (json.success && Array.isArray(json.data) && json.data.length > 0) {
           inquiries = json.data;
@@ -978,17 +982,23 @@
     // =========================================================================
     // VIP ATELIER AUTHENTICATION GATE
     // =========================================================================
-    const VALID_CREDENTIALS = [
-      { id: 'naimsmahmud50@gmail.com', pass: 'Maijrun@VIP2026!' },
-      { id: 'admin', pass: 'Maijrun@VIP2026!' },
-      { id: 'maijrun_vip', pass: 'Maijrun@VIP2026!' },
-    ];
-
-    function checkAuth() {
-      const isAuth = sessionStorage.getItem('maijrun_admin_auth') === 'true' || localStorage.getItem('maijrun_admin_auth') === 'true';
+    // VIP ATELIER AUTHENTICATION GATE (Server-Side Verified)
+    // =========================================================================
+    async function checkAuth() {
       const loginGate = document.getElementById('loginGate');
       const adminApp = document.getElementById('adminApp');
       
+      let isAuth = false;
+      try {
+        const res = await fetch('/api/admin/session');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.authenticated) {
+            isAuth = true;
+          }
+        }
+      } catch (err) {}
+
       if (isAuth) {
         if (loginGate) loginGate.classList.add('hidden');
         if (adminApp) adminApp.classList.remove('hidden');
@@ -1003,32 +1013,43 @@
       lucide.createIcons();
     }
 
-    function handleLoginSubmit(e) {
+    async function handleLoginSubmit(e) {
       e.preventDefault();
       const idInput = (document.getElementById('adminId').value || '').trim().toLowerCase();
       const passInput = (document.getElementById('adminPass').value || '').trim();
       const remember = document.getElementById('rememberDevice').checked;
       const errorBox = document.getElementById('authError');
       const errorText = document.getElementById('authErrorText');
+      const submitBtn = e.target.querySelector('button[type="submit"]');
 
-      const matched = VALID_CREDENTIALS.some(c => c.id.toLowerCase() === idInput && c.pass === passInput);
-      if (matched) {
-        try {
-          sessionStorage.setItem('maijrun_admin_auth', 'true');
-          sessionStorage.setItem('maijrun_admin_user', idInput);
-          if (remember) {
-            localStorage.setItem('maijrun_admin_auth', 'true');
-            localStorage.setItem('maijrun_admin_user', idInput);
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: idInput, password: passInput, remember: remember })
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.success) {
+          if (errorBox) errorBox.classList.add('hidden');
+          const passElem = document.getElementById('adminPass');
+          if (passElem) passElem.value = '';
+          checkAuth();
+        } else {
+          if (errorBox) {
+            if (errorText) errorText.innerText = data.error || 'Authentication rejected. Invalid Executive Identifier or Master Passcode.';
+            errorBox.classList.remove('hidden');
           }
-        } catch (err) {}
-        
-        if (errorBox) errorBox.classList.add('hidden');
-        checkAuth();
-      } else {
+        }
+      } catch (err) {
         if (errorBox) {
-          if (errorText) errorText.innerText = 'Authentication rejected. Invalid Executive Identifier or Master Passcode.';
+          if (errorText) errorText.innerText = 'Unable to connect to authentication server.';
           errorBox.classList.remove('hidden');
         }
+      } finally {
+        if (submitBtn) submitBtn.disabled = false;
       }
     }
 
@@ -1047,12 +1068,9 @@
       lucide.createIcons();
     }
 
-    function signOutAdmin() {
+    async function signOutAdmin() {
       try {
-        sessionStorage.removeItem('maijrun_admin_auth');
-        sessionStorage.removeItem('maijrun_admin_user');
-        localStorage.removeItem('maijrun_admin_auth');
-        localStorage.removeItem('maijrun_admin_user');
+        await fetch('/api/admin/logout', { method: 'POST' });
       } catch (err) {}
       checkAuth();
     }
