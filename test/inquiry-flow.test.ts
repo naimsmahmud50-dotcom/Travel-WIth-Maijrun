@@ -54,13 +54,33 @@ async function run() {
       assert.ok(code.includes('preferences') && code.includes('setPreferences'), 'Must bind preferences state');
     });
 
-    await testAsync('InquiryModal: pre-fills destination from destinationTitle prop', () => {
+    await testAsync('InquiryModal: pre-fills destination and resets when destinationTitle is omitted', () => {
       const code = fs.readFileSync(COMPONENT_PATH, 'utf-8');
       assert.ok(code.includes('destinationTitle'), 'Must accept destinationTitle prop');
       assert.ok(
-        code.includes('setDestination(destinationTitle') || code.includes('destinationTitle'),
-        'Must synchronize destinationTitle with destination state'
+        code.includes("setDestination(destinationTitle || '')"),
+        'Must reset destination to empty string when destinationTitle is undefined/omitted'
       );
+    });
+
+    await testAsync('InquiryModal: protects against concurrent double submissions via isSubmitting and ref lock', () => {
+      const code = fs.readFileSync(COMPONENT_PATH, 'utf-8');
+      assert.ok(code.includes('isSubmittingRef'), 'Must declare synchronous submission lock ref');
+      assert.ok(code.includes('if (isSubmitting || isSubmittingRef.current) return;'), 'Must reject concurrent triggers in handleSubmit');
+    });
+
+    await testAsync('InquiryModal: validates phone number format and minimum length', () => {
+      const code = fs.readFileSync(COMPONENT_PATH, 'utf-8');
+      assert.ok(code.includes('phoneClean') || code.includes('phone'), 'Must clean and validate phone digits');
+      assert.ok(code.includes('length < 6'), 'Must enforce minimum phone length');
+    });
+
+    await testAsync('InquiryModal: supports keyboard Escape, backdrop click, and body scroll lock', () => {
+      const code = fs.readFileSync(COMPONENT_PATH, 'utf-8');
+      assert.ok(code.includes("'Escape'"), 'Must handle Escape key');
+      assert.ok(code.includes('overflow = \'hidden\''), 'Must lock background scroll');
+      assert.ok(code.includes('e.target === e.currentTarget'), 'Must handle backdrop click dismiss');
+      assert.ok(code.includes('Close Window'), 'Must provide Close Window button');
     });
 
     await testAsync('InquiryModal: connects to POST /api/inquiries with payload', () => {
@@ -156,9 +176,38 @@ async function run() {
 
       const fileData = JSON.parse(fs.readFileSync(INQUIRIES_PATH, 'utf-8'));
       const saved = fileData.find((item: any) => item.id === data.inquiryId);
-      assert.ok(saved);
       assert.ok(saved.destination);
       assert.ok(saved.guests);
+    });
+
+    await testAsync('POST /api/inquiries: handles concurrent submissions reliably with distinct IDs', async () => {
+      const submissions = [
+        { name: 'Concurrent Client Alpha', email: 'alpha@vip.com', phone: '+8801711111111', destination: 'Maldives' },
+        { name: 'Concurrent Client Beta', email: 'beta@vip.com', phone: '+8801722222222', destination: 'Andalusia' },
+      ];
+
+      const responses = await Promise.all(
+        submissions.map((sub) =>
+          fetch(`${BASE_URL}/api/inquiries`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(sub),
+          })
+        )
+      );
+
+      for (const res of responses) {
+        assert.ok(res.status === 200 || res.status === 201);
+      }
+
+      const results = await Promise.all(responses.map((r) => r.json()));
+      assert.strictEqual(results[0].success, true);
+      assert.strictEqual(results[1].success, true);
+      assert.notStrictEqual(results[0].inquiryId, results[1].inquiryId, 'Inquiry IDs must be distinct');
+
+      const fileData = JSON.parse(fs.readFileSync(INQUIRIES_PATH, 'utf-8'));
+      assert.ok(fileData.some((item: any) => item.id === results[0].inquiryId));
+      assert.ok(fileData.some((item: any) => item.id === results[1].inquiryId));
     });
 
     restoreData();

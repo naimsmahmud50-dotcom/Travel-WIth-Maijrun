@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Loader2, AlertCircle } from 'lucide-react';
 
 interface InquiryModalProps {
@@ -18,18 +18,44 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
   const [preferences, setPreferences] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
   const [error, setError] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   // Synchronize destination when modal opens or destinationTitle prop changes
   useEffect(() => {
     if (isOpen) {
-      if (destinationTitle) {
-        setDestination(destinationTitle);
-      }
+      setDestination(destinationTitle || '');
       setError('');
     }
   }, [isOpen, destinationTitle]);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
+  // Handle escape key to dismiss modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !isSubmitting && !isSubmittingRef.current) {
+        handleClose();
+      }
+    };
+    if (isOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, isSubmitting]);
 
   // Auto-close modal after successful submission
   useEffect(() => {
@@ -48,7 +74,7 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
   if (!isOpen) return null;
 
   const handleClose = () => {
-    if (isSubmitting) return;
+    if (isSubmitting || isSubmittingRef.current) return;
     setSubmitted(false);
     setError('');
     onClose();
@@ -56,6 +82,7 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting || isSubmittingRef.current) return;
     setError('');
 
     const trimmedName = name.trim();
@@ -74,11 +101,13 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
       return;
     }
 
-    if (!trimmedPhone || trimmedPhone.length < 6) {
+    const phoneClean = trimmedPhone.replace(/[\s().-]/g, '');
+    if (!trimmedPhone || phoneClean.length < 6 || !/^\+?[0-9]+$/.test(phoneClean)) {
       setError('Please provide a valid WhatsApp or phone contact number.');
       return;
     }
 
+    isSubmittingRef.current = true;
     setIsSubmitting(true);
 
     const payload = {
@@ -105,7 +134,6 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
         const errorMsg =
           data?.error || 'Unable to transmit your bespoke inquiry. Please try again or contact our VIP concierge.';
         setError(errorMsg);
-        setIsSubmitting(false);
         return;
       }
 
@@ -125,6 +153,7 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
           : 'Network connection error. Please verify your connection and try again.';
       setError(message);
     } finally {
+      isSubmittingRef.current = false;
       setIsSubmitting(false);
     }
   };
@@ -134,6 +163,12 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
       className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
+      aria-labelledby="inquiry-modal-title"
+      onClick={(e) => {
+        if (e.target === e.currentTarget && !isSubmitting && !isSubmittingRef.current) {
+          handleClose();
+        }
+      }}
     >
       <div className="glass-light bg-white rounded-2xl max-w-xl w-full p-6 sm:p-8 relative shadow-2xl border border-brand-gold/30 animate-fade-in max-h-[92vh] overflow-y-auto">
         <button
@@ -148,16 +183,27 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
         {submitted ? (
           <div className="text-center py-12 space-y-4">
             <span className="text-4xl">✨</span>
-            <h3 className="font-serif text-3xl text-brand-emerald font-bold">Alhamdulillah!</h3>
+            <h3 id="inquiry-modal-title" className="font-serif text-3xl text-brand-emerald font-bold">
+              Alhamdulillah!
+            </h3>
             <p className="text-neutral-600 text-sm max-w-md mx-auto">
               Your confidential bespoke inquiry has been received. Our Senior Travel Director will contact you within 4 business hours.
             </p>
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl border border-brand-gold text-brand-emerald hover:bg-brand-gold hover:text-white transition-all text-xs tracking-wider uppercase font-semibold"
+              >
+                Close Window
+              </button>
+            </div>
           </div>
         ) : (
           <>
             <div className="space-y-2 mb-6">
               <span className="text-xs uppercase tracking-[0.25em] font-bold text-brand-goldDark">Private Invitation</span>
-              <h3 className="font-serif text-3xl text-brand-emerald font-bold">
+              <h3 id="inquiry-modal-title" className="font-serif text-3xl text-brand-emerald font-bold">
                 {destinationTitle ? `Inquire: ${destinationTitle}` : 'Plan Your Bespoke Escape'}
               </h3>
               <p className="text-xs text-neutral-500">Provide your preferences and our senior travel director will contact you discretely.</p>
