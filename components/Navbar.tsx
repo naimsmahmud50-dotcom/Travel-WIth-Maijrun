@@ -14,13 +14,18 @@ const TOP_TICKER_SLIDES = [
     content: (
       <span className="flex items-center gap-2">
         <span className="text-[#D4AF37] font-semibold uppercase tracking-wider text-[10px]">Private Concierge:</span>
-        <a href="tel:+8809612888999" className="text-white hover:text-[#F3E5AB] font-medium transition-colors">
-          +880 9612-888-999
+        <a href="tel:+8801767850859" className="text-white hover:text-[#F3E5AB] font-medium transition-colors">
+          +880 1767-850859
         </a>
         <span className="text-neutral-500 hidden lg:inline">•</span>
-        <span className="text-neutral-300 hidden lg:inline">London Desk:</span>
-        <a href="tel:+442079460920" className="text-white hover:text-[#F3E5AB] font-medium transition-colors hidden lg:inline">
-          +44 20 7946 0920
+        <span className="text-neutral-300 hidden lg:inline">WhatsApp Concierge:</span>
+        <a
+          href="https://wa.me/8801767850859?text=Salam,%20I%20would%20like%20to%20inquire%20about%20a%20luxury%20halal%20journey%20with%20Travel%20With%20Maijrun"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white hover:text-[#F3E5AB] font-medium transition-colors hidden lg:inline"
+        >
+          +880 1767-850859
         </a>
       </span>
     ),
@@ -400,10 +405,10 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
           <div className="pt-2 text-center text-xs text-neutral-400 space-y-1">
             <p className="tracking-wide">24/7 VIP Concierge & WhatsApp</p>
             <a
-              href="tel:+8809612888999"
+              href="tel:+8801767850859"
               className="text-[#D4AF37] font-semibold hover:underline block"
             >
-              +880 9612-888-999
+              +880 1767-850859
             </a>
           </div>
         </div>
