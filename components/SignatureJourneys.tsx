@@ -136,14 +136,22 @@ export default function SignatureJourneys({ onOpenInquiry }: SignatureJourneysPr
 
         {/* Swiper Slider Carousel */}
         <div className="relative">
+          {/* Continuous Smooth Marquee Linear Transition Styling */}
+          <style dangerouslySetInnerHTML={{ __html: `
+            .signature-continuous-swiper .swiper-wrapper {
+              transition-timing-function: linear !important;
+            }
+          `}} />
+
           <Swiper
             modules={[Navigation, Pagination, Autoplay, A11y]}
             spaceBetween={24}
             slidesPerView={1.15}
-            loop={SIGNATURE_CARDS.length > 4}
+            loop={true}
+            speed={7000}
             grabCursor={true}
             autoplay={{
-              delay: 4500,
+              delay: 0,
               disableOnInteraction: false,
               pauseOnMouseEnter: true,
             }}
@@ -170,10 +178,10 @@ export default function SignatureJourneys({ onOpenInquiry }: SignatureJourneysPr
                 spaceBetween: 24,
               },
             }}
-            className="w-full !pb-14 overflow-visible"
+            className="w-full !pb-14 overflow-visible signature-continuous-swiper"
           >
-            {SIGNATURE_CARDS.map((card) => (
-              <SwiperSlide key={card.id} className="h-auto">
+            {[...SIGNATURE_CARDS, ...SIGNATURE_CARDS].map((card, idx) => (
+              <SwiperSlide key={`${card.id}-${idx}`} className="h-auto">
                 <div
                   onClick={() => onOpenInquiry(card.inquiryTarget)}
                   className="group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl h-[420px] flex flex-col justify-end p-6 cursor-pointer border border-[#D4AF37]/25 transition-all duration-500 hover:-translate-y-1.5 bg-[#061410]"

@@ -527,6 +527,10 @@
       pointer-events: none !important;
       cursor: not-allowed !important;
     }
+    /* Signature Journeys Continuous Smooth Marquee Ticker */
+    .signature-swiper .swiper-wrapper {
+      transition-timing-function: linear !important;
+    }
     .top-utility-swiper {
       height: 100%;
       width: 100%;
@@ -2096,8 +2100,9 @@
       spaceBetween: 24,
       grabCursor: true,
       loop: true,
+      speed: 7000,
       autoplay: {
-        delay: 4500,
+        delay: 0,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
       },
