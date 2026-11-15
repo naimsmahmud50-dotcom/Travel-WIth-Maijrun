@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, RotateCcw, Compass } from 'lucide-react';
+import { Sparkles, RotateCcw, Compass, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCoverflow, Navigation, Pagination, Autoplay, A11y } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/effect-coverflow';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/autoplay';
+
 import {
   DESTINATIONS,
   type DestinationItem,
@@ -83,36 +92,63 @@ export default function DestinationCards({
   const filtered = filterDestinations(DESTINATIONS, activeCategory, searchFilter);
 
   return (
-    <section id="destinations" className="py-20 bg-white border-y border-brand-sandDark/70 scroll-mt-20">
+    <section id="destinations" className="py-20 bg-white border-y border-brand-sandDark/70 scroll-mt-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        
+        {/* Section Header with Category Tabs and Swiper Arrows */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
           <div>
             <span className="text-xs uppercase tracking-[0.25em] font-bold text-brand-goldDark">World-Class Portfolio</span>
             <h2 className="font-serif text-3xl sm:text-5xl text-brand-emerald tracking-tight mt-2">
               Curated Expeditions for 2026
             </h2>
+            <p className="text-neutral-500 text-sm font-light mt-1">
+              Swipe to explore our certified luxury halal destinations
+            </p>
           </div>
 
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            {[
-              { id: 'all', label: 'All' },
-              { id: 'pilgrimage', label: 'Pilgrimage' },
-              { id: 'heritage', label: 'Heritage' },
-              { id: 'island', label: 'Islands & Seclusion' },
-              { id: 'alpine', label: 'Alpine & Nature' },
-            ].map((tab) => (
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+              {[
+                { id: 'all', label: 'All' },
+                { id: 'pilgrimage', label: 'Pilgrimage' },
+                { id: 'heritage', label: 'Heritage' },
+                { id: 'island', label: 'Islands & Seclusion' },
+                { id: 'alpine', label: 'Alpine & Nature' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => handleCategorySelect(tab.id)}
+                  className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all whitespace-nowrap cursor-pointer ${
+                    activeCategory === tab.id
+                      ? 'bg-brand-emerald text-white shadow-sm'
+                      : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Custom Navigation Controls */}
+            <div className="flex items-center gap-2 pl-2 border-l border-neutral-300">
               <button
-                key={tab.id}
-                onClick={() => handleCategorySelect(tab.id)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wider uppercase transition-all whitespace-nowrap ${
-                  activeCategory === tab.id
-                    ? 'bg-brand-emerald text-white shadow-sm'
-                    : 'bg-neutral-100 hover:bg-neutral-200 text-neutral-700'
-                }`}
+                type="button"
+                className="dest-swiper-prev w-10 h-10 rounded-full border border-neutral-300 hover:border-[#D4AF37] bg-white hover:bg-brand-emerald text-neutral-800 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label="Previous Destination"
               >
-                {tab.label}
+                <ChevronLeft className="w-5 h-5" />
               </button>
-            ))}
+              <button
+                type="button"
+                className="dest-swiper-next w-10 h-10 rounded-full border border-neutral-300 hover:border-[#D4AF37] bg-white hover:bg-brand-emerald text-neutral-800 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                aria-label="Next Destination"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -170,7 +206,7 @@ export default function DestinationCards({
           </div>
         )}
 
-        {/* Dynamic Card Grid or Elegant Empty State */}
+        {/* Dynamic 3D Coverflow Carousel or Elegant Empty State */}
         {filtered.length === 0 ? (
           <div
             data-testid="destinations-empty-state"
@@ -205,55 +241,137 @@ export default function DestinationCards({
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filtered.map((item) => (
-              <div
-                key={item.id}
-                className="bg-brand-sandLight rounded-2xl overflow-hidden border border-neutral-200 hover:shadow-2xl transition-all duration-500 group flex flex-col justify-between"
-              >
-                <div className="relative h-72 overflow-hidden">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute top-4 left-4 bg-brand-emerald/90 backdrop-blur-md text-brand-gold text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-brand-gold/30">
-                    {item.tag}
-                  </div>
-                  <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1 rounded-md">
-                    {item.duration}
-                  </div>
-                </div>
+          <div className="relative">
+            {/* 3D Coverflow Perspective and Active Slide Highlight Styles */}
+            <style dangerouslySetInnerHTML={{ __html: `
+              .destinations-coverflow-swiper {
+                padding-top: 1.5rem !important;
+                padding-bottom: 3.5rem !important;
+                overflow: visible !important;
+              }
+              .destinations-coverflow-swiper .swiper-slide {
+                transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+                opacity: 0.85;
+                transform: scale(0.92);
+              }
+              .destinations-coverflow-swiper .swiper-slide-active {
+                opacity: 1 !important;
+                transform: scale(1.04) !important;
+                z-index: 20;
+              }
+              .destinations-coverflow-swiper .swiper-slide-active .journey-card {
+                border-color: #D4AF37 !important;
+                box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.5) !important;
+              }
+              .dest-swiper-pagination .swiper-pagination-bullet {
+                background: #cbd5e1;
+                transition: all 0.3s ease;
+              }
+              .dest-swiper-pagination .swiper-pagination-bullet-active {
+                background: #0B2019 !important;
+                width: 28px !important;
+                border-radius: 9999px !important;
+              }
+            `}} />
 
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-brand-goldDark font-semibold uppercase tracking-wider mb-1">
-                      <span>{item.country}</span> • <span>{item.region}</span>
+            <Swiper
+              key={`${activeCategory}-${filtered.length}-${searchFilter?.destination || ''}`}
+              modules={[EffectCoverflow, Navigation, Pagination, Autoplay, A11y]}
+              effect="coverflow"
+              grabCursor={true}
+              centeredSlides={true}
+              slidesPerView={1.15}
+              loop={filtered.length > 2}
+              speed={800}
+              autoplay={{
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }}
+              coverflowEffect={{
+                rotate: 20,
+                stretch: 0,
+                depth: 140,
+                modifier: 1.2,
+                slideShadows: false,
+              }}
+              navigation={{
+                prevEl: '.dest-swiper-prev',
+                nextEl: '.dest-swiper-next',
+              }}
+              pagination={{
+                el: '.dest-swiper-pagination',
+                clickable: true,
+                dynamicBullets: true,
+              }}
+              breakpoints={{
+                640: {
+                  slidesPerView: 1.8,
+                  spaceBetween: 20,
+                },
+                1024: {
+                  slidesPerView: 2.8,
+                  spaceBetween: 28,
+                },
+                1280: {
+                  slidesPerView: 3,
+                  spaceBetween: 32,
+                },
+              }}
+              className="destinations-coverflow-swiper"
+            >
+              {filtered.map((item) => (
+                <SwiperSlide key={item.id} className="h-auto">
+                  <div className="journey-card bg-brand-sandLight rounded-2xl overflow-hidden border border-neutral-200 hover:shadow-2xl transition-all duration-500 group flex flex-col justify-between h-full">
+                    <div className="relative h-72 overflow-hidden">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute top-4 left-4 bg-brand-emerald/90 backdrop-blur-md text-brand-gold text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-brand-gold/30">
+                        {item.tag}
+                      </div>
+                      <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white text-xs px-3 py-1 rounded-md">
+                        {item.duration}
+                      </div>
                     </div>
-                    <h3 className="font-serif text-2xl text-brand-emerald font-bold group-hover:text-brand-goldDark transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-neutral-600 text-sm font-light leading-relaxed mt-2">{item.desc}</p>
-                  </div>
 
-                  <div className="pt-4 border-t border-neutral-200 flex items-center justify-between">
-                    <div>
-                      <span className="text-[11px] uppercase tracking-wider text-neutral-400 block font-semibold">Starting From</span>
-                      <span className="font-serif text-xl font-bold text-brand-emerald">{item.priceBdt}</span>
-                      <span className="text-xs text-neutral-500 font-light"> / guest</span>
+                    <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                      <div>
+                        <div className="flex items-center gap-2 text-xs text-brand-goldDark font-semibold uppercase tracking-wider mb-1">
+                          <span>{item.country}</span> • <span>{item.region}</span>
+                        </div>
+                        <h3 className="font-serif text-2xl text-brand-emerald font-bold group-hover:text-brand-goldDark transition-colors">
+                          {item.title}
+                        </h3>
+                        <p className="text-neutral-600 text-sm font-light leading-relaxed mt-2">{item.desc}</p>
+                      </div>
+
+                      <div className="pt-4 border-t border-neutral-200 flex items-center justify-between">
+                        <div>
+                          <span className="text-[11px] uppercase tracking-wider text-neutral-400 block font-semibold">Starting From</span>
+                          <span className="font-serif text-xl font-bold text-brand-emerald">{item.priceBdt}</span>
+                          <span className="text-xs text-neutral-500 font-light"> / guest</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => onOpenInquiry(item.title)}
+                          className="bg-brand-emerald hover:bg-brand-gold text-white hover:text-brand-emeraldDeep text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                        >
+                          Details & Booking
+                        </button>
+                      </div>
                     </div>
-                    <button
-                      onClick={() => onOpenInquiry(item.title)}
-                      className="bg-brand-emerald hover:bg-brand-gold text-white hover:text-brand-emeraldDeep text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg transition-colors"
-                    >
-                      Details & Booking
-                    </button>
                   </div>
-                </div>
-              </div>
-            ))}
+                </SwiperSlide>
+              ))}
+            </Swiper>
+
+            {/* Pagination Bullets */}
+            <div className="dest-swiper-pagination flex justify-center items-center gap-1.5 mt-8" />
           </div>
         )}
       </div>

@@ -515,12 +515,31 @@
       border-radius: 9999px !important;
       box-shadow: 0 0 12px rgba(212, 175, 55, 0.8);
     }
+    .destinations-swiper {
+      padding-top: 1.5rem !important;
+      padding-bottom: 3.5rem !important;
+    }
+    .destinations-swiper .swiper-slide {
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+      opacity: 0.85;
+      transform: scale(0.92);
+    }
+    .destinations-swiper .swiper-slide-active {
+      opacity: 1 !important;
+      transform: scale(1.04) !important;
+      z-index: 20;
+    }
+    .destinations-swiper .swiper-slide-active .journey-card {
+      border-color: #D4AF37 !important;
+      box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.5) !important;
+    }
     .destinations-swiper .swiper-pagination-bullet {
       background: #cbd5e1 !important;
     }
     .destinations-swiper .swiper-pagination-bullet-active {
       background: #0B2019 !important;
       width: 28px !important;
+      border-radius: 9999px !important;
     }
     .swiper-button-disabled {
       opacity: 0.35 !important;
@@ -1395,7 +1414,7 @@
           <div class="swiper-slide h-auto" data-destination="spain" data-category="heritage" data-styles="heritage,honeymoon,family" data-seasons="any,spring,summer,winter">
             <div class="journey-card bg-brand-sandLight rounded-2xl overflow-hidden border border-neutral-200 hover:shadow-2xl transition-all duration-500 group flex flex-col justify-between h-full">
               <div class="relative h-72 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1566837945700-30057527ade0?q=75&w=640&auto=format&fit=crop" 
+                <img src="https://images.unsplash.com/photo-1568084680786-a84f91d1153c?q=75&w=640&auto=format&fit=crop" 
                      alt="Alhambra Palace Granada" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                 <div class="absolute top-4 left-4 bg-brand-emerald/90 backdrop-blur-md text-brand-gold text-[11px] font-bold tracking-widest uppercase px-3 py-1 rounded-full border border-brand-gold/30">
                   Cultural Heritage
@@ -2068,11 +2087,25 @@
       },
     });
 
-    // 2. Swiper 11 Destinations Touch Carousel (Responsive Multi-Cards)
+    // 2. Swiper 11 Destinations 3D Coverflow Perspective Carousel
     const destSwiper = new Swiper('.destinations-swiper', {
+      effect: 'coverflow',
+      centeredSlides: true,
       slidesPerView: 1.15,
-      spaceBetween: 24,
       grabCursor: true,
+      speed: 800,
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+        pauseOnMouseEnter: true,
+      },
+      coverflowEffect: {
+        rotate: 20,
+        stretch: 0,
+        depth: 140,
+        modifier: 1.2,
+        slideShadows: false,
+      },
       navigation: {
         nextEl: '#destNextBtn',
         prevEl: '#destPrevBtn',
@@ -2083,12 +2116,13 @@
       },
       breakpoints: {
         640: {
-          slidesPerView: 2,
-          spaceBetween: 24,
+          slidesPerView: 1.8,
         },
         1024: {
+          slidesPerView: 2.8,
+        },
+        1280: {
           slidesPerView: 3,
-          spaceBetween: 32,
         },
       },
     });

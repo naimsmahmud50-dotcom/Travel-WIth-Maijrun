@@ -47,7 +47,7 @@ export const DESTINATIONS: DestinationItem[] = [
     title: 'Echoes of Al-Andalus: Moorish Splendors',
     desc: 'Private after-hours entry into the Alhambra and Great Mosque of Cordoba. Halal Andalusian culinary tastings and luxury historical estates.',
     priceBdt: '৳768,000',
-    image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=75&w=640&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1568084680786-a84f91d1153c?q=75&w=640&auto=format&fit=crop',
     styles: ['heritage', 'honeymoon', 'family'],
     seasons: ['any', 'spring', 'summer', 'winter'],
   },
