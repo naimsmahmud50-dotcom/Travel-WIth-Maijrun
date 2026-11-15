@@ -515,23 +515,18 @@
       border-radius: 9999px !important;
       box-shadow: 0 0 12px rgba(212, 175, 55, 0.8);
     }
-    .destinations-swiper {
-      padding-top: 1.5rem !important;
-      padding-bottom: 3.5rem !important;
+    .destinations-swiper .swiper-wrapper {
+      transition-timing-function: linear !important;
     }
     .destinations-swiper .swiper-slide {
-      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
-      opacity: 0.85;
-      transform: scale(0.92);
+      height: auto !important;
     }
-    .destinations-swiper .swiper-slide-active {
-      opacity: 1 !important;
-      transform: scale(1.04) !important;
-      z-index: 20;
+    .destinations-swiper .swiper-slide .journey-card {
+      transition: all 0.4s ease;
     }
-    .destinations-swiper .swiper-slide-active .journey-card {
+    .destinations-swiper .swiper-slide:hover .journey-card {
       border-color: #D4AF37 !important;
-      box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.5) !important;
+      box-shadow: 0 20px 40px -15px rgba(212, 175, 55, 0.25);
     }
     .destinations-swiper .swiper-pagination-bullet {
       background: #cbd5e1 !important;
@@ -1293,14 +1288,17 @@
   <section id="destinations" class="py-24 bg-white border-y border-brand-sandDark/70 relative">
     <div class="max-w-7xl mx-auto px-4 sm:px-8">
       
-      <!-- Section Header -->
-      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+      <!-- Elevated Royal Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
         <div>
-          <span class="text-xs uppercase tracking-[0.25em] font-bold text-brand-goldDark">World-Class Portfolio</span>
-          <h2 class="font-serif text-3xl sm:text-5xl text-brand-emerald tracking-tight mt-2">
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#0B2019] text-[10px] tracking-[0.25em] uppercase font-bold mb-2.5">
+            <i data-lucide="sparkles" class="w-3 h-3 text-[#D4AF37]"></i>
+            <span>World-Class Portfolio</span>
+          </div>
+          <h2 class="font-serif text-3xl sm:text-5xl text-brand-emerald tracking-tight">
             Curated Expeditions for 2026
           </h2>
-          <p class="text-neutral-500 text-sm font-light mt-1">Swipe to explore our certified luxury halal destinations</p>
+          <p class="text-neutral-600 text-xs sm:text-sm font-light mt-1.5 max-w-xl">Continuous bespoke showcase of our certified luxury halal sanctuaries across the globe.</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-4">
@@ -2087,24 +2085,17 @@
       },
     });
 
-    // 2. Swiper 11 Destinations 3D Coverflow Perspective Carousel
+    // 2. Swiper 11 Destinations Continuous Smooth Linear Glide Carousel
     const destSwiper = new Swiper('.destinations-swiper', {
-      effect: 'coverflow',
-      centeredSlides: true,
       slidesPerView: 1.15,
+      spaceBetween: 28,
       grabCursor: true,
-      speed: 800,
+      loop: true,
+      speed: 7500,
       autoplay: {
-        delay: 3000,
+        delay: 0,
         disableOnInteraction: false,
         pauseOnMouseEnter: true,
-      },
-      coverflowEffect: {
-        rotate: 20,
-        stretch: 0,
-        depth: 140,
-        modifier: 1.2,
-        slideShadows: false,
       },
       navigation: {
         nextEl: '#destNextBtn',
@@ -2113,16 +2104,20 @@
       pagination: {
         el: '.destinations-pagination',
         clickable: true,
+        dynamicBullets: true,
       },
       breakpoints: {
         640: {
           slidesPerView: 1.8,
+          spaceBetween: 24,
         },
         1024: {
-          slidesPerView: 2.8,
+          slidesPerView: 2.6,
+          spaceBetween: 28,
         },
         1280: {
-          slidesPerView: 3,
+          slidesPerView: 3.15,
+          spaceBetween: 32,
         },
       },
     });

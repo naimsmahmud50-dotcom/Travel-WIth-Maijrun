@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, RotateCcw, Compass, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { EffectCoverflow, Navigation, Pagination, Autoplay, A11y } from 'swiper/modules';
+import { Navigation, Pagination, Autoplay, A11y } from 'swiper/modules';
 
 import 'swiper/css';
-import 'swiper/css/effect-coverflow';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/autoplay';
@@ -92,24 +91,27 @@ export default function DestinationCards({
   const filtered = filterDestinations(DESTINATIONS, activeCategory, searchFilter);
 
   return (
-    <section id="destinations" className="py-20 bg-white border-y border-brand-sandDark/70 scroll-mt-20 overflow-hidden">
+    <section id="destinations" className="py-24 bg-white border-y border-brand-sandDark/70 scroll-mt-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         
-        {/* Section Header with Category Tabs and Swiper Arrows */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
+        {/* Elevated Royal Header with Badge, Typography, Tabs, and Swiper Controls */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-bold text-brand-goldDark">World-Class Portfolio</span>
-            <h2 className="font-serif text-3xl sm:text-5xl text-brand-emerald tracking-tight mt-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#D4AF37]/15 border border-[#D4AF37]/30 text-[#0B2019] text-[10px] tracking-[0.25em] uppercase font-bold mb-2.5">
+              <Sparkles className="w-3 h-3 text-[#D4AF37]" />
+              <span>World-Class Portfolio</span>
+            </div>
+            <h2 className="font-serif text-3xl sm:text-5xl text-brand-emerald tracking-tight">
               Curated Expeditions for 2026
             </h2>
-            <p className="text-neutral-500 text-sm font-light mt-1">
-              Swipe to explore our certified luxury halal destinations
+            <p className="text-neutral-600 text-xs sm:text-sm font-light mt-1.5 max-w-xl">
+              Continuous bespoke showcase of our certified luxury halal sanctuaries across the globe.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
             {/* Category Filter Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1">
               {[
                 { id: 'all', label: 'All' },
                 { id: 'pilgrimage', label: 'Pilgrimage' },
@@ -132,18 +134,18 @@ export default function DestinationCards({
               ))}
             </div>
 
-            {/* Custom Navigation Controls */}
+            {/* Custom Luxury Navigation Controls */}
             <div className="flex items-center gap-2 pl-2 border-l border-neutral-300">
               <button
                 type="button"
-                className="dest-swiper-prev w-10 h-10 rounded-full border border-neutral-300 hover:border-[#D4AF37] bg-white hover:bg-brand-emerald text-neutral-800 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                className="dest-swiper-prev w-10 h-10 rounded-full border border-[#D4AF37]/50 bg-white hover:bg-[#D4AF37] hover:border-[#D4AF37] text-[#061410] flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                 aria-label="Previous Destination"
               >
                 <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 type="button"
-                className="dest-swiper-next w-10 h-10 rounded-full border border-neutral-300 hover:border-[#D4AF37] bg-white hover:bg-brand-emerald text-neutral-800 hover:text-[#D4AF37] flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                className="dest-swiper-next w-10 h-10 rounded-full border border-[#D4AF37]/50 bg-white hover:bg-[#D4AF37] hover:border-[#D4AF37] text-[#061410] flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                 aria-label="Next Destination"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -206,7 +208,7 @@ export default function DestinationCards({
           </div>
         )}
 
-        {/* Dynamic 3D Coverflow Carousel or Elegant Empty State */}
+        {/* Dynamic Continuous Glide Carousel or Elegant Empty State */}
         {filtered.length === 0 ? (
           <div
             data-testid="destinations-empty-state"
@@ -242,26 +244,14 @@ export default function DestinationCards({
           </div>
         ) : (
           <div className="relative">
-            {/* 3D Coverflow Perspective and Active Slide Highlight Styles */}
+            {/* Continuous Smooth Linear Glide Transition Styling */}
             <style dangerouslySetInnerHTML={{ __html: `
-              .destinations-coverflow-swiper {
-                padding-top: 1.5rem !important;
-                padding-bottom: 3.5rem !important;
-                overflow: visible !important;
+              .destinations-glide-swiper .swiper-wrapper {
+                transition-timing-function: linear !important;
               }
-              .destinations-coverflow-swiper .swiper-slide {
-                transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
-                opacity: 0.85;
-                transform: scale(0.92);
-              }
-              .destinations-coverflow-swiper .swiper-slide-active {
-                opacity: 1 !important;
-                transform: scale(1.04) !important;
-                z-index: 20;
-              }
-              .destinations-coverflow-swiper .swiper-slide-active .journey-card {
-                border-color: #D4AF37 !important;
-                box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.3), 0 0 0 1px rgba(212, 175, 55, 0.5) !important;
+              .destinations-glide-swiper .swiper-slide {
+                height: auto !important;
+                display: flex;
               }
               .dest-swiper-pagination .swiper-pagination-bullet {
                 background: #cbd5e1;
@@ -276,24 +266,16 @@ export default function DestinationCards({
 
             <Swiper
               key={`${activeCategory}-${filtered.length}-${searchFilter?.destination || ''}`}
-              modules={[EffectCoverflow, Navigation, Pagination, Autoplay, A11y]}
-              effect="coverflow"
-              grabCursor={true}
-              centeredSlides={true}
+              modules={[Navigation, Pagination, Autoplay, A11y]}
+              spaceBetween={28}
               slidesPerView={1.15}
               loop={filtered.length > 2}
-              speed={800}
+              speed={7500}
+              grabCursor={true}
               autoplay={{
-                delay: 3000,
+                delay: 0,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
-              }}
-              coverflowEffect={{
-                rotate: 20,
-                stretch: 0,
-                depth: 140,
-                modifier: 1.2,
-                slideShadows: false,
               }}
               navigation={{
                 prevEl: '.dest-swiper-prev',
@@ -307,22 +289,22 @@ export default function DestinationCards({
               breakpoints={{
                 640: {
                   slidesPerView: 1.8,
-                  spaceBetween: 20,
+                  spaceBetween: 24,
                 },
                 1024: {
-                  slidesPerView: 2.8,
+                  slidesPerView: 2.6,
                   spaceBetween: 28,
                 },
                 1280: {
-                  slidesPerView: 3,
+                  slidesPerView: 3.15,
                   spaceBetween: 32,
                 },
               }}
-              className="destinations-coverflow-swiper"
+              className="destinations-glide-swiper py-4"
             >
               {filtered.map((item) => (
                 <SwiperSlide key={item.id} className="h-auto">
-                  <div className="journey-card bg-brand-sandLight rounded-2xl overflow-hidden border border-neutral-200 hover:shadow-2xl transition-all duration-500 group flex flex-col justify-between h-full">
+                  <div className="journey-card bg-brand-sandLight rounded-2xl overflow-hidden border border-neutral-200 hover:border-[#D4AF37] hover:shadow-2xl transition-all duration-500 group flex flex-col justify-between h-full w-full">
                     <div className="relative h-72 overflow-hidden">
                       <img
                         src={item.image}
