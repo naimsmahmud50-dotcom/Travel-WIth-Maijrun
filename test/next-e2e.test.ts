@@ -161,7 +161,7 @@ async function run() {
       assert.strictEqual(res.status, 200);
       const body = await res.json();
       assert.strictEqual(body.authenticated, true);
-      assert.strictEqual(body.user, 'Sheikh Mahmud Hasan (VIP Admin)');
+      assert.strictEqual(body.user, 'Mahmud Hasan (VIP Admin)');
     });
 
     // 8. GET /api/inquiries without auth -> 401 Unauthorized

@@ -184,6 +184,15 @@ export default function HalalPillars() {
           <p className="text-xs sm:text-[13px] uppercase tracking-[0.2em] text-neutral-600 font-medium leading-relaxed">
             Every journey audited &amp; accompanied by certified halal travel specialists • 100% Discretion &amp; Seclusion Assured
           </p>
+          <div className="mt-6">
+            <a
+              href="/ethos"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-[#0B2019] text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#061410] text-xs font-semibold uppercase tracking-widest transition-all shadow-sm"
+            >
+              <span>Explore The Halal Standard &amp; Founder’s Ethos</span>
+              <span>→</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>

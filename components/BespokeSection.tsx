@@ -56,12 +56,18 @@ export default function BespokeSection({ onOpenInquiry }: BespokeSectionProps) {
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-4 flex flex-wrap items-center gap-4">
+              <a
+                href="/bespoke"
+                className="bg-brand-gold hover:bg-white text-brand-emeraldDeep font-semibold text-xs tracking-widest uppercase px-8 py-4 rounded-full shadow-xl transition-all duration-300 inline-block text-center"
+              >
+                Launch Tailor-Made Atelier
+              </a>
               <button
                 onClick={() => onOpenInquiry('Bespoke Custom Plan')}
-                className="bg-brand-gold hover:bg-white text-brand-emeraldDeep font-semibold text-xs tracking-widest uppercase px-8 py-4 rounded-full shadow-xl transition-all duration-300"
+                className="border border-brand-gold/60 hover:bg-white/10 text-white font-semibold text-xs tracking-widest uppercase px-6 py-4 rounded-full transition-all duration-300 cursor-pointer"
               >
-                Start Designing With A Specialist
+                Direct Concierge Inquiry
               </button>
             </div>
           </div>

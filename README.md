@@ -79,4 +79,4 @@ Travel With Maijrun/
 ```
 
 ---
-*Created for Sheikh Mahmud Hasan — Travel With Maijrun.*
+*Created for Mahmud Hasan — Travel With Maijrun.*

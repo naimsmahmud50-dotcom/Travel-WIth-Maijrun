@@ -326,9 +326,11 @@ export default function DestinationCards({
                         <div className="flex items-center gap-2 text-xs text-brand-goldDark font-semibold uppercase tracking-wider mb-1">
                           <span>{item.country}</span> • <span>{item.region}</span>
                         </div>
-                        <h3 className="font-serif text-2xl text-brand-emerald font-bold group-hover:text-brand-goldDark transition-colors">
-                          {item.title}
-                        </h3>
+                        <a href={`/destinations/${item.id}`} className="block group/title">
+                          <h3 className="font-serif text-2xl text-brand-emerald font-bold group-hover/title:text-brand-goldDark transition-colors">
+                            {item.title}
+                          </h3>
+                        </a>
                         <p className="text-neutral-600 text-sm font-light leading-relaxed mt-2">{item.desc}</p>
                       </div>
 
@@ -338,13 +340,21 @@ export default function DestinationCards({
                           <span className="font-serif text-xl font-bold text-brand-emerald">{item.priceBdt}</span>
                           <span className="text-xs text-neutral-500 font-light"> / guest</span>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => onOpenInquiry(item.title)}
-                          className="bg-brand-emerald hover:bg-brand-gold text-white hover:text-brand-emeraldDeep text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
-                        >
-                          Details & Booking
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={`/destinations/${item.id}`}
+                            className="hidden sm:inline-block border border-[#0B2019]/25 hover:border-[#D4AF37] hover:bg-[#D4AF37]/10 text-[#0B2019] text-xs font-semibold uppercase tracking-wider px-3 py-2.5 rounded-lg transition-colors cursor-pointer text-center"
+                          >
+                            Itinerary
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => onOpenInquiry(item.title)}
+                            className="bg-brand-emerald hover:bg-brand-gold text-white hover:text-brand-emeraldDeep text-xs font-semibold uppercase tracking-widest px-4 py-2.5 rounded-lg transition-colors cursor-pointer"
+                          >
+                            Details & Booking
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

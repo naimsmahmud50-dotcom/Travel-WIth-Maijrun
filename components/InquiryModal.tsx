@@ -229,7 +229,7 @@ export default function InquiryModal({ isOpen, destinationTitle, onClose }: Inqu
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   disabled={isSubmitting}
-                  placeholder="e.g. Sheikh Mahmud Hasan"
+                  placeholder="e.g. Mahmud Hasan"
                   className="w-full px-4 py-3 rounded-xl border border-neutral-200 text-sm focus:outline-none focus:border-brand-gold transition-colors disabled:opacity-50 disabled:bg-neutral-50"
                 />
               </div>

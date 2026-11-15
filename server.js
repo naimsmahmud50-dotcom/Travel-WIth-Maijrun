@@ -281,7 +281,7 @@ const server = http.createServer((req, res) => {
 
         clearLoginRateLimit(clientIp);
 
-        const displayName = cleanId.includes('@') ? cleanId : 'Sheikh Mahmud Hasan (VIP Admin)';
+        const displayName = cleanId.includes('@') ? cleanId : 'Mahmud Hasan (VIP Admin)';
         const token = createSessionToken(displayName, Boolean(remember));
         const maxAge = remember ? 30 * 24 * 60 * 60 : 24 * 60 * 60;
         const expires = new Date(Date.now() + maxAge * 1000).toUTCString();

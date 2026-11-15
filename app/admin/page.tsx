@@ -44,7 +44,7 @@ export default function AdminDashboard() {
   const [rememberDevice, setRememberDevice] = useState<boolean>(true);
   const [authError, setAuthError] = useState<string>('');
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
-  const [currentAdminUser, setCurrentAdminUser] = useState<string>('Sheikh Mahmud Hasan');
+  const [currentAdminUser, setCurrentAdminUser] = useState<string>('Mahmud Hasan');
 
   // CRM Leads State
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
       const data = await res.json().catch(() => ({}));
 
       if (res.ok && data.success) {
-        const userName = data.user || 'Sheikh Mahmud Hasan (VIP Admin)';
+        const userName = data.user || 'Mahmud Hasan (VIP Admin)';
         setCurrentAdminUser(userName);
         setIsAuthenticated(true);
         setAdminPassword('');
@@ -265,7 +265,7 @@ export default function AdminDashboard() {
                   Private Atelier Access
                 </h1>
                 <p className="text-xs text-neutral-400 mt-1.5 max-w-xs leading-relaxed font-light">
-                  Restricted portal for Sheikh Mahmud Hasan & authorized concierge directors.
+                  Restricted portal for Mahmud Hasan & authorized concierge directors.
                 </p>
               </div>
 

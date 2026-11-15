@@ -76,9 +76,61 @@ interface NavbarProps {
   onOpenInquiry?: (type?: string) => void;
 }
 
+const NAV_DESTINATIONS = [
+  {
+    id: 'makkah',
+    country: 'Saudi Arabia',
+    title: 'The Sacred Sanctuaries: Makkah & Madinah',
+    duration: '10 Days • 9 Nights',
+    price: '৳695,000 / $5,800',
+    image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'spain',
+    country: 'Spain',
+    title: 'Echoes of Al-Andalus: Moorish Splendors',
+    duration: '12 Days • 11 Nights',
+    price: '৳768,000 / $6,400',
+    image: 'https://images.unsplash.com/photo-1583200424564-94676644fcf6?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'maldives',
+    country: 'Maldives',
+    title: 'The Pearl Pavilions: Overwater Sanctuary',
+    duration: '7 Days • 6 Nights',
+    price: '৳864,000 / $7,200',
+    image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'switzerland',
+    country: 'Switzerland',
+    title: 'Matterhorn Majesty: Swiss Alpine Chalets',
+    duration: '9 Days • 8 Nights',
+    price: '৳890,000 / $7,400',
+    image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'turkey',
+    country: 'Turkey',
+    title: 'Sultans of the Bosphorus: Palaces & Yachts',
+    duration: '10 Days • 9 Nights',
+    price: '৳680,000 / $5,650',
+    image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?q=80&w=400&auto=format&fit=crop',
+  },
+  {
+    id: 'safari',
+    country: 'Tanzania',
+    title: 'The Great Migration: Luxury Tented Haven',
+    duration: '8 Days • 7 Nights',
+    price: '৳1,176,000 / $9,800',
+    image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=400&auto=format&fit=crop',
+  },
+];
+
 export default function Navbar({ onOpenInquiry }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [destDropdownOpen, setDestDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -128,6 +180,13 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
   };
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+      // Let standard link navigation route to /#targetId
+      if (mobileOpen) {
+        setMobileOpen(false);
+      }
+      return;
+    }
     e.preventDefault();
     const target = document.getElementById(targetId);
     if (target) {
@@ -212,17 +271,91 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
             
             {/* LEFT NAVIGATION LINKS (Desktop >= 1200px) */}
             <div className="hidden min-[1200px]:flex items-center gap-6 xl:gap-8 shrink-0">
-              <a
-                href="#destinations"
-                onClick={(e) => handleNavClick(e, 'destinations')}
-                className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline cursor-pointer"
+              
+              {/* Destinations with Luxury Mega-Menu Dropdown */}
+              <div
+                className="relative py-2"
+                onMouseEnter={() => setDestDropdownOpen(true)}
+                onMouseLeave={() => setDestDropdownOpen(false)}
               >
-                <span>Destinations</span>
-                <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#D4AF37] group-hover:w-full transition-all duration-300 ease-out" />
-              </a>
+                <a
+                  href="/#destinations"
+                  onClick={(e) => handleNavClick(e, 'destinations')}
+                  className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 flex items-center gap-1 no-underline cursor-pointer"
+                >
+                  <span>Destinations</span>
+                  <span className="text-[10px] text-[#D4AF37] group-hover:rotate-180 transition-transform duration-300">▼</span>
+                  <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-[#D4AF37] group-hover:w-full transition-all duration-300 ease-out" />
+                </a>
+
+                {/* Mega-Menu Panel */}
+                <div
+                  className={`absolute top-full left-0 w-[680px] bg-[#0B2019] border border-[#D4AF37]/30 rounded-2xl shadow-2xl p-6 transition-all duration-300 z-50 ${
+                    destDropdownOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-2 pointer-events-none'
+                  }`}
+                >
+                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+                    <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#D4AF37]">
+                      Curated 2026 Black Book Expeditions
+                    </span>
+                    <a
+                      href="/#destinations"
+                      onClick={() => setDestDropdownOpen(false)}
+                      className="text-[11px] text-neutral-300 hover:text-[#D4AF37] tracking-wider uppercase font-semibold transition-colors"
+                    >
+                      View All Sanctuaries →
+                    </a>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3.5">
+                    {NAV_DESTINATIONS.map((dest) => (
+                      <a
+                        key={dest.id}
+                        href={`/destinations/${dest.id}`}
+                        onClick={() => setDestDropdownOpen(false)}
+                        className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-[#D4AF37]/40 transition-all group"
+                      >
+                        <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-white/10">
+                          <img
+                            src={dest.image}
+                            alt={dest.title}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <span className="text-[9px] uppercase tracking-wider font-bold text-[#D4AF37] block">
+                            {dest.country}
+                          </span>
+                          <h4 className="font-serif text-sm font-bold text-white truncate group-hover:text-[#F3E5AB] transition-colors">
+                            {dest.title}
+                          </h4>
+                          <div className="flex items-center justify-between text-[10px] text-neutral-400 mt-0.5">
+                            <span>{dest.duration}</span>
+                            <span className="text-white/80 font-semibold">{dest.price.split('/')[0]}</span>
+                          </div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-neutral-400">
+                    <span className="flex items-center gap-1.5 text-neutral-300">
+                      <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                      100% Certified Halal • Alcohol-Free • Zero Sightlines
+                    </span>
+                    <a
+                      href="/bespoke"
+                      onClick={() => setDestDropdownOpen(false)}
+                      className="text-[#D4AF37] hover:underline font-semibold"
+                    >
+                      Bespoke Royal Atelier &gt;
+                    </a>
+                  </div>
+                </div>
+              </div>
 
               <a
-                href="#signature-journeys"
+                href="/#signature-journeys"
                 onClick={(e) => handleNavClick(e, 'signature-journeys')}
                 className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline cursor-pointer"
               >
@@ -231,8 +364,7 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
               </a>
 
               <a
-                href="#halal-philosophy"
-                onClick={(e) => handleNavClick(e, 'halal-philosophy')}
+                href="/ethos"
                 className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 flex items-center gap-1.5 no-underline cursor-pointer"
               >
                 <span>Halal Sanctuary</span>
@@ -243,8 +375,7 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
               </a>
 
               <a
-                href="#bespoke-tailored"
-                onClick={(e) => handleNavClick(e, 'bespoke-tailored')}
+                href="/bespoke"
                 className="group relative py-2 font-sans text-[12px] xl:text-[13px] font-semibold uppercase tracking-[0.14em] text-[#0B2019] hover:text-[#D4AF37] whitespace-nowrap transition-colors duration-250 no-underline cursor-pointer"
               >
                 <span>Tailor-Made</span>
@@ -268,7 +399,7 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
             {/* CENTER BRAND IDENTITY (Strictly Single-Line, Never Wraps) */}
             <a
-              href="#"
+              href="/"
               className="flex flex-col items-center justify-center group no-underline shrink-0 text-center px-2"
               aria-label="Travel with Maijrun Home"
             >
@@ -356,19 +487,19 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
         {/* Drawer Links */}
         <div className="p-6 flex flex-col gap-2 flex-1 overflow-y-auto">
           {[
-            { label: 'Destinations', href: '#destinations' },
-            { label: 'Signature Journeys', href: '#signature-journeys' },
-            { label: 'Halal Sanctuary Ethos', href: '#halal-philosophy', badge: '100% Halal' },
-            { label: 'Tailor-Made Atelier', href: '#bespoke-tailored' },
-            { label: 'VIP Society Reviews', href: '#testimonials' },
+            { label: 'Curated Expeditions', href: '/#destinations' },
+            { label: 'Halal Sanctuary Ethos', href: '/ethos', badge: '100% Halal' },
+            { label: 'Tailor-Made Royal Atelier', href: '/bespoke' },
+            { label: 'Signature Journeys', href: '/#signature-journeys' },
+            { label: 'VIP Society Reviews', href: '/#testimonials' },
             { label: 'Client Portal', href: '/admin' },
           ].map((item) => (
             <a
               key={item.label}
               href={item.href}
               onClick={(e) => {
-                if (item.href.startsWith('#')) {
-                  handleNavClick(e, item.href.slice(1));
+                if (item.href.startsWith('/#')) {
+                  handleNavClick(e, item.href.slice(2));
                 } else {
                   setMobileOpen(false);
                 }

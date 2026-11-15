@@ -126,7 +126,7 @@ export function validateAdminCredentials(
 
   const displayName = cleanId.includes('@')
     ? cleanId
-    : 'Sheikh Mahmud Hasan (VIP Admin)';
+    : 'Mahmud Hasan (VIP Admin)';
 
   return { valid: true, user: displayName };
 }

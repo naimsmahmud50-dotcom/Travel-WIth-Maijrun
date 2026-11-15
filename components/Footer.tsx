@@ -148,7 +148,7 @@ export default function Footer() {
               
               <div className="text-xs text-neutral-400 font-light pt-1">
                 <span className="text-[#D4AF37] font-medium">Founder & Executive Director:</span>{' '}
-                <span className="text-white font-medium">Sheikh Mahmud Hasan</span>
+                <span className="text-white font-medium">Mahmud Hasan</span>
               </div>
 
               {/* Accreditations */}
@@ -208,56 +208,32 @@ export default function Footer() {
               <h5 className="text-xs tracking-[0.2em] uppercase font-bold text-[#D4AF37]">Destinations</h5>
               <ul className="space-y-2 text-xs text-neutral-300 font-light">
                 <li>
-                  <a
-                    href="#destinations"
-                    onClick={(e) => handleSmoothScroll(e, 'destinations')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
+                  <a href="/destinations/makkah" className="hover:text-[#D4AF37] transition-colors">
                     Makkah &amp; Madinah Royal
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#destinations"
-                    onClick={(e) => handleSmoothScroll(e, 'destinations')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
+                  <a href="/destinations/spain" className="hover:text-[#D4AF37] transition-colors">
                     Andalusia &amp; Granada
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#destinations"
-                    onClick={(e) => handleSmoothScroll(e, 'destinations')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
+                  <a href="/destinations/maldives" className="hover:text-[#D4AF37] transition-colors">
                     Maldives Private Atolls
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#destinations"
-                    onClick={(e) => handleSmoothScroll(e, 'destinations')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
+                  <a href="/destinations/turkey" className="hover:text-[#D4AF37] transition-colors">
                     Bosphorus &amp; Bodrum
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#destinations"
-                    onClick={(e) => handleSmoothScroll(e, 'destinations')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
+                  <a href="/destinations/switzerland" className="hover:text-[#D4AF37] transition-colors">
                     Swiss Alpine Chalets
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#destinations"
-                    onClick={(e) => handleSmoothScroll(e, 'destinations')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
+                  <a href="/destinations/safari" className="hover:text-[#D4AF37] transition-colors">
                     Serengeti Safari Tents
                   </a>
                 </li>
@@ -266,51 +242,26 @@ export default function Footer() {
 
             {/* Col 4: Expedition Styles */}
             <div className="space-y-3">
-              <h5 className="text-xs tracking-[0.2em] uppercase font-bold text-[#D4AF37]">Expedition Styles</h5>
+              <h5 className="text-xs tracking-[0.2em] uppercase font-bold text-[#D4AF37]">Royal Portals</h5>
               <ul className="space-y-2 text-xs text-neutral-300 font-light">
                 <li>
-                  <a
-                    href="#bespoke-tailored"
-                    onClick={(e) => handleSmoothScroll(e, 'bespoke-tailored')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
-                    Private Aviation &amp; Jets
+                  <a href="/ethos" className="hover:text-[#D4AF37] transition-colors">
+                    The Halal Luxury Ethos
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#signature-journeys"
-                    onClick={(e) => handleSmoothScroll(e, 'signature-journeys')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
-                    Sacred Royal Umrah
+                  <a href="/bespoke" className="hover:text-[#D4AF37] transition-colors">
+                    Tailor-Made Royal Atelier
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#bespoke-tailored"
-                    onClick={(e) => handleSmoothScroll(e, 'bespoke-tailored')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
-                    Secluded Honeymoons
+                  <a href="/#signature-journeys" className="hover:text-[#D4AF37] transition-colors">
+                    Signature Journeys
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#bespoke-tailored"
-                    onClick={(e) => handleSmoothScroll(e, 'bespoke-tailored')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
-                    Multi-Gen Family Havens
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="#bespoke-tailored"
-                    onClick={(e) => handleSmoothScroll(e, 'bespoke-tailored')}
-                    className="hover:text-[#D4AF37] transition-colors"
-                  >
-                    Yacht &amp; Coastal Charters
+                  <a href="/admin" className="hover:text-[#D4AF37] transition-colors">
+                    VIP Client Portal
                   </a>
                 </li>
               </ul>
@@ -377,7 +328,7 @@ export default function Footer() {
           {/* ================= 3. COPYRIGHT & LEGAL ACTION BUTTONS ================= */}
           <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-400 gap-4">
             <p className="text-center sm:text-left">
-              &copy; {new Date().getFullYear()} Travel With Maijrun Ltd. Founded by Sheikh Mahmud Hasan. All Rights Reserved.
+              &copy; {new Date().getFullYear()} Travel With Maijrun Ltd. Founded by Mahmud Hasan. All Rights Reserved.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-6">
               <button
@@ -468,7 +419,7 @@ export default function Footer() {
                   <h3 className="font-serif text-xl font-bold">Terms of Luxury Service</h3>
                 </div>
                 <p className="text-xs text-neutral-300 leading-relaxed">
-                  Bespoke reservations are crafted exclusively through one-on-one consultation with our dedicated travel artisans led by Sheikh Mahmud Hasan.
+                  Bespoke reservations are crafted exclusively through one-on-one consultation with our dedicated travel artisans led by Mahmud Hasan.
                 </p>
                 <ul className="text-xs text-neutral-400 space-y-1.5 list-disc pl-4">
                   <li>Complimentary itinerary revisions during the initial bespoke design phase.</li>
