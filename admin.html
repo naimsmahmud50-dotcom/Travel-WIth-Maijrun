@@ -68,6 +68,11 @@
       caret-color: #D4AF37 !important;
       transition: background-color 5000s ease-in-out 0s;
     }
+    /* Custom masked text for password inputs without triggering browser password managers */
+    .mask-password-dots {
+      -webkit-text-security: disc !important;
+      text-security: disc !important;
+    }
   </style>
 </head>
 <body class="bg-[#061410] font-sans text-neutral-100 min-h-screen flex flex-col antialiased selection:bg-brand-gold selection:text-brand-emeraldDeep">
@@ -163,8 +168,8 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
                   <i data-lucide="lock" class="w-4 h-4"></i>
                 </div>
-                <input id="adminPass" name="admin_pass_credential" type="password" required placeholder="Password" autocomplete="new-password" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" onmousedown="this.removeAttribute('readonly')" ontouchstart="this.removeAttribute('readonly')"
-                  class="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all font-mono">
+                <input id="adminPass" name="admin_pass_credential" type="text" required placeholder="Password" autocomplete="new-password" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" onmousedown="this.removeAttribute('readonly')" ontouchstart="this.removeAttribute('readonly')"
+                  class="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all font-mono mask-password-dots">
                 <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-[#D4AF37] transition-colors">
                   <i id="passToggleIcon" data-lucide="eye" class="w-4 h-4"></i>
                 </button>
@@ -1072,15 +1077,27 @@
       const icon = document.getElementById('passToggleIcon');
       if (!passInput) return;
 
-      if (passInput.type === 'password') {
-        passInput.type = 'text';
+      if (passInput.classList.contains('mask-password-dots')) {
+        passInput.classList.remove('mask-password-dots');
         if (icon) icon.setAttribute('data-lucide', 'eye-off');
       } else {
-        passInput.type = 'password';
+        passInput.classList.add('mask-password-dots');
         if (icon) icon.setAttribute('data-lucide', 'eye');
       }
       lucide.createIcons();
     }
+
+    function enforceWipeAutofill() {
+      const idEl = document.getElementById('adminId');
+      const passEl = document.getElementById('adminPass');
+      if (idEl && idEl.hasAttribute('readonly')) idEl.value = '';
+      if (passEl && passEl.hasAttribute('readonly')) passEl.value = '';
+    }
+    window.addEventListener('DOMContentLoaded', enforceWipeAutofill);
+    window.addEventListener('load', () => {
+      enforceWipeAutofill();
+      [50, 150, 300, 600, 1000].forEach(t => setTimeout(enforceWipeAutofill, t));
+    });
 
     async function signOutAdmin() {
       try {

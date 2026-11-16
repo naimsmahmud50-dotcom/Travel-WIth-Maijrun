@@ -34,3 +34,9 @@ input:-webkit-autofill:active {
   caret-color: #D4AF37 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+/* Custom masked text for password inputs without triggering browser password managers */
+.mask-password-dots {
+  -webkit-text-security: disc !important;
+  text-security: disc !important;
+}

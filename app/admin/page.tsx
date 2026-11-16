@@ -78,6 +78,28 @@ export default function AdminDashboard() {
     };
   }, []);
 
+  // Active Autofill Nullifier: Guarantee inputs remain 100% empty on mount
+  useEffect(() => {
+    const wipeAutofill = () => {
+      if (!inputsUnlocked) {
+        const idEl = document.getElementById('adminId') as HTMLInputElement | null;
+        const passEl = document.getElementById('adminPass') as HTMLInputElement | null;
+        if (idEl && idEl.value) {
+          idEl.value = '';
+          setAdminIdentifier('');
+        }
+        if (passEl && passEl.value) {
+          passEl.value = '';
+          setAdminPassword('');
+        }
+      }
+    };
+
+    wipeAutofill();
+    const timers = [50, 150, 300, 600, 1000].map((ms) => setTimeout(wipeAutofill, ms));
+    return () => timers.forEach(clearTimeout);
+  }, [inputsUnlocked]);
+
   // Fetch inquiries when authenticated
   useEffect(() => {
     if (isAuthenticated) {
@@ -314,7 +336,10 @@ export default function AdminDashboard() {
                       type="text"
                       required
                       value={adminIdentifier}
-                      onChange={(e) => setAdminIdentifier(e.target.value)}
+                      onChange={(e) => {
+                        setInputsUnlocked(true);
+                        setAdminIdentifier(e.target.value);
+                      }}
                       onFocus={() => setInputsUnlocked(true)}
                       onMouseDown={() => setInputsUnlocked(true)}
                       onTouchStart={() => setInputsUnlocked(true)}
@@ -345,10 +370,13 @@ export default function AdminDashboard() {
                     <input
                       id="adminPass"
                       name="admin_pass_credential"
-                      type={showPassword ? 'text' : 'password'}
+                      type="text"
                       required
                       value={adminPassword}
-                      onChange={(e) => setAdminPassword(e.target.value)}
+                      onChange={(e) => {
+                        setInputsUnlocked(true);
+                        setAdminPassword(e.target.value);
+                      }}
                       onFocus={() => setInputsUnlocked(true)}
                       onMouseDown={() => setInputsUnlocked(true)}
                       onTouchStart={() => setInputsUnlocked(true)}
@@ -356,7 +384,9 @@ export default function AdminDashboard() {
                       placeholder="Password"
                       autoComplete="new-password"
                       data-lpignore="true"
-                      className="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all font-mono tracking-wide"
+                      className={`w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all font-mono tracking-wide ${
+                        showPassword ? '' : 'mask-password-dots'
+                      }`}
                     />
                     <button
                       type="button"

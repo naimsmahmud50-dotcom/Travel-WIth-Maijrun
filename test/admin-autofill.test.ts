@@ -21,6 +21,10 @@ test('Admin Autofill Shield: app/admin/page.tsx contract', () => {
   assert.ok(code.includes('data-lpignore="true"'), 'Must prevent third-party password managers from aggressive autofill');
   assert.ok(code.includes('autoComplete="new-password"'), 'Password must use new-password attribute');
 
+  // Masked dots and active nullifier
+  assert.ok(code.includes('mask-password-dots'), 'Must use custom text security mask to prevent Chrome password manager injection');
+  assert.ok(code.includes('wipeAutofill'), 'Must have active autofill nullifier on mount');
+
   // Ensure placeholders are clean and no credentials leaked
   assert.ok(code.includes('placeholder="Gmail"'), 'Must have placeholder Gmail');
   assert.ok(code.includes('placeholder="Password"'), 'Must have placeholder Password');
@@ -36,6 +40,8 @@ test('Admin Autofill Shield: admin.html contract', () => {
   assert.ok(html.includes('readonly onfocus="this.removeAttribute(\'readonly\')"'), 'admin.html must have readonly mount shield with onfocus unlock');
   assert.ok(html.includes('placeholder="Gmail"'), 'admin.html must have placeholder Gmail');
   assert.ok(html.includes('placeholder="Password"'), 'admin.html must have placeholder Password');
+  assert.ok(html.includes('mask-password-dots'), 'admin.html must have mask-password-dots');
+  assert.ok(html.includes('enforceWipeAutofill'), 'admin.html must have enforceWipeAutofill');
   assert.ok(html.includes('-webkit-autofill'), 'admin.html must have -webkit-autofill CSS override');
 });
 
