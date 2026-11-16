@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSlider from '@/components/HeroSlider';
 import JourneyFinder, { JourneyFilter } from '@/components/JourneyFinder';
+import GlobalSanctuaryMap from '@/components/GlobalSanctuaryMap';
 import HalalPillars from '@/components/HalalPillars';
 import SignatureJourneys from '@/components/SignatureJourneys';
 import DestinationCards from '@/components/DestinationCards';
@@ -43,6 +44,7 @@ export default function HomePage() {
         onSearch={handleSearchJourneys}
         activeFilter={journeyFilter}
       />
+      <GlobalSanctuaryMap onOpenInquiry={handleOpenInquiry} />
       <SignatureJourneys onOpenInquiry={handleOpenInquiry} />
       <HalalPillars />
       <DestinationCards

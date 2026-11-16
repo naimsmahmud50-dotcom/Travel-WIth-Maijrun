@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Cormorant_Garamond, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
+import { CurrencyProvider } from '@/context/CurrencyContext';
 
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
@@ -35,7 +36,9 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://images.unsplash.com" />
       </head>
       <body className="bg-brand-sand font-sans text-neutral-800 antialiased selection:bg-brand-gold selection:text-brand-emerald">
-        {children}
+        <CurrencyProvider>
+          {children}
+        </CurrencyProvider>
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Crown, Shield, Compass, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface HeroSliderProps {
   onOpenInquiry: (destination?: string) => void;
@@ -13,6 +14,7 @@ const HERO_SLIDES = [
     image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=75&w=1280&auto=format&fit=crop',
     tag: 'Royal Spiritual Expeditions',
     icon: Sparkles,
+    bdtAmount: 695000,
     titleMain: 'Makkah & Madinah',
     titleItalic: 'The Presidential Sanctuary',
     desc: 'Experience the pinnacle of spiritual elevation with five-star private Haram-facing suites, private chauffeured VIP transfers, and curated Islamic scholars on retinue.',
@@ -23,6 +25,7 @@ const HERO_SLIDES = [
     image: 'https://images.unsplash.com/photo-1566837945700-30057527ade0?q=75&w=1280&auto=format&fit=crop',
     tag: 'Islamic Heritage Discovery',
     icon: Crown,
+    bdtAmount: 768000,
     titleMain: 'Moorish Andalusia',
     titleItalic: 'Alhambra & Cordoba Splendors',
     desc: 'Walk through 800 years of golden Islamic civilization with private after-hours palace tours, certified Halal gourmet Michelin-star chefs, and boutique historical riads.',
@@ -33,6 +36,7 @@ const HERO_SLIDES = [
     image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=75&w=1280&auto=format&fit=crop',
     tag: '100% Private Secluded Haven',
     icon: Shield,
+    bdtAmount: 864000,
     titleMain: 'The Maldives Pavilions',
     titleItalic: 'Private Overwater Seclusion',
     desc: 'Zero visibility infinity plunge pools, halal oceanfront private dining under the stars, and alcohol-free luxury family villas designed for absolute peace of mind.',
@@ -43,6 +47,7 @@ const HERO_SLIDES = [
     image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=75&w=1280&auto=format&fit=crop',
     tag: 'Ottoman Grandeur & Coastal Luxury',
     icon: Compass,
+    bdtAmount: 624000,
     titleMain: 'Bosphorus Royalty',
     titleItalic: 'Palatial Istanbul & Bodrum',
     desc: 'Private luxury yacht cruises on the Bosphorus, VIP private palace tours, and exclusive halal-certified coastal wellness resorts in Bodrum.',
@@ -51,6 +56,7 @@ const HERO_SLIDES = [
 ];
 
 export default function HeroSlider({ onOpenInquiry }: HeroSliderProps) {
+  const { formatBdt } = useCurrency();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loadedSecondary, setLoadedSecondary] = useState(false);
 
@@ -97,9 +103,14 @@ export default function HeroSlider({ onOpenInquiry }: HeroSliderProps) {
 
             <div className="relative z-20 h-full max-w-7xl mx-auto px-6 sm:px-8 flex flex-col justify-end pb-36 md:pb-40">
               <div className="max-w-3xl space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-goldLight text-xs tracking-[0.2em] uppercase font-medium">
-                  <IconComponent className="w-3.5 h-3.5 text-brand-gold" />
-                  <span>{item.tag}</span>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-gold/20 border border-brand-gold/40 text-brand-goldLight text-xs tracking-[0.2em] uppercase font-medium">
+                    <IconComponent className="w-3.5 h-3.5 text-brand-gold" />
+                    <span>{item.tag}</span>
+                  </div>
+                  <div className="inline-flex items-center px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-[#D4AF37]/35 text-neutral-200 text-xs tracking-wider">
+                    <span className="text-[#D4AF37] font-semibold mr-1.5">From {formatBdt(item.bdtAmount)}</span> / guest
+                  </div>
                 </div>
                 <h1 className="font-serif text-4xl sm:text-6xl md:text-7xl font-normal text-white leading-[1.08] tracking-tight">
                   {item.titleMain} <br />

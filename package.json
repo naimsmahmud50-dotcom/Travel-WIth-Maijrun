@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --experimental-strip-types test/auth.test.ts && node --experimental-strip-types test/server-e2e.test.ts && node --experimental-strip-types test/next-e2e.test.ts && node --experimental-strip-types test/inquiry-flow.test.ts && node --experimental-strip-types test/journey-finder.test.ts && node --experimental-strip-types test/multi-page.test.ts"
+    "test": "node --experimental-strip-types test/auth.test.ts && node --experimental-strip-types test/server-e2e.test.ts && node --experimental-strip-types test/next-e2e.test.ts && node --experimental-strip-types test/inquiry-flow.test.ts && node --experimental-strip-types test/journey-finder.test.ts && node --experimental-strip-types test/multi-page.test.ts && node --experimental-strip-types test/currency.test.ts && node --experimental-strip-types test/map-contract.test.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",

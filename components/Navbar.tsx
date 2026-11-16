@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Phone, ShieldCheck, Globe, Search, Menu, X, ArrowRight, Sparkles, Lock, Compass } from 'lucide-react';
+import { Phone, ShieldCheck, Globe, Search, Menu, X, ArrowRight, Sparkles, Lock, Compass, ChevronDown, Check } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
+import { useCurrency } from '@/context/CurrencyContext';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 
@@ -83,6 +84,7 @@ const NAV_DESTINATIONS = [
     title: 'The Sacred Sanctuaries: Makkah & Madinah',
     duration: '10 Days • 9 Nights',
     price: '৳695,000 / $5,800',
+    bdtAmount: 695000,
     image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=400&auto=format&fit=crop',
   },
   {
@@ -91,6 +93,7 @@ const NAV_DESTINATIONS = [
     title: 'Echoes of Al-Andalus: Moorish Splendors',
     duration: '12 Days • 11 Nights',
     price: '৳768,000 / $6,400',
+    bdtAmount: 768000,
     image: 'https://images.unsplash.com/photo-1583200424564-94676644fcf6?q=80&w=400&auto=format&fit=crop',
   },
   {
@@ -99,6 +102,7 @@ const NAV_DESTINATIONS = [
     title: 'The Pearl Pavilions: Overwater Sanctuary',
     duration: '7 Days • 6 Nights',
     price: '৳864,000 / $7,200',
+    bdtAmount: 864000,
     image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=400&auto=format&fit=crop',
   },
   {
@@ -107,6 +111,7 @@ const NAV_DESTINATIONS = [
     title: 'Matterhorn Majesty: Swiss Alpine Chalets',
     duration: '9 Days • 8 Nights',
     price: '৳890,000 / $7,400',
+    bdtAmount: 890000,
     image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=400&auto=format&fit=crop',
   },
   {
@@ -115,6 +120,7 @@ const NAV_DESTINATIONS = [
     title: 'Sultans of the Bosphorus: Palaces & Yachts',
     duration: '10 Days • 9 Nights',
     price: '৳680,000 / $5,650',
+    bdtAmount: 680000,
     image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?q=80&w=400&auto=format&fit=crop',
   },
   {
@@ -123,14 +129,28 @@ const NAV_DESTINATIONS = [
     title: 'The Great Migration: Luxury Tented Haven',
     duration: '8 Days • 7 Nights',
     price: '৳1,176,000 / $9,800',
+    bdtAmount: 1176000,
     image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=400&auto=format&fit=crop',
   },
 ];
 
 export default function Navbar({ onOpenInquiry }: NavbarProps) {
+  const { currency, setCurrency, formatBdt, currencies, currencyList } = useCurrency();
+  const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [destDropdownOpen, setDestDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (currencyDropdownOpen && !target?.closest('.currency-dropdown-container')) {
+        setCurrencyDropdownOpen(false);
+      }
+    };
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, [currencyDropdownOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -237,9 +257,54 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
             {/* RIGHT UTILITIES */}
             <div className="flex items-center gap-3 sm:gap-4 whitespace-nowrap shrink-0">
-              <div className="flex items-center gap-1.5">
-                <Globe className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
-                <span className="text-neutral-200 text-xs font-medium">BDT (৳)</span>
+              {/* Luxury Currency Dropdown Selector */}
+              <div className="relative currency-dropdown-container">
+                <button
+                  type="button"
+                  onClick={() => setCurrencyDropdownOpen((prev) => !prev)}
+                  className="flex items-center gap-1.5 hover:text-[#D4AF37] transition-colors py-1 cursor-pointer focus:outline-none"
+                  aria-label="Select Currency"
+                  aria-expanded={currencyDropdownOpen}
+                >
+                  <Globe className="w-3.5 h-3.5 text-[#D4AF37] shrink-0" />
+                  <span className="text-neutral-200 text-xs font-semibold">
+                    {currency} ({currencies[currency]?.symbol || '৳'})
+                  </span>
+                  <ChevronDown
+                    className={`w-3 h-3 text-[#D4AF37] transition-transform duration-200 ${
+                      currencyDropdownOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {currencyDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-1.5 w-48 bg-[#0B2019] border border-[#D4AF37]/35 rounded-xl shadow-2xl p-1.5 z-[100] backdrop-blur-xl">
+                    <div className="px-2 py-1 text-[9px] uppercase tracking-widest text-[#D4AF37] font-bold border-b border-white/10 mb-1">
+                      Currency Preference
+                    </div>
+                    {currencyList.map((item) => (
+                      <button
+                        key={item.code}
+                        type="button"
+                        onClick={() => {
+                          setCurrency(item.code);
+                          setCurrencyDropdownOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs transition-colors cursor-pointer ${
+                          currency === item.code
+                            ? 'bg-[#D4AF37]/20 text-[#D4AF37] font-semibold'
+                            : 'text-neutral-200 hover:bg-white/5 hover:text-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-white">{item.code}</span>
+                          <span className="text-neutral-400 text-[11px]">({item.symbol})</span>
+                        </div>
+                        {currency === item.code && <Check className="w-3.5 h-3.5 text-[#D4AF37]" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               <span className="hidden md:inline text-neutral-600">|</span>
               <button
@@ -331,7 +396,7 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
                           </h4>
                           <div className="flex items-center justify-between text-[10px] text-neutral-400 mt-0.5">
                             <span>{dest.duration}</span>
-                            <span className="text-white/80 font-semibold">{dest.price.split('/')[0]}</span>
+                            <span className="text-white/80 font-semibold">{formatBdt(dest.bdtAmount)}</span>
                           </div>
                         </div>
                       </a>
@@ -517,6 +582,31 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
               <ArrowRight className="w-4 h-4 text-[#D4AF37] opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0" />
             </a>
           ))}
+        </div>
+
+        {/* Mobile Currency Selector */}
+        <div className="px-6 py-4 border-t border-[#D4AF37]/15 bg-white/5">
+          <div className="flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-[0.2em] text-[#D4AF37] mb-2.5">
+            <Globe className="w-3.5 h-3.5" />
+            <span>Select Currency</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {currencyList.map((c) => (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => setCurrency(c.code)}
+                className={`py-2 px-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 transition-all cursor-pointer ${
+                  currency === c.code
+                    ? 'bg-[#D4AF37] text-[#061410] shadow-sm font-bold'
+                    : 'bg-[#0B2019] text-neutral-300 hover:text-white border border-[#D4AF37]/20 hover:border-[#D4AF37]/50'
+                }`}
+              >
+                <span>{c.code}</span>
+                <span className="text-[10px] opacity-80">({c.symbol})</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Drawer Footer Actions */}

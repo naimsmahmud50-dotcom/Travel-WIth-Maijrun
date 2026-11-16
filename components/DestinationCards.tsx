@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Sparkles, RotateCcw, Compass, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, A11y } from 'swiper/modules';
+import { useCurrency } from '@/context/CurrencyContext';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -38,6 +39,7 @@ export default function DestinationCards({
   onResetFilter,
   onFilterChange,
 }: DestinationCardsProps) {
+  const { formatBdt } = useCurrency();
   const [activeCategory, setActiveCategory] = useState('all');
 
   // Synchronize category pills whenever external search filter changes
@@ -337,7 +339,7 @@ export default function DestinationCards({
                       <div className="pt-4 border-t border-neutral-200 flex items-center justify-between">
                         <div>
                           <span className="text-[11px] uppercase tracking-wider text-neutral-400 block font-semibold">Starting From</span>
-                          <span className="font-serif text-xl font-bold text-brand-emerald">{item.priceBdt}</span>
+                          <span className="font-serif text-xl font-bold text-brand-emerald">{formatBdt(item.priceBdt)}</span>
                           <span className="text-xs text-neutral-500 font-light"> / guest</span>
                         </div>
                         <div className="flex items-center gap-2">

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Autoplay, A11y } from 'swiper/modules';
+import { useCurrency } from '@/context/CurrencyContext';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -30,6 +31,7 @@ const SIGNATURE_CARDS = [
     desc: 'Storybook Alpine peaks of Zermatt & Lake Geneva with private halal chalet catering.',
     days: '10 Days',
     price: 'From ৳ 890,000 / $7,400',
+    bdtAmount: 890000,
     image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=800&auto=format&fit=crop',
     inquiryTarget: 'Switzerland Alpine Sanctuary',
   },
@@ -40,6 +42,7 @@ const SIGNATURE_CARDS = [
     desc: 'Lush cloud forests, private hot-spring villas, and custom halal eco-adventures.',
     days: '9 Days',
     price: 'From ৳ 720,000 / $6,000',
+    bdtAmount: 720000,
     image: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=800&auto=format&fit=crop',
     inquiryTarget: 'Costa Rica Rainforest Sanctuary',
   },
@@ -50,6 +53,7 @@ const SIGNATURE_CARDS = [
     desc: 'Kyoto private ryokan buyouts, bullet train first class, and certified halal Wagyu Kaiseki.',
     days: '12 Days',
     price: 'From ৳ 940,000 / $7,800',
+    bdtAmount: 940000,
     image: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop',
     inquiryTarget: 'Japan Heritage Ryokan',
   },
@@ -60,6 +64,7 @@ const SIGNATURE_CARDS = [
     desc: 'VIP private access to Alhambra, historic Cordoba courtyards, and halal olive-estate dining.',
     days: '11 Days',
     price: 'From ৳ 768,000 / $6,400',
+    bdtAmount: 768000,
     image: 'https://images.unsplash.com/photo-1568084680786-a84f91d1153c?q=80&w=800&auto=format&fit=crop',
     inquiryTarget: 'Andalusia Private Palaces',
   },
@@ -70,6 +75,7 @@ const SIGNATURE_CARDS = [
     desc: 'Private Golden Horn yacht charters and exclusive cave-sanctuary hot air balloon dawns.',
     days: '8 Days',
     price: 'From ৳ 640,000 / $5,300',
+    bdtAmount: 640000,
     image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?q=80&w=800&auto=format&fit=crop',
     inquiryTarget: 'Ottoman Bosphorus & Cappadocia',
   },
@@ -80,12 +86,14 @@ const SIGNATURE_CARDS = [
     desc: 'Vintage luxury train traverse through wild savannahs with private halal bush banquet dining.',
     days: '13 Days',
     price: 'From ৳ 1,120,000 / $9,300',
+    bdtAmount: 1120000,
     image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=800&auto=format&fit=crop',
     inquiryTarget: 'Serengeti Royal Wilderness',
   },
 ];
 
 export default function SignatureJourneys({ onOpenInquiry }: SignatureJourneysProps) {
+  const { formatBdt } = useCurrency();
   return (
     <section id="signature-journeys" className="py-24 bg-[#FAFAF8] border-b border-brand-sandDark/70 scroll-mt-20 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
@@ -224,7 +232,7 @@ export default function SignatureJourneys({ onOpenInquiry }: SignatureJourneysPr
                         <span>{card.days}</span>
                       </div>
                       <span className="text-[#D4AF37] font-semibold">
-                        {card.price}
+                        From {formatBdt(card.bdtAmount)}
                       </span>
                     </div>
                   </div>

@@ -24,12 +24,14 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import InquiryModal from '@/components/InquiryModal';
 import { DetailedDestination } from '@/lib/destination-details';
+import { useCurrency } from '@/context/CurrencyContext';
 
 interface DestinationClientViewProps {
   destination: DetailedDestination;
 }
 
 export default function DestinationClientView({ destination }: DestinationClientViewProps) {
+  const { currency, formatBdt } = useCurrency();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTarget, setModalTarget] = useState<string | undefined>(destination.title);
   
@@ -182,8 +184,10 @@ export default function DestinationClientView({ destination }: DestinationClient
                 </div>
                 <div className="text-right">
                   <span className="text-[11px] uppercase tracking-wider text-neutral-300 block">Investment</span>
-                  <span className="font-serif text-2xl font-bold text-[#D4AF37]">{destination.priceBdt}</span>
-                  <span className="text-xs text-neutral-300 block">({destination.priceUsd} / guest)</span>
+                  <span className="font-serif text-2xl font-bold text-[#D4AF37]">{formatBdt(destination.priceBdt)}</span>
+                  <span className="text-xs text-neutral-300 block">
+                    {currency === 'BDT' ? `(${destination.priceUsd} / guest)` : `(${destination.priceBdt} / guest)`}
+                  </span>
                 </div>
               </div>
 
