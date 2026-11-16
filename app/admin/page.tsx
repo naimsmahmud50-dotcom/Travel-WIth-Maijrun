@@ -297,8 +297,9 @@ export default function AdminDashboard() {
                       required
                       value={adminIdentifier}
                       onChange={(e) => setAdminIdentifier(e.target.value)}
+                      placeholder="Gmail"
                       autoComplete="username"
-                      className="w-full pl-10 pr-4 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -324,8 +325,9 @@ export default function AdminDashboard() {
                       required
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
+                      placeholder="Password"
                       autoComplete="current-password"
-                      className="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white outline-none transition-all font-mono tracking-wide"
+                      className="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all font-mono tracking-wide"
                     />
                     <button
                       type="button"
