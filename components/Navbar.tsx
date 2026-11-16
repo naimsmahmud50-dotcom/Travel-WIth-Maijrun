@@ -81,56 +81,68 @@ const NAV_DESTINATIONS = [
   {
     id: 'makkah',
     country: 'Saudi Arabia',
+    tag: 'Royal Umrah',
     title: 'The Sacred Sanctuaries: Makkah & Madinah',
     duration: '10 Days • 9 Nights',
     price: '৳695,000 / $5,800',
     bdtAmount: 695000,
     image: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=400&auto=format&fit=crop',
+    highlight: 'Direct Kaaba-view suites & VIP Haram assistance',
   },
   {
     id: 'spain',
     country: 'Spain',
+    tag: 'Moorish Heritage',
     title: 'Echoes of Al-Andalus: Moorish Splendors',
     duration: '12 Days • 11 Nights',
     price: '৳768,000 / $6,400',
     bdtAmount: 768000,
-    image: 'https://images.unsplash.com/photo-1583200424564-94676644fcf6?q=80&w=400&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1568084680786-a84f91d1153c?q=80&w=400&auto=format&fit=crop',
+    highlight: 'After-hours Alhambra & Cordoba Mosque entries',
   },
   {
     id: 'maldives',
     country: 'Maldives',
+    tag: 'Private Island Haven',
     title: 'The Pearl Pavilions: Overwater Sanctuary',
     duration: '7 Days • 6 Nights',
     price: '৳864,000 / $7,200',
     bdtAmount: 864000,
     image: 'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=400&auto=format&fit=crop',
+    highlight: 'Zero-sightline lagoon pool villas & private reef',
   },
   {
     id: 'switzerland',
     country: 'Switzerland',
+    tag: 'Alpine Seclusion',
     title: 'Matterhorn Majesty: Swiss Alpine Chalets',
     duration: '9 Days • 8 Nights',
     price: '৳890,000 / $7,400',
     bdtAmount: 890000,
     image: 'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=400&auto=format&fit=crop',
+    highlight: 'Private heli-transfer & glacier dining under stars',
   },
   {
     id: 'turkey',
     country: 'Turkey',
+    tag: 'Ottoman Grandeur',
     title: 'Sultans of the Bosphorus: Palaces & Yachts',
     duration: '10 Days • 9 Nights',
     price: '৳680,000 / $5,650',
     bdtAmount: 680000,
-    image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?q=80&w=400&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?q=80&w=400&auto=format&fit=crop',
+    highlight: 'Ciragan Palace suite & private yacht sunset cruise',
   },
   {
     id: 'safari',
     country: 'Tanzania',
+    tag: 'Wilderness Luxury',
     title: 'The Great Migration: Luxury Tented Haven',
     duration: '8 Days • 7 Nights',
     price: '৳1,176,000 / $9,800',
     bdtAmount: 1176000,
     image: 'https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=400&auto=format&fit=crop',
+    highlight: 'Dawn hot-air balloon & halal gourmet tented feast',
   },
 ];
 
@@ -362,65 +374,111 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
                 {/* Mega-Menu Panel */}
                 <div
-                  className={`absolute top-full left-0 w-[680px] bg-[#0B2019] border border-[#D4AF37]/30 rounded-2xl shadow-2xl p-6 transition-all duration-300 z-50 ${
-                    destDropdownOpen ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-2 pointer-events-none'
+                  className={`absolute top-full left-0 w-[840px] xl:w-[890px] bg-[#FAF8F5]/98 backdrop-blur-2xl border border-[#D4AF37]/45 rounded-3xl shadow-[0_24px_60px_-12px_rgba(11,32,25,0.22)] p-6 sm:p-7 transition-all duration-300 z-50 ${
+                    destDropdownOpen ? 'opacity-100 translate-y-1 pointer-events-auto' : 'opacity-0 translate-y-3 pointer-events-none'
                   }`}
                 >
-                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
-                    <span className="text-[10px] uppercase font-bold tracking-[0.25em] text-[#D4AF37]">
-                      Curated 2026 Black Book Expeditions
-                    </span>
+                  {/* Dropdown Header Bar */}
+                  <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-[#E8E2D5]">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-pulse" />
+                        <span className="text-[10px] uppercase font-bold tracking-[0.24em] text-[#8C6B14]">
+                          Curated 2026 Black Book Expeditions
+                        </span>
+                      </div>
+                      <h3 className="font-serif text-2xl text-[#0B2019] font-normal tracking-tight mt-1">
+                        Private Halal Sanctuaries <span className="italic font-light text-[#8C6B14]">&amp; Royal Retreats</span>
+                      </h3>
+                    </div>
+
                     <a
                       href="/#destinations"
                       onClick={() => setDestDropdownOpen(false)}
-                      className="text-[11px] text-neutral-300 hover:text-[#D4AF37] tracking-wider uppercase font-semibold transition-colors"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white border border-[#D4AF37]/35 hover:border-[#0B2019] text-[#0B2019] hover:text-[#8C6B14] text-[11px] font-semibold tracking-wider uppercase transition-all duration-200 shadow-xs cursor-pointer group"
                     >
-                      View All Sanctuaries →
+                      <span>View All Sanctuaries</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#8C6B14] group-hover:translate-x-1 transition-transform" />
                     </a>
                   </div>
 
+                  {/* 6 Curated Destination Cards Grid */}
                   <div className="grid grid-cols-2 gap-3.5">
                     {NAV_DESTINATIONS.map((dest) => (
                       <a
                         key={dest.id}
                         href={`/destinations/${dest.id}`}
                         onClick={() => setDestDropdownOpen(false)}
-                        className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/5 border border-transparent hover:border-[#D4AF37]/40 transition-all group"
+                        className="flex items-center gap-3.5 p-3 rounded-2xl bg-white/85 hover:bg-white border border-[#E8E2D5] hover:border-[#D4AF37]/80 hover:shadow-[0_8px_24px_-6px_rgba(212,175,55,0.22)] hover:-translate-y-0.5 transition-all duration-300 group"
                       >
-                        <div className="w-14 h-14 rounded-lg overflow-hidden shrink-0 border border-white/10">
+                        {/* High-Resolution Luxury Cinema Thumbnail */}
+                        <div className="relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-[#D4AF37]/30 shadow-xs">
                           <img
                             src={dest.image}
                             alt={dest.title}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=400&auto=format&fit=crop';
+                            }}
+                            className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <span className="text-[9px] uppercase tracking-wider font-bold text-[#D4AF37] block">
-                            {dest.country}
-                          </span>
-                          <h4 className="font-serif text-sm font-bold text-white truncate group-hover:text-[#F3E5AB] transition-colors">
+
+                        {/* Content Hierarchy with Cormorant Serif */}
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-[9.5px] uppercase tracking-[0.16em] font-bold text-[#8C6B14] flex items-center gap-1.5 truncate">
+                              <span>{dest.country}</span>
+                              <span className="text-neutral-300">•</span>
+                              <span className="text-neutral-500 font-normal">{dest.tag}</span>
+                            </span>
+                            <span className="text-[10px] font-mono text-neutral-500 font-medium shrink-0">
+                              {dest.duration.split('•')[0].trim()}
+                            </span>
+                          </div>
+
+                          {/* Full Title without truncate truncation */}
+                          <h4 className="font-serif text-[14px] font-bold text-[#0B2019] group-hover:text-[#8C6B14] leading-snug transition-colors line-clamp-1">
                             {dest.title}
                           </h4>
-                          <div className="flex items-center justify-between text-[10px] text-neutral-400 mt-0.5">
-                            <span>{dest.duration}</span>
-                            <span className="text-white/80 font-semibold">{formatBdt(dest.bdtAmount)}</span>
+
+                          {/* Investment & Halal Badge */}
+                          <div className="flex items-center justify-between text-xs pt-0.5">
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-[9.5px] uppercase tracking-wider text-neutral-400 font-medium">From</span>
+                              <span className="font-serif text-[14.5px] font-bold text-[#0B2019]">
+                                {formatBdt(dest.bdtAmount)}
+                              </span>
+                              <span className="text-[9.5px] text-neutral-500 font-light">/guest</span>
+                            </div>
+                            <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                              100% Halal
+                            </span>
                           </div>
                         </div>
                       </a>
                     ))}
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-neutral-400">
-                    <span className="flex items-center gap-1.5 text-neutral-300">
-                      <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-                      100% Certified Halal • Alcohol-Free • Zero Sightlines
-                    </span>
+                  {/* Dropdown Atelier Footer */}
+                  <div className="mt-4 p-3.5 rounded-2xl bg-[#0B2019] border border-[#D4AF37]/35 text-white flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs">
+                    <div className="flex items-center gap-2.5 text-xs text-neutral-200">
+                      <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/15 border border-[#D4AF37]/35 flex items-center justify-center text-[#D4AF37] shrink-0">
+                        <ShieldCheck className="w-4 h-4" />
+                      </div>
+                      <div className="text-[11px] leading-tight">
+                        <span className="font-semibold text-[#F3E5AB] block">Verified Halal Luxury Sanctuary Protocol</span>
+                        <span className="text-neutral-300 font-light">100% Certified Halal • Alcohol-Free • Zero Sightlines</span>
+                      </div>
+                    </div>
+
                     <a
                       href="/bespoke"
                       onClick={() => setDestDropdownOpen(false)}
-                      className="text-[#D4AF37] hover:underline font-semibold"
+                      className="shrink-0 px-4 py-2 rounded-xl bg-[#D4AF37] hover:bg-[#F3E5AB] text-[#061410] font-sans text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-1.5 shadow-sm hover:shadow-md cursor-pointer whitespace-nowrap"
                     >
-                      Bespoke Royal Atelier &gt;
+                      <span>Bespoke Royal Atelier</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </a>
                   </div>
                 </div>
