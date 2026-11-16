@@ -181,9 +181,10 @@ export function calculateDistanceNM(
  * Private Jet flight duration based on Mach 0.85 cruising speed (~485 knots)
  */
 export function calculateFlightDuration(distanceNM: number): { hours: number; minutes: number; text: string } {
-  const totalHours = distanceNM / 485 + 0.45;
-  const hours = Math.floor(totalHours);
-  const minutes = Math.round((totalHours - hours) * 60);
+  const safeDistance = Math.max(0, isNaN(distanceNM) ? 0 : distanceNM);
+  const totalMinutes = Math.round((safeDistance / 485 + 0.45) * 60);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
   return {
     hours,
     minutes,

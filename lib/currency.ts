@@ -118,7 +118,8 @@ export function formatCurrency(
   options: { round?: boolean } = { round: true }
 ): string {
   const config = CURRENCIES[currency] || CURRENCIES.BDT;
-  const rounded = options.round !== false ? Math.round(amount) : amount;
+  const safeAmount = isNaN(amount) || amount == null ? 0 : amount;
+  const rounded = options.round !== false ? Math.round(safeAmount) : safeAmount;
   const formattedNumber = rounded.toLocaleString('en-US');
 
   if (config.symbol === 'د.إ' || config.symbol === '﷼') {

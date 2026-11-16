@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 import {
   CURRENCIES,
   SUPPORTED_CURRENCY_CODES,
@@ -124,3 +126,25 @@ test('Currency Engine: formatBdt helper integrates parsing, conversion, and form
   // AED formatting
   assert.strictEqual(formatBdt('৳1,176,000', 'AED'), 'د.إ 35,963');
 });
+
+test('Currency Engine: robust handling of NaN, null, and empty boundaries', () => {
+  // NaN inputs safely format to zero rather than displaying NaN to luxury visitors
+  assert.strictEqual(formatCurrency(NaN, 'BDT'), '৳0');
+  assert.strictEqual(formatCurrency(NaN, 'USD'), '$0');
+  // Nullish conversion
+  assert.strictEqual(formatBdt(null, 'USD'), '$0');
+  assert.strictEqual(formatBdt(undefined, 'GBP'), '£0');
+  assert.strictEqual(formatBdt('', 'EUR'), '€0');
+  assert.strictEqual(formatBdt('invalid-text', 'SAR'), '﷼ 0');
+});
+
+test('Currency UI Contract: Navbar integrates visible non-clipped currency selector', () => {
+  const code = fs.readFileSync(path.resolve('components/Navbar.tsx'), 'utf-8');
+  assert.ok(code.includes('useCurrency'), 'Navbar must consume useCurrency hook');
+  assert.ok(code.includes('currencyDropdownOpen'), 'Navbar must manage dropdown state');
+  assert.ok(code.includes('overflow-visible'), 'Navbar top bar must have overflow-visible when not scrolled to prevent clipping dropdown');
+  assert.ok(code.includes('Select Currency'), 'Navbar must include Select Currency controls');
+  assert.ok(code.includes('currencyList.map'), 'Navbar must map through all supported currencies');
+});
+
+

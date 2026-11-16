@@ -282,17 +282,43 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                   strokeDasharray="6 6"
                   className="animate-pulse"
                 />
+                {/* Animated Flying Jet Marker */}
+                <g>
+                  <animateMotion
+                    path={flightPathArc}
+                    dur="4.5s"
+                    repeatCount="indefinite"
+                    rotate="auto"
+                  />
+                  <g transform="translate(0, 0)">
+                    <circle r="7" fill="#D4AF37" opacity="0.3" />
+                    <path
+                      d="M 6 0 L -4 -4 L -2 -1 L -6 -1 L -7 -3 L -8 -3 L -7 0 L -8 3 L -7 3 L -6 1 L -2 1 L -4 4 Z"
+                      fill="#F3E5AB"
+                      stroke="#061410"
+                      strokeWidth="0.5"
+                    />
+                  </g>
+                </g>
               </g>
 
               {/* All 6 Sanctuary Location Pins */}
               {SANCTUARIES.map((sanctuary) => {
                 const isSelected = selectedSanctuary.id === sanctuary.id;
                 const coords = projectCoords(sanctuary.lat, sanctuary.lon);
+                // Smart label offset: Switzerland offset slightly to avoid London overlap
+                const labelY = sanctuary.id === 'switzerland' ? coords.y + 16 : coords.y - 12;
 
                 return (
                   <g
                     key={sanctuary.id}
                     onClick={() => setSelectedSanctuary(sanctuary)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedSanctuary(sanctuary);
+                      }
+                    }}
                     className="cursor-pointer group"
                     role="button"
                     tabIndex={0}
@@ -341,7 +367,7 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                     />
 
                     {/* Label Badge */}
-                    <g transform={`translate(${coords.x}, ${coords.y - 12})`}>
+                    <g transform={`translate(${coords.x}, ${labelY})`}>
                       <rect
                         x="-40"
                         y="-16"
@@ -369,35 +395,84 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                 );
               })}
 
-              {/* Selected Origin Hub Marker */}
-              <g transform={`translate(${originCoords.x}, ${originCoords.y})`}>
-                <circle r="14" fill="#10B981" opacity="0.2" className="animate-ping" />
-                <circle r="6" fill="#10B981" stroke="#FFFFFF" strokeWidth="1.5" />
-                <g transform="translate(0, 16)">
-                  <rect
-                    x="-24"
-                    y="0"
-                    width="48"
-                    height="14"
-                    rx="4"
-                    fill="#061410"
-                    stroke="#10B981"
-                    strokeWidth="1"
-                  />
-                  <text
-                    x="0"
-                    y="10"
-                    textAnchor="middle"
-                    fill="#A7F3D0"
-                    fontSize="7.5"
-                    fontWeight="bold"
-                    letterSpacing="0.1em"
-                    className="select-none font-mono"
+              {/* All 4 Origin Departure Hub Markers */}
+              {ORIGIN_HUBS.map((hub) => {
+                const isSelected = selectedOrigin.code === hub.code;
+                const coords = projectCoords(hub.lat, hub.lon);
+                const labelOffsetY = hub.code === 'LHR' ? -18 : 16;
+                const labelOffsetX = hub.code === 'DXB' ? 24 : 0;
+
+                return (
+                  <g
+                    key={hub.code}
+                    transform={`translate(${coords.x}, ${coords.y})`}
+                    onClick={() => setSelectedOrigin(hub)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedOrigin(hub);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Select departure hub: ${hub.city} (${hub.code})`}
+                    className="cursor-pointer group"
                   >
-                    {selectedOrigin.code} ORIGIN
-                  </text>
-                </g>
-              </g>
+                    {isSelected ? (
+                      <>
+                        <circle r="14" fill="#10B981" opacity="0.25" className="animate-ping" />
+                        <circle r="6" fill="#10B981" stroke="#FFFFFF" strokeWidth="1.5" />
+                        <g transform={`translate(${labelOffsetX}, ${labelOffsetY})`}>
+                          <rect
+                            x="-26"
+                            y="-7"
+                            width="52"
+                            height="14"
+                            rx="4"
+                            fill="#061410"
+                            stroke="#10B981"
+                            strokeWidth="1"
+                          />
+                          <text
+                            x="0"
+                            y="3.5"
+                            textAnchor="middle"
+                            fill="#A7F3D0"
+                            fontSize="7.5"
+                            fontWeight="bold"
+                            letterSpacing="0.1em"
+                            className="select-none font-mono"
+                          >
+                            {hub.code} ORIGIN
+                          </text>
+                        </g>
+                      </>
+                    ) : (
+                      <>
+                        <circle
+                          r="4"
+                          fill="#061410"
+                          stroke="#10B981"
+                          strokeWidth="1.5"
+                          className="group-hover:scale-125 transition-transform"
+                        />
+                        <text
+                          x="0"
+                          y="-7"
+                          textAnchor="middle"
+                          fill="#6EE7B7"
+                          fontSize="7"
+                          fontWeight="600"
+                          letterSpacing="0.05em"
+                          className="select-none font-mono opacity-80 group-hover:opacity-100"
+                        >
+                          {hub.code}
+                        </text>
+                      </>
+                    )}
+                  </g>
+                );
+              })}
             </svg>
           </div>
 

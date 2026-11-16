@@ -87,6 +87,18 @@ test('Global Sanctuary Map: calculateFlightDuration returns formatted private je
   const d2 = calculateFlightDuration(2550);
   assert.strictEqual(d2.hours, 5);
   assert.ok(d2.text.includes('5h'));
+
+  // Critical boundary test: verify minutes never equal 60 across 5000 test distances
+  for (let nm = 0; nm <= 5000; nm += 37) {
+    const dur = calculateFlightDuration(nm);
+    assert.ok(dur.minutes >= 0 && dur.minutes < 60, `Minutes must be 0-59, got ${dur.minutes} for ${nm} NM`);
+    assert.ok(!dur.text.includes('60m'), `Formatted duration must never display '60m' (distance: ${nm} NM)`);
+  }
+  // Check exact previous edge distances that caused 60m bug
+  const edge263 = calculateFlightDuration(263);
+  assert.strictEqual(edge263.minutes, 0);
+  assert.strictEqual(edge263.hours, 1);
+  assert.strictEqual(edge263.text, '1h 00m');
 });
 
 test('Global Sanctuary Map: getRecommendedAircraft selects appropriate luxury jet model by range', () => {
@@ -111,6 +123,8 @@ test('Global Sanctuary Map: UI component code contract', () => {
   assert.ok(code.includes('Avionics & Telemetry'), 'Must render Avionics & Telemetry display');
   assert.ok(code.includes('Inquire Jet Charter'), 'Must include Inquire Jet Charter CTA');
   assert.ok(code.includes('/destinations/${selectedSanctuary.id}'), 'Must link to active sanctuary dossier');
+  assert.ok(code.includes('animateMotion'), 'Must feature dynamic animated jet along flight trajectory');
+  assert.ok(code.includes('{hub.code} ORIGIN'), 'Must render origin hub indicators on map');
 });
 
 test('Page Integration: app/page.tsx embeds GlobalSanctuaryMap between JourneyFinder and SignatureJourneys', () => {

@@ -154,7 +154,11 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 40);
+      const isScrolled = window.scrollY > 40;
+      setScrolled(isScrolled);
+      if (isScrolled) {
+        setCurrencyDropdownOpen(false);
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
@@ -165,8 +169,9 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && mobileOpen) {
-        setMobileOpen(false);
+      if (e.key === 'Escape') {
+        if (mobileOpen) setMobileOpen(false);
+        if (currencyDropdownOpen) setCurrencyDropdownOpen(false);
       }
     };
 
@@ -181,7 +186,7 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
       document.body.style.overflow = '';
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [mobileOpen]);
+  }, [mobileOpen, currencyDropdownOpen]);
 
   const handleInquiry = (topic: string) => {
     if (onOpenInquiry) {
@@ -222,8 +227,10 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
       <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         {/* Top Utility Concierge Bar (38px, smoothly collapses on scroll, powered by Swiper) */}
         <div
-          className={`overflow-hidden transition-all duration-300 bg-[#0B2019] border-b border-[#D4AF37]/20 ${
-            scrolled ? 'max-h-0 opacity-0 py-0 border-b-0 pointer-events-none' : 'h-[38px] max-h-[38px] opacity-100'
+          className={`transition-all duration-300 bg-[#0B2019] border-b border-[#D4AF37]/20 ${
+            scrolled
+              ? 'max-h-0 opacity-0 py-0 border-b-0 pointer-events-none overflow-hidden'
+              : 'h-[38px] max-h-[38px] opacity-100 overflow-visible'
           }`}
         >
           <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between text-xs text-neutral-300 gap-4">
