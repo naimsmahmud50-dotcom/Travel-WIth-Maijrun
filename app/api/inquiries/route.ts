@@ -1,30 +1,54 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
-import path from 'path';
 import crypto from 'crypto';
-import { getSessionFromRequest } from '@/lib/auth';
+import { getSessionFromRequest, getClientIp } from '@/lib/auth';
+import {
+  sanitizeText,
+  isValidEmail,
+  isValidPhone,
+  isHoneypotTriggered,
+  checkPublicRateLimit,
+  getStorageFilePath,
+} from '@/lib/security';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const INQUIRIES_FILE = path.join(DATA_DIR, 'inquiries.json');
+function getInquiriesFilePath(): string {
+  return getStorageFilePath('inquiries.json');
+}
 
-// Ensure data directory and file exist
-function ensureDataFile() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+function ensureDataFile(): string {
+  const filePath = getInquiriesFilePath();
+  try {
+    if (!fs.existsSync(filePath)) {
+      fs.writeFileSync(filePath, JSON.stringify([], null, 2));
+    }
+  } catch (err) {
+    console.error('Warning: Unable to ensure inquiries file on filesystem:', err);
   }
-  if (!fs.existsSync(INQUIRIES_FILE)) {
-    fs.writeFileSync(INQUIRIES_FILE, JSON.stringify([], null, 2));
-  }
+  return filePath;
 }
 
 function readInquiries(): any[] {
-  ensureDataFile();
+  const filePath = ensureDataFile();
   try {
-    const data = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
-    const inquiries = data ? JSON.parse(data) : [];
-    return Array.isArray(inquiries) ? inquiries : [];
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf-8');
+      const inquiries = data ? JSON.parse(data) : [];
+      return Array.isArray(inquiries) ? inquiries : [];
+    }
+    return [];
   } catch {
     return [];
+  }
+}
+
+function writeInquiries(inquiries: any[]): boolean {
+  const filePath = ensureDataFile();
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(inquiries, null, 2));
+    return true;
+  } catch (err) {
+    console.error('Warning: Failed to persist inquiries to disk:', err);
+    return false;
   }
 }
 
@@ -74,6 +98,26 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const clientIp = getClientIp(request);
+
+    // 1. Rate Limiting Protection (Anti-DoS / Anti-Spam)
+    const rateCheck = checkPublicRateLimit(clientIp, 'inquiries', 10, 60000);
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Too many submissions. Please wait ${rateCheck.retryAfterSeconds} seconds before submitting again.`,
+        },
+        {
+          status: 429,
+          headers: {
+            ...NO_CACHE_SECURITY_HEADERS,
+            'Retry-After': String(rateCheck.retryAfterSeconds),
+          },
+        }
+      );
+    }
+
     let body: any;
     try {
       body = await request.json();
@@ -86,13 +130,31 @@ export async function POST(request: Request) {
         }
       );
     }
+
+    // 2. Invisible Bot Honeypot Check
+    if (isHoneypotTriggered(body)) {
+      // Return synthetic success to confuse spam bots without saving junk
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Bespoke inquiry received successfully. Our VIP director will contact you.',
+          inquiryId: `INQ-${Date.now()}-trap`,
+        },
+        {
+          status: 200,
+          headers: NO_CACHE_SECURITY_HEADERS,
+        }
+      );
+    }
+
     const { name, email, phone, destination, guests, preferences } = body || {};
 
-    const trimmedName = typeof name === 'string' ? name.trim() : '';
-    const trimmedEmail = typeof email === 'string' ? email.trim() : '';
-    const trimmedPhone = typeof phone === 'string' ? phone.trim() : '';
+    // 3. Strict Validation & XSS Sanitization
+    const sanitizedName = sanitizeText(name, 100);
+    const sanitizedEmail = typeof email === 'string' ? email.trim() : '';
+    const sanitizedPhone = typeof phone === 'string' ? phone.trim() : '';
 
-    if (!trimmedName || !trimmedEmail || !trimmedPhone) {
+    if (!sanitizedName || !sanitizedEmail || !sanitizedPhone) {
       return NextResponse.json(
         { success: false, error: 'Name, email, and phone/WhatsApp are required fields.' },
         {
@@ -102,22 +164,47 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!isValidEmail(sanitizedEmail)) {
+      return NextResponse.json(
+        { success: false, error: 'Please provide a valid email address.' },
+        {
+          status: 400,
+          headers: NO_CACHE_SECURITY_HEADERS,
+        }
+      );
+    }
+
+    if (!isValidPhone(sanitizedPhone)) {
+      return NextResponse.json(
+        { success: false, error: 'Please provide a valid contact telephone/WhatsApp number.' },
+        {
+          status: 400,
+          headers: NO_CACHE_SECURITY_HEADERS,
+        }
+      );
+    }
+
+    const sanitizedDestination = sanitizeText(destination, 100) || 'Custom Bespoke';
+    const sanitizedGuests = sanitizeText(guests, 50) || 'Couples / 2 Guests';
+    const sanitizedPreferences = sanitizeText(preferences, 2000) || 'None specified';
+
+    // 4. Persistence
     const inquiries = readInquiries();
     const entropy = crypto.randomBytes(4).toString('hex');
     const newInquiry = {
       id: `INQ-${Date.now()}-${entropy}`,
-      name: trimmedName,
-      email: trimmedEmail,
-      phone: trimmedPhone,
-      destination: (typeof destination === 'string' && destination.trim()) || 'Custom Bespoke',
-      guests: (typeof guests === 'string' && guests.trim()) || 'Couples / 2 Guests',
-      preferences: (typeof preferences === 'string' && preferences.trim()) || 'None specified',
+      name: sanitizedName,
+      email: sanitizedEmail,
+      phone: sanitizedPhone,
+      destination: sanitizedDestination,
+      guests: sanitizedGuests,
+      preferences: sanitizedPreferences,
       status: 'NEW',
       createdAt: new Date().toISOString(),
     };
 
     inquiries.unshift(newInquiry);
-    fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(inquiries, null, 2));
+    writeInquiries(inquiries);
 
     return NextResponse.json(
       {

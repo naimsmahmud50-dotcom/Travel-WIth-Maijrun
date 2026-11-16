@@ -221,6 +221,14 @@ const server = http.createServer((req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
 
+  // Global Enterprise HTTP Security Headers (OWASP Top 10)
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), browsing-topics=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=63072000; includeSubDomains; preload');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+
   if (req.method === 'OPTIONS') {
     res.writeHead(204);
     res.end();
@@ -372,7 +380,15 @@ const server = http.createServer((req, res) => {
         if (isTooLarge) return;
         try {
           const parsed = JSON.parse(body);
-          const name = typeof parsed.name === 'string' ? parsed.name.trim() : '';
+          // Honeypot check
+          if (parsed && (parsed.website || parsed.fax_number || parsed.bot_token)) {
+            res.writeHead(201, { 'Content-Type': 'application/json', ...noCacheHeaders });
+            res.end(JSON.stringify({ success: true, message: 'Inquiry saved successfully', inquiryId: `INQ-${Date.now()}-trap` }));
+            return;
+          }
+
+          const sanitize = (str, len = 200) => typeof str === 'string' ? str.replace(/<\/?[^>]+(>|$)/g, '').replace(/[<>]/g, '').trim().slice(0, len) : '';
+          const name = sanitize(parsed.name, 100);
           const email = typeof parsed.email === 'string' ? parsed.email.trim() : '';
           const phone = typeof parsed.phone === 'string' ? parsed.phone.trim() : '';
 
@@ -382,6 +398,15 @@ const server = http.createServer((req, res) => {
               ...noCacheHeaders,
             });
             res.end(JSON.stringify({ success: false, error: 'Name, email, and phone are required fields.' }));
+            return;
+          }
+
+          if (!/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-]+/.test(email)) {
+            res.writeHead(400, {
+              'Content-Type': 'application/json',
+              ...noCacheHeaders,
+            });
+            res.end(JSON.stringify({ success: false, error: 'Valid email is required.' }));
             return;
           }
 
@@ -405,9 +430,9 @@ const server = http.createServer((req, res) => {
             name,
             email,
             phone,
-            destination: (typeof parsed.destination === 'string' && parsed.destination.trim()) || 'Custom Bespoke',
-            guests: (typeof parsed.guests === 'string' && parsed.guests.trim()) || 'Couples / 2 Guests',
-            preferences: (typeof parsed.preferences === 'string' && parsed.preferences.trim()) || 'None specified',
+            destination: sanitize(parsed.destination, 100) || 'Custom Bespoke',
+            guests: sanitize(parsed.guests, 50) || 'Couples / 2 Guests',
+            preferences: sanitize(parsed.preferences, 2000) || 'None specified',
             status: 'NEW',
             createdAt: new Date().toISOString(),
           };

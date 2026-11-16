@@ -38,15 +38,25 @@ export function getAdminUsers(): string[] {
 }
 
 export function getAdminPassword(): string {
-  // Strong default fallback; can be overridden via ADMIN_PASSWORD in .env.local
-  return process.env.ADMIN_PASSWORD || 'Maijrun#RoyalElite@2026!Secured';
+  const pass = process.env.ADMIN_PASSWORD;
+  if (pass && pass.trim().length >= 16) {
+    return pass.trim();
+  }
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('[SECURITY NOTICE] ADMIN_PASSWORD environment variable should be securely configured in production dashboard.');
+  }
+  return 'Maijrun#RoyalElite@2026!Secured';
 }
 
 export function getSessionSecret(): string {
-  return (
-    process.env.ADMIN_SESSION_SECRET ||
-    'maijrun_vip_luxury_atelier_secret_key_2026_q8w9e1r2t3y4'
-  );
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (secret && secret.trim().length >= 32) {
+    return secret.trim();
+  }
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('[SECURITY NOTICE] ADMIN_SESSION_SECRET environment variable should be securely configured in production dashboard.');
+  }
+  return 'maijrun_vip_luxury_atelier_secret_key_2026_q8w9e1r2t3y4';
 }
 
 // IP-based Rate Limiting for Admin Authentication (Anti-Brute-Force)
