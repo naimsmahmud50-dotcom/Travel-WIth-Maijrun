@@ -45,6 +45,7 @@ export default function AdminDashboard() {
   const [authError, setAuthError] = useState<string>('');
   const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
   const [currentAdminUser, setCurrentAdminUser] = useState<string>('Mahmud Hasan');
+  const [inputsUnlocked, setInputsUnlocked] = useState<boolean>(false);
 
   // CRM Leads State
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
@@ -277,8 +278,24 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              {/* Form */}
-              <form onSubmit={handleLogin} className="space-y-5">
+              {/* Form with Passive Autofill Shield */}
+              <form onSubmit={handleLogin} autoComplete="off" className="space-y-5">
+                {/* Invisible decoy inputs to trap aggressive browser password managers */}
+                <input
+                  type="text"
+                  name="decoy_user"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="sr-only opacity-0 absolute -z-10 h-0 w-0 pointer-events-none"
+                />
+                <input
+                  type="password"
+                  name="decoy_pass"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                  className="sr-only opacity-0 absolute -z-10 h-0 w-0 pointer-events-none"
+                />
+
                 {/* Gmail Input */}
                 <div className="space-y-1.5">
                   <label
@@ -293,12 +310,18 @@ export default function AdminDashboard() {
                     </div>
                     <input
                       id="adminId"
+                      name="admin_user_credential"
                       type="text"
                       required
                       value={adminIdentifier}
                       onChange={(e) => setAdminIdentifier(e.target.value)}
+                      onFocus={() => setInputsUnlocked(true)}
+                      onMouseDown={() => setInputsUnlocked(true)}
+                      onTouchStart={() => setInputsUnlocked(true)}
+                      readOnly={!inputsUnlocked}
                       placeholder="Gmail"
-                      autoComplete="username"
+                      autoComplete="off"
+                      data-lpignore="true"
                       className="w-full pl-10 pr-4 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all"
                     />
                   </div>
@@ -321,12 +344,18 @@ export default function AdminDashboard() {
                     </div>
                     <input
                       id="adminPass"
+                      name="admin_pass_credential"
                       type={showPassword ? 'text' : 'password'}
                       required
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
+                      onFocus={() => setInputsUnlocked(true)}
+                      onMouseDown={() => setInputsUnlocked(true)}
+                      onTouchStart={() => setInputsUnlocked(true)}
+                      readOnly={!inputsUnlocked}
                       placeholder="Password"
-                      autoComplete="current-password"
+                      autoComplete="new-password"
+                      data-lpignore="true"
                       className="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all font-mono tracking-wide"
                     />
                     <button

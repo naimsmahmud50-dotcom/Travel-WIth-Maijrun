@@ -58,6 +58,16 @@
       background: #D4AF37;
       border-radius: 9999px;
     }
+    /* Prevent browser autofill light-blue background and preserve dark luxury styling */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover, 
+    input:-webkit-autofill:focus, 
+    input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px rgba(6, 20, 16, 0.95) inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #D4AF37 !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
   </style>
 </head>
 <body class="bg-[#061410] font-sans text-neutral-100 min-h-screen flex flex-col antialiased selection:bg-brand-gold selection:text-brand-emeraldDeep">
@@ -123,8 +133,12 @@
             <span id="authErrorText" class="leading-snug">Invalid Executive Identifier or Master Passcode.</span>
           </div>
 
-          <!-- Login Form -->
-          <form onsubmit="handleLoginSubmit(event)" class="space-y-5">
+          <!-- Login Form with Passive Autofill Shield -->
+          <form onsubmit="handleLoginSubmit(event)" autocomplete="off" class="space-y-5">
+            <!-- Invisible decoy inputs to trap aggressive browser password managers -->
+            <input type="text" name="decoy_user" tabindex="-1" aria-hidden="true" style="position:absolute;opacity:0;height:0;width:0;z-index:-1;pointer-events:none;">
+            <input type="password" name="decoy_pass" tabindex="-1" aria-hidden="true" style="position:absolute;opacity:0;height:0;width:0;z-index:-1;pointer-events:none;">
+
             <div class="space-y-1.5">
               <label for="adminId" class="block text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-300">
                 Gmail
@@ -133,7 +147,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
                   <i data-lucide="mail" class="w-4 h-4"></i>
                 </div>
-                <input id="adminId" type="text" required placeholder="Gmail" autocomplete="username"
+                <input id="adminId" name="admin_user_credential" type="text" required placeholder="Gmail" autocomplete="off" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" onmousedown="this.removeAttribute('readonly')" ontouchstart="this.removeAttribute('readonly')"
                   class="w-full pl-10 pr-4 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all">
               </div>
             </div>
@@ -149,7 +163,7 @@
                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
                   <i data-lucide="lock" class="w-4 h-4"></i>
                 </div>
-                <input id="adminPass" type="password" required placeholder="Password" autocomplete="current-password"
+                <input id="adminPass" name="admin_pass_credential" type="password" required placeholder="Password" autocomplete="new-password" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" onmousedown="this.removeAttribute('readonly')" ontouchstart="this.removeAttribute('readonly')"
                   class="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-400 outline-none transition-all font-mono">
                 <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-[#D4AF37] transition-colors">
                   <i id="passToggleIcon" data-lucide="eye" class="w-4 h-4"></i>
