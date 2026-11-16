@@ -259,11 +259,6 @@ export default function Footer() {
                     Signature Journeys
                   </a>
                 </li>
-                <li>
-                  <a href="/admin" className="hover:text-[#D4AF37] transition-colors">
-                    VIP Client Portal
-                  </a>
-                </li>
               </ul>
             </div>
 

@@ -279,13 +279,13 @@ export default function AdminDashboard() {
 
               {/* Form */}
               <form onSubmit={handleLogin} className="space-y-5">
-                {/* Identifier Input */}
+                {/* Gmail Input */}
                 <div className="space-y-1.5">
                   <label
                     htmlFor="adminId"
                     className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-300"
                   >
-                    Executive Identifier
+                    Gmail
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-500">
@@ -297,9 +297,8 @@ export default function AdminDashboard() {
                       required
                       value={adminIdentifier}
                       onChange={(e) => setAdminIdentifier(e.target.value)}
-                      placeholder="naimsmahmud50@gmail.com or admin"
                       autoComplete="username"
-                      className="w-full pl-10 pr-4 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-500 outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -311,7 +310,7 @@ export default function AdminDashboard() {
                       htmlFor="adminPass"
                       className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-300"
                     >
-                      Master Security Key
+                      Password
                     </label>
                     <span className="text-[10px] text-neutral-500">256-Bit SSL</span>
                   </div>
@@ -325,9 +324,8 @@ export default function AdminDashboard() {
                       required
                       value={adminPassword}
                       onChange={(e) => setAdminPassword(e.target.value)}
-                      placeholder="Enter security key"
                       autoComplete="current-password"
-                      className="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white placeholder-neutral-500 outline-none transition-all font-mono tracking-wide"
+                      className="w-full pl-10 pr-11 py-3 bg-black/40 border border-[#D4AF37]/25 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/60 rounded-xl text-sm text-white outline-none transition-all font-mono tracking-wide"
                     />
                     <button
                       type="button"

@@ -333,13 +333,6 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
               >
                 Request Brochure
               </button>
-              <span className="hidden sm:inline text-neutral-600">|</span>
-              <a
-                href="/admin"
-                className="hidden sm:inline-flex items-center gap-1.5 border border-[#D4AF37]/40 hover:border-[#D4AF37] bg-[#D4AF37]/10 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-[#061410] text-[11px] font-semibold tracking-wider uppercase px-3 py-1 rounded-full transition-all whitespace-nowrap"
-              >
-                Client Portal
-              </a>
             </div>
           </div>
         </div>
@@ -622,7 +615,6 @@ export default function Navbar({ onOpenInquiry }: NavbarProps) {
             { label: 'Tailor-Made Royal Atelier', href: '/bespoke' },
             { label: 'Signature Journeys', href: '/#signature-journeys' },
             { label: 'VIP Society Reviews', href: '/#testimonials' },
-            { label: 'Client Portal', href: '/admin' },
           ].map((item) => (
             <a
               key={item.label}
