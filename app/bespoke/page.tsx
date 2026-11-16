@@ -191,12 +191,16 @@ Notes: ${additionalNotes}`;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          name: fullName,
           fullName,
           email,
           phone,
+          destination: `[Atelier] ${destinationTitle}`,
           destinationTitle: `[Atelier] ${destinationTitle}`,
           preferredDates: `${targetSeason} • ${duration}`,
+          guests: guestCount,
           guestCount,
+          preferences: dossierNotes,
           specialRequests: dossierNotes,
         }),
       });

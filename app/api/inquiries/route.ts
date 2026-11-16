@@ -147,12 +147,18 @@ export async function POST(request: Request) {
       );
     }
 
-    const { name, email, phone, destination, guests, preferences } = body || {};
+    const rawName = body?.name || body?.fullName;
+    const rawEmail = body?.email;
+    const rawPhone = body?.phone || body?.whatsapp;
+    const rawDestination = body?.destination || body?.destinationTitle;
+    const rawGuests = body?.guests || body?.guestCount || body?.guestsCount;
+    const rawPreferences = body?.preferences || body?.specialRequests;
+    const rawDates = body?.preferredDates || body?.dates;
 
     // 3. Strict Validation & XSS Sanitization
-    const sanitizedName = sanitizeText(name, 100);
-    const sanitizedEmail = typeof email === 'string' ? email.trim() : '';
-    const sanitizedPhone = typeof phone === 'string' ? phone.trim() : '';
+    const sanitizedName = sanitizeText(rawName, 100);
+    const sanitizedEmail = typeof rawEmail === 'string' ? rawEmail.trim() : '';
+    const sanitizedPhone = typeof rawPhone === 'string' ? rawPhone.trim() : '';
 
     if (!sanitizedName || !sanitizedEmail || !sanitizedPhone) {
       return NextResponse.json(
@@ -184,9 +190,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const sanitizedDestination = sanitizeText(destination, 100) || 'Custom Bespoke';
-    const sanitizedGuests = sanitizeText(guests, 50) || 'Couples / 2 Guests';
-    const sanitizedPreferences = sanitizeText(preferences, 2000) || 'None specified';
+    const sanitizedDestination = sanitizeText(rawDestination, 100) || 'Custom Bespoke';
+    const sanitizedGuests = sanitizeText(rawGuests, 50) || 'Couples / 2 Guests';
+    const sanitizedPreferences = sanitizeText(rawPreferences, 2000) || 'None specified';
+    const sanitizedDates = sanitizeText(rawDates, 100) || 'Flexible';
 
     // 4. Persistence
     const inquiries = readInquiries();
@@ -194,11 +201,16 @@ export async function POST(request: Request) {
     const newInquiry = {
       id: `INQ-${Date.now()}-${entropy}`,
       name: sanitizedName,
+      fullName: sanitizedName,
       email: sanitizedEmail,
       phone: sanitizedPhone,
       destination: sanitizedDestination,
+      destinationTitle: sanitizedDestination,
       guests: sanitizedGuests,
+      guestCount: sanitizedGuests,
       preferences: sanitizedPreferences,
+      specialRequests: sanitizedPreferences,
+      preferredDates: sanitizedDates,
       status: 'NEW',
       createdAt: new Date().toISOString(),
     };

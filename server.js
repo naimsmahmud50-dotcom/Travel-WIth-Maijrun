@@ -235,12 +235,28 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  const noCacheHeaders = {
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+    'Pragma': 'no-cache',
+    'Expires': '0',
+    'X-Content-Type-Options': 'nosniff',
+  };
+
   const url = new URL(req.url, `http://${req.headers.host}`);
 
-  // 1. GET /api/destinations
-  if (req.method === 'GET' && url.pathname === '/api/destinations') {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ success: true, data: DESTINATIONS }));
+  // 1. GET /api/destinations & /api/admin/destinations
+  if (req.method === 'GET' && (url.pathname === '/api/destinations' || url.pathname === '/api/admin/destinations')) {
+    let data = [];
+    const destFile = path.join(DATA_DIR, 'destinations.json');
+    if (fs.existsSync(destFile)) {
+      try {
+        const raw = fs.readFileSync(destFile, 'utf-8');
+        data = raw ? JSON.parse(raw) : [];
+      } catch { data = []; }
+    }
+    if (!data.length) data = DESTINATIONS;
+    res.writeHead(200, { 'Content-Type': 'application/json', ...noCacheHeaders });
+    res.end(JSON.stringify({ success: true, count: data.length, data }));
     return;
   }
 
@@ -327,13 +343,6 @@ const server = http.createServer((req, res) => {
 
   // 5. GET & POST /api/inquiries
   if (url.pathname === '/api/inquiries' || url.pathname === '/api/inquiries/') {
-    const noCacheHeaders = {
-      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
-      'Pragma': 'no-cache',
-      'Expires': '0',
-      'X-Content-Type-Options': 'nosniff',
-    };
-
     if (req.method === 'GET') {
       const session = getSessionFromReq(req);
       if (!session || !session.user) {
@@ -388,7 +397,13 @@ const server = http.createServer((req, res) => {
           }
 
           const sanitize = (str, len = 200) => typeof str === 'string' ? str.replace(/<\/?[^>]+(>|$)/g, '').replace(/[<>]/g, '').trim().slice(0, len) : '';
-          const name = sanitize(parsed.name, 100);
+          const rawName = parsed.name || parsed.fullName;
+          const rawDestination = parsed.destination || parsed.destinationTitle;
+          const rawGuests = parsed.guests || parsed.guestCount || parsed.guestsCount;
+          const rawPreferences = parsed.preferences || parsed.specialRequests;
+          const rawDates = parsed.preferredDates || parsed.dates;
+
+          const name = sanitize(rawName, 100);
           const email = typeof parsed.email === 'string' ? parsed.email.trim() : '';
           const phone = typeof parsed.phone === 'string' ? parsed.phone.trim() : '';
 
@@ -428,11 +443,16 @@ const server = http.createServer((req, res) => {
           const newInquiry = {
             id: `INQ-${Date.now()}-${entropy}`,
             name,
+            fullName: name,
             email,
             phone,
-            destination: sanitize(parsed.destination, 100) || 'Custom Bespoke',
-            guests: sanitize(parsed.guests, 50) || 'Couples / 2 Guests',
-            preferences: sanitize(parsed.preferences, 2000) || 'None specified',
+            destination: sanitize(rawDestination, 100) || 'Custom Bespoke',
+            destinationTitle: sanitize(rawDestination, 100) || 'Custom Bespoke',
+            guests: sanitize(rawGuests, 50) || 'Couples / 2 Guests',
+            guestCount: sanitize(rawGuests, 50) || 'Couples / 2 Guests',
+            preferences: sanitize(rawPreferences, 2000) || 'None specified',
+            specialRequests: sanitize(rawPreferences, 2000) || 'None specified',
+            preferredDates: sanitize(rawDates, 100) || 'Flexible',
             status: 'NEW',
             createdAt: new Date().toISOString(),
           };
@@ -462,6 +482,250 @@ const server = http.createServer((req, res) => {
     });
     res.end(JSON.stringify({ success: false, error: 'Method Not Allowed' }));
     return;
+  }
+
+  // 5.1 Admin Inquiries Management: PATCH & DELETE /api/admin/inquiries
+  if (url.pathname === '/api/admin/inquiries') {
+    const session = getSessionFromReq(req);
+    if (!session || !session.user) {
+      res.writeHead(401, { 'Content-Type': 'application/json', ...noCacheHeaders });
+      res.end(JSON.stringify({ success: false, error: 'Unauthorized: Admin authentication clearance required.' }));
+      return;
+    }
+
+    if (req.method === 'PATCH') {
+      let body = '';
+      req.on('data', (chunk) => { body += chunk; });
+      req.on('end', () => {
+        try {
+          const parsed = JSON.parse(body);
+          const { id, status } = parsed || {};
+          if (!id) {
+            res.writeHead(400, { 'Content-Type': 'application/json', ...noCacheHeaders });
+            res.end(JSON.stringify({ success: false, error: 'Inquiry ID is required.' }));
+            return;
+          }
+          const validStatuses = ['NEW', 'CONTACTED', 'CONFIRMED', 'ARCHIVED'];
+          const normalizedStatus = typeof status === 'string' ? status.toUpperCase().trim() : '';
+          if (!validStatuses.includes(normalizedStatus)) {
+            res.writeHead(400, { 'Content-Type': 'application/json', ...noCacheHeaders });
+            res.end(JSON.stringify({ success: false, error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` }));
+            return;
+          }
+
+          let data = [];
+          if (fs.existsSync(INQUIRIES_FILE)) {
+            try {
+              const fileContent = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
+              data = fileContent ? JSON.parse(fileContent) : [];
+            } catch { data = []; }
+          }
+          const index = data.findIndex((inq) => inq.id === id);
+          if (index === -1) {
+            res.writeHead(404, { 'Content-Type': 'application/json', ...noCacheHeaders });
+            res.end(JSON.stringify({ success: false, error: 'Inquiry not found.' }));
+            return;
+          }
+
+          data[index].status = normalizedStatus;
+          data[index].updatedAt = new Date().toISOString();
+          fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(data, null, 2));
+
+          res.writeHead(200, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: true, message: 'Status updated', inquiry: data[index] }));
+        } catch {
+          res.writeHead(400, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: false, error: 'Invalid JSON payload' }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'DELETE') {
+      let id = url.searchParams.get('id');
+      const processDelete = (targetId) => {
+        if (!targetId) {
+          res.writeHead(400, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: false, error: 'Inquiry ID is required for deletion.' }));
+          return;
+        }
+
+        let data = [];
+        if (fs.existsSync(INQUIRIES_FILE)) {
+          try {
+            const fileContent = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
+            data = fileContent ? JSON.parse(fileContent) : [];
+          } catch { data = []; }
+        }
+        const index = data.findIndex((inq) => inq.id === targetId);
+        if (index === -1) {
+          res.writeHead(404, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: false, error: 'Inquiry not found.' }));
+          return;
+        }
+
+        const deleted = data.splice(index, 1)[0];
+        fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(data, null, 2));
+
+        res.writeHead(200, { 'Content-Type': 'application/json', ...noCacheHeaders });
+        res.end(JSON.stringify({ success: true, message: 'Inquiry deleted successfully', id: deleted.id }));
+      };
+
+      if (id) {
+        processDelete(id);
+      } else {
+        let body = '';
+        req.on('data', (chunk) => { body += chunk; });
+        req.on('end', () => {
+          try {
+            const parsed = JSON.parse(body);
+            processDelete(parsed?.id);
+          } catch {
+            processDelete(null);
+          }
+        });
+      }
+      return;
+    }
+
+    res.writeHead(405, { 'Content-Type': 'application/json', 'Allow': 'PATCH, DELETE', ...noCacheHeaders });
+    res.end(JSON.stringify({ success: false, error: 'Method Not Allowed' }));
+    return;
+  }
+
+  // 5.5 Destinations CMS API: /api/admin/destinations & /api/destinations
+  const DESTINATIONS_FILE = path.join(DATA_DIR, 'destinations.json');
+  if (url.pathname === '/api/admin/destinations' || url.pathname === '/api/destinations') {
+    if (req.method === 'GET') {
+      let data = [];
+      if (fs.existsSync(DESTINATIONS_FILE)) {
+        try {
+          const raw = fs.readFileSync(DESTINATIONS_FILE, 'utf-8');
+          data = raw ? JSON.parse(raw) : [];
+        } catch { data = []; }
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json', ...noCacheHeaders });
+      res.end(JSON.stringify({ success: true, count: data.length, data }));
+      return;
+    }
+
+    // POST, PUT, DELETE require admin session
+    const session = getSessionFromReq(req);
+    if (!session || !session.user) {
+      res.writeHead(401, { 'Content-Type': 'application/json', ...noCacheHeaders });
+      res.end(JSON.stringify({ success: false, error: 'Unauthorized: Admin clearance required.' }));
+      return;
+    }
+
+    if (req.method === 'POST') {
+      let body = '';
+      req.on('data', (chunk) => (body += chunk));
+      req.on('end', () => {
+        try {
+          const parsed = JSON.parse(body);
+          let data = [];
+          if (fs.existsSync(DESTINATIONS_FILE)) {
+            try { data = JSON.parse(fs.readFileSync(DESTINATIONS_FILE, 'utf-8')); } catch { data = []; }
+          }
+          const id = parsed.id || `custom-${Date.now().toString(36)}`;
+          const newItem = {
+            id,
+            destKey: parsed.destKey || 'custom',
+            category: parsed.category || 'heritage',
+            tag: parsed.tag || 'Bespoke Haven',
+            duration: parsed.duration || '7 Days • 6 Nights',
+            country: parsed.country || 'Global',
+            region: parsed.region || 'Bespoke Haven',
+            title: parsed.title || 'Curated Journey',
+            desc: parsed.desc || 'Ultra-luxury curated journey.',
+            priceBdt: parsed.priceBdt || '৳800,000',
+            priceUsd: parsed.priceUsd || '$6,500',
+            image: parsed.image || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=75&w=640&auto=format&fit=crop',
+            styles: parsed.styles || ['heritage', 'family'],
+            seasons: parsed.seasons || ['any'],
+            isCustom: true,
+            updatedAt: new Date().toISOString(),
+          };
+          data.push(newItem);
+          fs.writeFileSync(DESTINATIONS_FILE, JSON.stringify(data, null, 2));
+          res.writeHead(201, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: true, data: newItem }));
+        } catch {
+          res.writeHead(400, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: false, error: 'Invalid JSON' }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'PUT') {
+      let body = '';
+      req.on('data', (chunk) => (body += chunk));
+      req.on('end', () => {
+        try {
+          const parsed = JSON.parse(body);
+          if (!parsed.id) {
+            res.writeHead(400, { 'Content-Type': 'application/json', ...noCacheHeaders });
+            res.end(JSON.stringify({ success: false, error: 'Destination ID required' }));
+            return;
+          }
+          let data = [];
+          if (fs.existsSync(DESTINATIONS_FILE)) {
+            try { data = JSON.parse(fs.readFileSync(DESTINATIONS_FILE, 'utf-8')); } catch { data = []; }
+          }
+          const index = data.findIndex((d) => d.id === parsed.id);
+          if (index === -1) {
+            res.writeHead(404, { 'Content-Type': 'application/json', ...noCacheHeaders });
+            res.end(JSON.stringify({ success: false, error: 'Destination not found' }));
+            return;
+          }
+          data[index] = { ...data[index], ...parsed, updatedAt: new Date().toISOString() };
+          fs.writeFileSync(DESTINATIONS_FILE, JSON.stringify(data, null, 2));
+          res.writeHead(200, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: true, data: data[index] }));
+        } catch {
+          res.writeHead(400, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: false, error: 'Invalid JSON' }));
+        }
+      });
+      return;
+    }
+
+    if (req.method === 'DELETE') {
+      let id = url.searchParams.get('id');
+      const processDelete = (targetId) => {
+        let data = [];
+        if (fs.existsSync(DESTINATIONS_FILE)) {
+          try { data = JSON.parse(fs.readFileSync(DESTINATIONS_FILE, 'utf-8')); } catch { data = []; }
+        }
+        const index = data.findIndex((d) => d.id === targetId);
+        if (index === -1) {
+          res.writeHead(404, { 'Content-Type': 'application/json', ...noCacheHeaders });
+          res.end(JSON.stringify({ success: false, error: 'Destination not found' }));
+          return;
+        }
+        const deleted = data.splice(index, 1)[0];
+        fs.writeFileSync(DESTINATIONS_FILE, JSON.stringify(data, null, 2));
+        res.writeHead(200, { 'Content-Type': 'application/json', ...noCacheHeaders });
+        res.end(JSON.stringify({ success: true, id: deleted.id }));
+      };
+
+      if (id) {
+        processDelete(id);
+      } else {
+        let body = '';
+        req.on('data', (chunk) => (body += chunk));
+        req.on('end', () => {
+          try {
+            const parsed = JSON.parse(body);
+            processDelete(parsed?.id);
+          } catch {
+            processDelete(null);
+          }
+        });
+      }
+      return;
+    }
   }
 
   // 6. POST /api/newsletter

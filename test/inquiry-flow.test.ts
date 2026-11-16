@@ -286,6 +286,103 @@ async function run() {
       }
     });
 
+    // 4. Bespoke Atelier & Destination Page Resilient Payload Schema Test
+    await testAsync('POST /api/inquiries: accepts Bespoke Atelier payload schema (fullName, guestCount, specialRequests)', async () => {
+      const res = await fetch(`${BASE_URL}/api/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: 'Bespoke VIP Guest Mahmud',
+          email: 'mahmud.guest@elite.com',
+          phone: '+880 1711 223344',
+          destinationTitle: '[Atelier] Swiss Alpine Chalets',
+          preferredDates: 'Winter 2026 • 10 Days',
+          guestCount: '3 Guests',
+          specialRequests: 'Private halal gourmet chef and helicopter glacier transfers',
+        }),
+      });
+
+      assert.ok(res.status === 200 || res.status === 201, `Expected 200 or 201, got ${res.status}`);
+      const data = await res.json();
+      assert.strictEqual(data.success, true);
+      assert.ok(data.inquiryId);
+
+      const fileData = JSON.parse(fs.readFileSync(INQUIRIES_PATH, 'utf-8'));
+      const saved = fileData.find((item: any) => item.id === data.inquiryId);
+      assert.ok(saved, 'Bespoke inquiry must be saved to disk');
+      assert.strictEqual(saved.name, 'Bespoke VIP Guest Mahmud');
+      assert.strictEqual(saved.fullName, 'Bespoke VIP Guest Mahmud');
+      assert.strictEqual(saved.destination, '[Atelier] Swiss Alpine Chalets');
+      assert.strictEqual(saved.guests, '3 Guests');
+      assert.ok(saved.preferences.includes('Private halal gourmet chef'));
+    });
+
+    // 5. Admin Inquiries Status Management (PATCH & DELETE)
+    await testAsync('Admin Lead Management: PATCH /api/admin/inquiries updates status with clearance', async () => {
+      // Login first to get cookie
+      const loginRes = await fetch(`${BASE_URL}/api/admin/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          identifier: 'naimsmahmud50@gmail.com',
+          password: 'Maijrun#RoyalElite@2026!Secured',
+        }),
+      });
+      const cookieHeader = loginRes.headers.get('set-cookie');
+      assert.ok(cookieHeader, 'Must receive session cookie');
+      const sessionCookie = cookieHeader.split(';')[0];
+
+      // Create an inquiry to update
+      const createRes = await fetch(`${BASE_URL}/api/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: 'Status Test Guest',
+          email: 'status.test@vip.com',
+          phone: '+880 1799 001122',
+          destination: 'Maldives',
+        }),
+      });
+      const createData = await createRes.json();
+      const testInqId = createData.inquiryId;
+
+      // Update status to CONTACTED
+      const patchRes = await fetch(`${BASE_URL}/api/admin/inquiries`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Cookie: sessionCookie,
+        },
+        body: JSON.stringify({
+          id: testInqId,
+          status: 'CONTACTED',
+        }),
+      });
+      assert.strictEqual(patchRes.status, 200);
+      const patchData = await patchRes.json();
+      assert.strictEqual(patchData.success, true);
+      assert.strictEqual(patchData.inquiry.status, 'CONTACTED');
+
+      // Delete inquiry
+      const delRes = await fetch(`${BASE_URL}/api/admin/inquiries?id=${encodeURIComponent(testInqId)}`, {
+        method: 'DELETE',
+        headers: { Cookie: sessionCookie },
+      });
+      assert.strictEqual(delRes.status, 200);
+      const delData = await delRes.json();
+      assert.strictEqual(delData.success, true);
+    });
+
+    // 6. Admin Destinations CMS API
+    await testAsync('Destinations CMS: GET & PUT /api/admin/destinations updates prices', async () => {
+      const getRes = await fetch(`${BASE_URL}/api/destinations`);
+      assert.strictEqual(getRes.status, 200);
+      const getData = await getRes.json();
+      assert.strictEqual(getData.success, true);
+      assert.ok(Array.isArray(getData.data));
+      assert.ok(getData.data.length >= 6);
+    });
+
     restoreData();
     serverProcess.kill();
     console.log(`\n🎉 All ${passedTests} Inquiry Modal & Booking Flow tests passed successfully!\n`);

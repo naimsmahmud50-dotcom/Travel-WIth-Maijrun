@@ -87,12 +87,16 @@ export default function DestinationClientView({ destination }: DestinationClient
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          name: formData.fullName,
           fullName: formData.fullName,
           email: formData.email,
           phone: formData.phone,
+          destination: destination.title,
           destinationTitle: destination.title,
           preferredDates: formData.travelDates,
+          guests: formData.guestsCount,
           guestCount: formData.guestsCount,
+          preferences: formData.specialRequests,
           specialRequests: formData.specialRequests,
         }),
       });
