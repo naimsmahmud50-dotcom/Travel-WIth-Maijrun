@@ -45,6 +45,7 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
   const { formatBdt } = useCurrency();
   const [selectedOrigin, setSelectedOrigin] = useState<OriginHub>(ORIGIN_HUBS[0]); // Dhaka default
   const [selectedSanctuary, setSelectedSanctuary] = useState<SanctuaryLocation>(SANCTUARIES[0]); // Makkah default
+  const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
 
   const originCoords = useMemo(
     () => projectCoords(selectedOrigin.lat, selectedOrigin.lon),
@@ -229,40 +230,68 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                 <line x1="750" y1="0" x2="750" y2="500" />
               </g>
 
-              {/* Stylized Royal Emerald & Gold Landmasses */}
-              <g fill="#0E2A21" stroke="#D4AF37" strokeOpacity="0.55" strokeWidth="1.2" strokeLinejoin="round">
-                {/* Europe */}
-                <path d="M 470 90 L 515 80 L 550 95 L 565 130 L 540 150 L 500 155 L 480 145 L 460 135 L 450 115 Z" />
-                <path d="M 485 105 L 510 102 L 505 125 L 485 120 Z" /> {/* British Isles */}
-                <path d="M 465 145 L 495 140 L 490 170 L 465 170 Z" /> {/* Iberian Peninsula (Spain) */}
-                <path d="M 515 125 L 530 120 L 528 155 L 518 160 Z" /> {/* Italy */}
+              {/* High-Fidelity Organic Royal Emerald & Gold Landmasses */}
+              <g fill="#0E2A21" stroke="#D4AF37" strokeOpacity="0.55" strokeWidth="1" strokeLinejoin="round">
+                {/* British Isles */}
+                <path d="M 488 102 C 484 96 490 92 496 95 C 501 98 504 106 500 114 C 496 122 491 125 487 118 C 485 113 491 106 488 102 Z" />
+                <path d="M 478 108 C 475 105 480 102 483 105 C 486 109 484 116 480 115 C 476 114 476 110 478 108 Z" />
+
+                {/* Scandinavia */}
+                <path d="M 515 85 C 518 72 528 62 538 65 C 548 68 558 75 562 88 C 560 98 550 102 542 98 C 536 95 532 88 526 90 C 520 92 516 95 515 85 Z" />
+
+                {/* Western & Central Europe */}
+                <path d="M 475 138 C 482 135 495 132 505 130 C 515 125 518 118 525 118 C 535 118 545 125 555 128 C 565 132 575 138 578 148 C 572 155 560 156 550 150 C 542 146 535 148 528 142 C 518 138 505 142 492 140 C 482 140 478 139 475 138 Z" />
+
+                {/* Iberian Peninsula (Spain) */}
+                <path d="M 462 144 C 458 152 462 165 470 170 C 482 173 496 168 495 152 C 495 145 486 142 476 142 C 468 142 464 143 462 144 Z" />
+
+                {/* Italy & Sicily */}
+                <path d="M 518 132 C 524 135 528 142 532 148 C 535 154 532 160 527 162 C 523 162 522 154 520 148 C 518 142 515 136 518 132 Z" />
+                <path d="M 522 165 C 526 164 528 168 524 170 C 520 171 519 167 522 165 Z" />
+
+                {/* Anatolia / Turkey */}
+                <path d="M 570 134 C 585 130 610 130 625 135 C 630 142 622 150 610 152 C 595 152 580 150 572 142 C 568 138 568 135 570 134 Z" />
+
+                {/* Arabian Peninsula */}
+                <path d="M 602 168 C 615 162 630 162 642 168 C 655 174 658 185 660 198 C 662 212 654 225 640 228 C 625 230 612 224 606 210 C 600 196 598 180 602 168 Z" />
 
                 {/* Africa */}
-                <path d="M 465 180 L 525 180 L 585 200 L 610 245 L 585 320 L 555 365 L 520 370 L 500 320 L 460 250 L 450 200 Z" />
-                <path d="M 605 310 L 615 315 L 610 345 L 600 340 Z" /> {/* Madagascar */}
+                <path d="M 465 176 C 500 174 540 178 575 186 C 595 192 612 210 622 232 C 628 248 618 268 604 290 C 592 312 580 340 562 364 C 550 376 532 376 520 362 C 506 342 496 308 488 274 C 478 245 458 238 450 218 C 445 204 450 188 465 176 Z" />
+                <path d="M 612 308 C 618 312 622 324 618 342 C 614 352 608 350 605 338 C 602 326 606 312 612 308 Z" />
 
-                {/* Middle East & Central Asia */}
-                <path d="M 570 140 L 620 140 L 640 175 L 635 220 L 585 225 L 575 190 Z" /> {/* Arabian Peninsula */}
-                <path d="M 570 120 L 670 105 L 710 145 L 670 180 L 620 160 Z" /> {/* Levant & Persia */}
+                {/* Indian Subcontinent & Sri Lanka */}
+                <path d="M 672 172 C 692 168 720 168 742 174 C 758 180 762 195 754 212 C 744 230 732 254 722 272 C 716 274 710 262 702 244 C 692 224 676 206 672 188 C 670 178 670 174 672 172 Z" />
+                <path d="M 728 266 C 732 264 736 268 734 274 C 731 278 727 276 728 266 Z" />
+                {/* Maldives Atolls */}
+                <circle cx="704" cy="238" r="3" fill="#0E2A21" stroke="#D4AF37" strokeWidth="0.8" />
+                <circle cx="705" cy="244" r="2.2" fill="#0E2A21" stroke="#D4AF37" strokeWidth="0.8" />
+                <circle cx="706" cy="250" r="1.8" fill="#0E2A21" stroke="#D4AF37" strokeWidth="0.8" />
 
-                {/* South Asia & India */}
-                <path d="M 670 180 L 730 175 L 755 210 L 735 270 L 705 250 L 680 205 Z" />
-                <circle cx="704" cy="238" r="3.5" fill="#0E2A21" stroke="#D4AF37" strokeOpacity="0.6" /> {/* Maldives */}
+                {/* Northern Eurasia & China */}
+                <path d="M 565 110 C 610 92 680 82 760 80 C 820 80 865 92 875 112 C 880 128 855 145 832 155 C 805 164 775 168 748 168 C 715 166 680 158 640 152 C 600 148 575 130 565 110 Z" />
 
-                {/* East & Southeast Asia */}
-                <path d="M 680 90 L 820 80 L 870 120 L 850 190 L 790 200 L 760 180 L 740 130 Z" />
-                <path d="M 770 205 L 820 220 L 830 260 L 770 270 L 755 240 Z" /> {/* SE Asia Archipelago */}
-                <path d="M 850 120 L 870 115 L 865 155 L 845 155 Z" /> {/* Japan */}
+                {/* East Asia & Japan */}
+                <path d="M 780 150 C 810 148 838 162 842 182 C 840 200 818 208 792 205 C 768 200 762 182 768 168 C 772 158 775 152 780 150 Z" />
+                <path d="M 854 118 C 862 114 868 122 865 134 C 860 145 852 156 845 154 C 842 150 848 138 852 128 C 854 122 850 120 854 118 Z" />
+                <path d="M 866 104 C 872 102 876 108 872 114 C 868 116 864 110 866 104 Z" />
 
-                {/* North America */}
-                <path d="M 120 70 L 260 70 L 290 125 L 240 180 L 190 210 L 150 170 L 100 120 Z" />
-                <path d="M 330 40 L 400 40 L 370 85 L 310 80 Z" /> {/* Greenland */}
+                {/* Southeast Asia Archipelago */}
+                <path d="M 764 195 C 778 194 792 202 788 218 C 785 228 778 242 774 252 C 770 252 768 238 765 224 C 762 210 758 198 764 195 Z" />
+                <path d="M 765 258 C 778 260 790 272 785 278 C 775 282 760 270 765 258 Z" />
+                <path d="M 792 245 C 808 242 818 255 812 268 C 802 272 795 260 792 245 Z" />
+                <path d="M 788 280 C 810 280 822 284 815 290 C 802 292 785 286 788 280 Z" />
+                <path d="M 825 215 C 832 212 836 224 832 238 C 828 244 822 235 825 215 Z" />
+
+                {/* North America & Greenland */}
+                <path d="M 110 82 C 145 70 195 68 245 74 C 278 80 294 105 286 130 C 278 152 258 178 235 198 C 215 214 195 220 180 205 C 165 188 150 162 135 140 C 118 118 100 95 110 82 Z" />
+                <path d="M 335 45 C 362 38 395 40 388 65 C 380 82 355 88 335 78 C 322 70 325 52 335 45 Z" />
 
                 {/* South America */}
-                <path d="M 230 220 L 305 240 L 330 290 L 290 380 L 250 410 L 235 340 L 210 260 Z" />
+                <path d="M 230 224 C 265 218 305 230 325 255 C 338 275 330 310 312 345 C 295 380 275 412 258 418 C 248 418 242 395 240 360 C 236 320 220 275 215 245 C 212 232 220 225 230 224 Z" />
 
-                {/* Australia */}
-                <path d="M 810 320 L 890 310 L 910 360 L 880 405 L 820 395 L 795 350 Z" />
+                {/* Australia & New Zealand */}
+                <path d="M 812 322 C 845 308 885 312 905 335 C 918 355 912 385 892 402 C 868 414 835 410 815 395 C 795 378 792 348 802 330 C 806 324 810 323 812 322 Z" />
+                <path d="M 938 395 C 944 390 948 398 944 410 C 940 418 935 412 938 395 Z" />
               </g>
 
               {/* Animated Flight Path Bezier Arc */}
@@ -286,7 +315,7 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                   strokeDasharray="6 6"
                   className="animate-pulse"
                 />
-                {/* Animated Flying Private Jet Marker */}
+                {/* Animated Flying Private Jet Marker with Golden Jet-Stream */}
                 <g>
                   <animateMotion
                     path={flightPathArc}
@@ -294,36 +323,60 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                     repeatCount="indefinite"
                     rotate="auto"
                   />
-                  <g transform="translate(0, 0)">
-                    <circle r="7" fill="#D4AF37" opacity="0.4" />
-                    <path
-                      d="M 6 0 L -4 -4 L -2 -1 L -6 -1 L -7 -3 L -8 -3 L -7 0 L -8 3 L -7 3 L -6 1 L -2 1 L -4 4 Z"
-                      fill="#D4AF37"
-                      stroke="#0B2019"
-                      strokeWidth="0.8"
-                    />
+                  {/* Trailing Twin Golden Jet-Stream Contrails */}
+                  <g stroke="#D4AF37" strokeLinecap="round">
+                    <line x1="-6" y1="-2.5" x2="-26" y2="-3" strokeWidth="1.2" strokeOpacity="0.85" strokeDasharray="3 2" />
+                    <line x1="-6" y1="2.5" x2="-26" y2="3" strokeWidth="1.2" strokeOpacity="0.85" strokeDasharray="3 2" />
+                    <line x1="-26" y1="-3" x2="-52" y2="-3.5" strokeWidth="0.8" strokeOpacity="0.4" strokeDasharray="4 4" />
+                    <line x1="-26" y1="3" x2="-52" y2="3.5" strokeWidth="0.8" strokeOpacity="0.4" strokeDasharray="4 4" />
                   </g>
+
+                  {/* Jet Engine Afterburner Thrust Halo */}
+                  <circle cx="-6" cy="0" r="4" fill="#FFE58F" opacity="0.85" filter="drop-shadow(0 0 6px #D4AF37)" />
+                  <circle cx="0" cy="0" r="9" fill="#D4AF37" opacity="0.25" />
+
+                  {/* Sleek Golden Private Jet Fuselage */}
+                  <path
+                    d="M 9 0 L -4 -5.5 L -2 -1.5 L -7 -1.5 L -9 -4 L -10.5 -4 L -9.5 0 L -10.5 4 L -9 4 L -7 1.5 L -2 1.5 L -4 5.5 Z"
+                    fill="#D4AF37"
+                    stroke="#0B2019"
+                    strokeWidth="0.9"
+                    filter="drop-shadow(0 2px 4px rgba(11,32,25,0.4))"
+                  />
+                  {/* VIP Cockpit Window */}
+                  <ellipse cx="3.5" cy="0" rx="1.5" ry="0.8" fill="#0B2019" />
                 </g>
               </g>
 
-              {/* All 6 Sanctuary Location Pins */}
+              {/* All 6 Sanctuary Location Pins (Smart De-cluttered Architecture) */}
               {SANCTUARIES.map((sanctuary) => {
                 const isSelected = selectedSanctuary.id === sanctuary.id;
+                const isHovered = hoveredLocationId === sanctuary.id;
                 const coords = projectCoords(sanctuary.lat, sanctuary.lon);
-                // Smart label offset
-                const labelY = sanctuary.id === 'switzerland' ? coords.y + 16 : coords.y - 12;
+
+                // Smart label offset preventing collision with flight path or nearby pins
+                const labelOffsetY =
+                  sanctuary.id === 'spain'
+                    ? 18
+                    : sanctuary.id === 'safari' || sanctuary.id === 'maldives'
+                    ? 18
+                    : -16;
 
                 return (
                   <g
                     key={sanctuary.id}
                     onClick={() => setSelectedSanctuary(sanctuary)}
+                    onMouseEnter={() => setHoveredLocationId(sanctuary.id)}
+                    onMouseLeave={() => setHoveredLocationId((prev) => (prev === sanctuary.id ? null : prev))}
+                    onFocus={() => setHoveredLocationId(sanctuary.id)}
+                    onBlur={() => setHoveredLocationId((prev) => (prev === sanctuary.id ? null : prev))}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         setSelectedSanctuary(sanctuary);
                       }
                     }}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group outline-none"
                     role="button"
                     tabIndex={0}
                     aria-label={`Select sanctuary: ${sanctuary.title}`}
@@ -334,7 +387,7 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                         <circle
                           cx={coords.x}
                           cy={coords.y}
-                          r="18"
+                          r="20"
                           fill="url(#beaconGlow)"
                           className="animate-ping"
                           style={{ animationDuration: '2.5s' }}
@@ -342,7 +395,7 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                         <circle
                           cx={coords.x}
                           cy={coords.y}
-                          r="12"
+                          r="13"
                           fill="none"
                           stroke="#8C6B14"
                           strokeWidth="1.5"
@@ -355,49 +408,82 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                     <circle
                       cx={coords.x}
                       cy={coords.y}
-                      r={isSelected ? '7' : '4.5'}
-                      fill={isSelected ? '#D4AF37' : '#0B2019'}
+                      r={isSelected ? '8' : isHovered ? '6.5' : '4.5'}
+                      fill={isSelected ? '#D4AF37' : isHovered ? '#0E2A21' : '#0B2019'}
                       stroke={isSelected ? '#0B2019' : '#D4AF37'}
                       strokeWidth={isSelected ? '2' : '1.5'}
-                      className="transition-all duration-300 group-hover:scale-125"
+                      className="transition-all duration-300"
                     />
 
                     {/* Pin Core */}
                     <circle
                       cx={coords.x}
                       cy={coords.y}
-                      r={isSelected ? '2.5' : '1.5'}
+                      r={isSelected ? '3' : '1.8'}
                       fill={isSelected ? '#0B2019' : '#D4AF37'}
                     />
 
-                    {/* Sanctuary Label Pill */}
-                    <g transform={`translate(${coords.x}, ${labelY})`}>
-                      <rect
-                        x="-48"
-                        y="-10"
-                        width="96"
-                        height="18"
-                        rx="9"
-                        fill={isSelected ? '#0B2019' : '#FFFFFF'}
-                        stroke={isSelected ? '#D4AF37' : '#D4AF37'}
-                        strokeOpacity={isSelected ? '1' : '0.6'}
-                        strokeWidth={isSelected ? '1.5' : '1'}
-                        filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.12))"
-                        className="transition-all"
-                      />
-                      <text
-                        x="0"
-                        y="2.5"
-                        textAnchor="middle"
-                        fill={isSelected ? '#D4AF37' : '#0B2019'}
-                        fontSize="8.5"
-                        fontWeight={isSelected ? '700' : '600'}
-                        letterSpacing="0.04em"
-                        className="select-none font-sans"
+                    {/* Active Destination Banner (Rendered ONLY when selected) */}
+                    {isSelected && (
+                      <g
+                        transform={`translate(${coords.x}, ${coords.y + labelOffsetY})`}
+                        className="transition-all duration-300 filter drop-shadow(0 4px 10px rgba(14,42,33,0.28))"
                       >
-                        {sanctuary.shortTitle}
-                      </text>
-                    </g>
+                        <rect
+                          x="-62"
+                          y="-11"
+                          width="124"
+                          height="22"
+                          rx="11"
+                          fill="#0E2A21"
+                          stroke="#D4AF37"
+                          strokeWidth="1.4"
+                        />
+                        <text
+                          x="0"
+                          y="3.5"
+                          textAnchor="middle"
+                          fill="#D4AF37"
+                          fontSize="8.5"
+                          fontWeight="700"
+                          letterSpacing="0.04em"
+                          className="select-none font-sans"
+                        >
+                          ✦ {sanctuary.shortTitle}
+                        </text>
+                      </g>
+                    )}
+
+                    {/* Hover Tooltip (Rendered when hovered but not selected) */}
+                    {!isSelected && isHovered && (
+                      <g
+                        transform={`translate(${coords.x}, ${coords.y + labelOffsetY})`}
+                        className="transition-all duration-200 filter drop-shadow(0 3px 8px rgba(0,0,0,0.18)) pointer-events-none"
+                      >
+                        <rect
+                          x="-50"
+                          y="-10"
+                          width="100"
+                          height="20"
+                          rx="10"
+                          fill="#FFFFFF"
+                          stroke="#D4AF37"
+                          strokeWidth="1.2"
+                        />
+                        <text
+                          x="0"
+                          y="3"
+                          textAnchor="middle"
+                          fill="#0E2A21"
+                          fontSize="8"
+                          fontWeight="600"
+                          letterSpacing="0.02em"
+                          className="select-none font-sans"
+                        >
+                          {sanctuary.shortTitle}
+                        </text>
+                      </g>
+                    )}
                   </g>
                 );
               })}
@@ -405,17 +491,25 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
               {/* All 4 Origin Hub Markers */}
               {ORIGIN_HUBS.map((hub) => {
                 const isSelected = selectedOrigin.code === hub.code;
+                const isHovered = hoveredLocationId === hub.code;
                 const coords = projectCoords(hub.lat, hub.lon);
+
+                // Smart offset: LHR, RUH, DAC place badge slightly above or below to avoid flight arc
+                const hubOffsetY = hub.code === 'DXB' ? 16 : -16;
 
                 return (
                   <g
                     key={hub.code}
                     transform={`translate(${coords.x}, ${coords.y})`}
-                    className="cursor-pointer group"
+                    className="cursor-pointer group outline-none"
                     role="button"
                     tabIndex={0}
                     aria-label={`Select departure hub: ${hub.city} (${hub.code})`}
                     onClick={() => setSelectedOrigin(hub)}
+                    onMouseEnter={() => setHoveredLocationId(hub.code)}
+                    onMouseLeave={() => setHoveredLocationId((prev) => (prev === hub.code ? null : prev))}
+                    onFocus={() => setHoveredLocationId(hub.code)}
+                    onBlur={() => setHoveredLocationId((prev) => (prev === hub.code ? null : prev))}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
@@ -426,7 +520,7 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                     {isSelected ? (
                       <>
                         <circle
-                          r="16"
+                          r="17"
                           fill="none"
                           stroke="#0B2019"
                           strokeWidth="1.5"
@@ -434,21 +528,23 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                           className="animate-spin"
                           style={{ animationDuration: '8s' }}
                         />
-                        <circle r="6" fill="#0B2019" stroke="#D4AF37" strokeWidth="2" />
-                        <circle r="2" fill="#D4AF37" />
-                        
-                        {/* Origin Badge */}
-                        <g transform="translate(0, 16)">
+                        <circle r="6.5" fill="#0B2019" stroke="#D4AF37" strokeWidth="2" />
+                        <circle r="2.5" fill="#D4AF37" />
+
+                        {/* Selected Origin Badge */}
+                        <g
+                          transform={`translate(0, ${hubOffsetY})`}
+                          className="filter drop-shadow(0 3px 8px rgba(11,32,25,0.22))"
+                        >
                           <rect
-                            x="-34"
-                            y="-8"
-                            width="68"
-                            height="16"
-                            rx="8"
+                            x="-36"
+                            y="-9"
+                            width="72"
+                            height="18"
+                            rx="9"
                             fill="#0B2019"
                             stroke="#D4AF37"
-                            strokeWidth="1"
-                            filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.15))"
+                            strokeWidth="1.2"
                           />
                           <text
                             x="0"
@@ -467,24 +563,44 @@ export default function GlobalSanctuaryMap({ onOpenInquiry }: GlobalSanctuaryMap
                     ) : (
                       <>
                         <circle
-                          r="4"
+                          r={isHovered ? '5' : '3.8'}
                           fill="#FFFFFF"
                           stroke="#0B2019"
-                          strokeWidth="1.5"
-                          className="group-hover:scale-125 transition-transform"
+                          strokeWidth="1.4"
+                          className="transition-all duration-200"
                         />
-                        <text
-                          x="0"
-                          y="-7"
-                          textAnchor="middle"
-                          fill="#0B2019"
-                          fontSize="7.5"
-                          fontWeight="700"
-                          letterSpacing="0.05em"
-                          className="select-none font-mono opacity-80 group-hover:opacity-100"
-                        >
-                          {hub.code}
-                        </text>
+                        <circle r="1.5" fill="#0B2019" />
+
+                        {/* Hover Tooltip for unselected origin */}
+                        {isHovered && (
+                          <g
+                            transform={`translate(0, ${hubOffsetY})`}
+                            className="filter drop-shadow(0 2px 6px rgba(0,0,0,0.15)) pointer-events-none"
+                          >
+                            <rect
+                              x="-30"
+                              y="-8"
+                              width="60"
+                              height="16"
+                              rx="8"
+                              fill="#0E2A21"
+                              stroke="#D4AF37"
+                              strokeWidth="1"
+                            />
+                            <text
+                              x="0"
+                              y="3"
+                              textAnchor="middle"
+                              fill="#D4AF37"
+                              fontSize="7.5"
+                              fontWeight="bold"
+                              letterSpacing="0.06em"
+                              className="select-none font-mono"
+                            >
+                              {hub.code} • {hub.city}
+                            </text>
+                          </g>
+                        )}
                       </>
                     )}
                   </g>
